@@ -1,0 +1,195 @@
+/* App Navigation */
+.appHeader{
+  position: sticky;
+  top: 0;
+  z-index: 1500;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+.appHeaderInner{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 0;
+}
+.appNav{ 
+  display: flex; 
+  gap: 24px; 
+  align-items: center; 
+  flex-wrap: wrap; 
+}
+
+.appNav a{ 
+  color: var(--text-secondary); 
+  font-weight: 400; 
+  font-size: 16px;
+  transition: color 0.2s ease;
+  text-transform: none;
+  position: relative;
+}
+
+.appNav a:hover{ 
+  color: var(--text-primary); 
+}
+
+.appNav a.active{ 
+  color: var(--primary); 
+}
+
+.appNav a.active::after{
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+.appRight{ display:flex; gap:12px; align-items:center; }
+.userPill{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+}
+.dot{ 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  background: var(--primary); 
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); 
+}
+
+[data-theme="dark"] .dot{
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+.pageWrap{ padding:26px 0 70px; }
+
+.kpiGrid{ display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:16px; }
+@media(max-width:1100px){ .kpiGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width:700px){ .kpiGrid{ grid-template-columns: 1fr; } }
+.kpiCard{ padding:16px; }
+.kpiTitle{ font-weight:900; margin:0 0 8px; }
+.kpiBody{ color:var(--muted); line-height:1.55; }
+
+.listItem{
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-radius: var(--radius);
+  transition: background 0.2s ease;
+}
+
+.listItem:hover{ 
+  background: var(--bg); 
+  border-radius: var(--radius); 
+}
+
+.messagesLayout{ display:grid; grid-template-columns: 360px 1fr; gap:16px; }
+@media(max-width:1000px){ .messagesLayout{ grid-template-columns: 1fr; } }
+.pane{ 
+  padding: 24px; 
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.threadItem{ 
+  padding: 16px; 
+  border-radius: var(--radius); 
+  border: 1px solid var(--border); 
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 0.2s ease;
+}
+
+.threadItem:hover{ 
+  border-color: var(--primary); 
+  background: var(--bg);
+}
+
+.threadItem.active{ 
+  border-color: var(--primary); 
+  background: rgba(37, 99, 235, 0.08); 
+}
+
+[data-theme="dark"] .threadItem.active{
+  background: rgba(59, 130, 246, 0.12);
+}
+.threadTop{ display:flex; justify-content:space-between; gap:10px; }
+.threadName{ 
+  font-weight: 500; 
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.threadSnippet{ 
+  color: var(--text-secondary); 
+  font-size: 14px; 
+  margin-top: 6px; 
+}
+
+.msgBlock{ 
+  padding: 16px; 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius); 
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+
+.msgMeta{ 
+  display: flex; 
+  justify-content: space-between; 
+  color: var(--text-secondary); 
+  font-size: 13px; 
+  margin-bottom: 8px; 
+}
+
+.table{ 
+  width: 100%; 
+  border-collapse: collapse; 
+}
+
+.table th,
+.table td{ 
+  padding: 12px 16px; 
+  border-bottom: 1px solid var(--border); 
+  text-align: left; 
+  color: var(--text-secondary); 
+  font-size: 14px;
+}
+
+.table th{ 
+  color: var(--text-primary); 
+  font-weight: 600; 
+  font-size: 14px;
+}
+
+.adminTabs{ 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 10px; 
+}
+
+.adminTabs .tab{ 
+  background: var(--bg); 
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.adminTabs .tab.active{
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+

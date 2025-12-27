@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Termine – …undbauen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/base.css"/>
+  <link rel="stylesheet" href="../assets/css/app.css"/>
+</head>
+<body data-page="termine">
+  <header class="appHeader">
+    <div class="container appHeaderInner">
+      <a class="brand" href="dashboard.html">…undbauen</a>
+      <nav class="appNav" id="appNav">
+        <a href="dashboard.html" data-nav="dashboard">Dashboard</a>
+        <a href="termine.html" data-nav="termine">Termine</a>
+        <a href="forum.html" data-nav="forum">Forum</a>
+        <a href="nachrichten.html" data-nav="nachrichten">Nachrichten</a>
+        <a href="mitglieder.html" data-nav="mitglieder">Mitglieder</a>
+        <a href="einstellungen.html" data-nav="einstellungen">Einstellungen</a>
+        <a href="admin.html" data-nav="admin" id="adminLink" style="display:none">Admin</a>
+      </nav>
+      <div class="appRight">
+        <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>
+        <div class="userPill"><span class="dot"></span><span id="userLabel">Member</span></div>
+        <button class="btn" id="logoutBtn">⎋ Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container pageWrap">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:end;flex-wrap:wrap">
+      <div>
+        <div class="h2">Termine</div>
+        <p class="p">Buchen, speichern, ICS exportieren. Event-Thread & Teilnehmerliste sind integriert.</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn" id="exportBooked">Alle gebuchten (ICS)</button>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:14px" id="eventsGrid"></div>
+
+    <!-- Modal -->
+    <div class="modalOverlay" id="evOverlay">
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modalHeader">
+          <div class="modalTitle" id="evTitle">Event</div>
+          <button class="btn" id="evClose">✕</button>
+        </div>
+        <div class="modalBody" id="evBody"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../assets/js/app.js"></script>
+</body>
+</html>
+

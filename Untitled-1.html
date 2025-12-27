@@ -1,0 +1,3730 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>…undbauen – Innovations- und Netzwerkformat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a0a0a;
+            --secondary: #2a2a2a;
+            --accent: #1a1a1a;
+            --light: #f0f0f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Page Sections */
+        section:not(.hero) {
+            padding: 2rem 3rem;
+            padding-top: calc(80px + 1.5rem);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            pointer-events: none;
+            display: none;
+        }
+        
+        /* Aktive Seitenabschnitte füllen den sichtbaren Bereich aus */
+        section.active:not(.hero) {
+            /* 80px ist die Höhe der fixen Navbar */
+            min-height: calc(100vh - 80px);
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        
+        /* Remove excessive white space - content starts directly after navbar */
+        section:not(.hero).active {
+            padding-top: calc(80px + 1.5rem);
+        }
+        
+        .network.active,
+        .updates.active,
+        .dates.active {
+            padding-top: calc(80px + 1.5rem);
+        }
+        
+        .network.active .section-title,
+        .updates.active .updates-hero,
+        .dates.active .dates-header {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        
+        .network.active .section-title {
+            margin-bottom: 1.5rem;
+        }
+        
+        .updates.active .updates-hero {
+            padding-top: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .dates.active .dates-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* CTA und Footer immer sichtbar */
+        .cta,
+        footer {
+            display: block !important;
+        }
+
+        section.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            display: block;
+        }
+
+        section.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .hero {
+            display: block;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #1a1a1a;
+            z-index: 1000;
+            transform: translateY(-100%);
+            animation: slideDown 0.8s ease-out 0.2s forwards;
+        }
+
+        @keyframes slideDown {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.2s;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+        }
+
+        .nav-icon:hover {
+            color: #ffffff;
+        }
+
+        .hamburger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger-icon span {
+            width: 20px;
+            height: 2px;
+            background: currentColor;
+            transition: all 0.3s;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-overlay.active {
+            display: flex;
+        }
+
+        .menu-content {
+            max-width: 600px;
+            width: 100%;
+            padding: 3rem;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .menu-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.5rem;
+            border: none;
+            background: transparent;
+        }
+
+        .menu-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 300;
+            padding: 0.8rem 0;
+            display: block;
+            transition: color 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-links a:hover,
+        .menu-links a.active {
+            color: #ffffff;
+        }
+
+        .account-dropdown {
+            position: relative;
+        }
+
+        .account-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .account-dropdown.active .account-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .account-menu-item {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .account-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .account-menu-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--primary);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 100%;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 400;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-modal {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-modal-primary:hover {
+            background: var(--secondary);
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .form-links a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .form-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Guest restrictions */
+        .guest-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .guest-disabled::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: not-allowed;
+        }
+
+        .login-prompt {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            font-size: 0.9rem;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            height: 75vh;
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        /* Hero verbergen, ohne Platz zu belegen */
+        .hero.hidden {
+            display: none;
+        }
+        
+        /* Modern Hero Animation - Morphing Background */
+        @keyframes heroMorph {
+            0%, 100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: translate(2%, -2%) scale(1.02);
+            }
+            50% {
+                border-radius: 70% 30% 50% 50% / 30% 50% 50% 70%;
+                transform: translate(-2%, 2%) scale(0.98);
+            }
+            75% {
+                border-radius: 40% 60% 50% 40% / 60% 30% 70% 50%;
+                transform: translate(1%, 1%) scale(1.01);
+            }
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.1) 0%, transparent 50%);
+            animation: heroMorph 20s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Glitch effect for modern look */
+        @keyframes glitch {
+            0%, 100% {
+                transform: translate(0);
+                filter: hue-rotate(0deg);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+                filter: hue-rotate(5deg);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+                filter: hue-rotate(-5deg);
+            }
+            60% {
+                transform: translate(2px, 2px);
+                filter: hue-rotate(3deg);
+            }
+            80% {
+                transform: translate(2px, -2px);
+                filter: hue-rotate(-3deg);
+            }
+        }
+        
+        .hero-content h1 {
+            animation: fadeInUp 1.2s ease-out 0.3s forwards, glitch 0.3s ease-in-out 1.5s;
+        }
+
+        /* Network Visual Background */
+        .hero-network-visual {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .hero-network-visual svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .hero-content h1 {
+            font-size: 6rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            opacity: 1;
+            animation: fadeInUp 0.8s ease-out forwards;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Headline mit animierten Punkten */
+        .headline-wrapper {
+            display: inline-flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .dots-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: inherit;
+            line-height: inherit;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 0.5em;
+            height: 0.5em;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            animation: dotGlow 2s ease-in-out infinite;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes dotGlow {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+                filter: blur(2px);
+            }
+        }
+
+        .static-suffix {
+            display: inline-block;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 1);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            
+            .headline-wrapper {
+                gap: 0.5rem;
+            }
+            
+            .dot {
+                width: 0.4em;
+                height: 0.4em;
+            }
+            
+            section.active:not(.hero) {
+                min-height: calc(100vh - 60px);
+            }
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            font-weight: 300;
+            max-width: 800px;
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeInUp 1.2s ease-out 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 0.95;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUpTitle {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: 300;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        /* Mission Section */
+        .mission {
+            background: var(--white);
+        }
+
+        .mission-text {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .mission-text p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: var(--primary);
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        /* Innovationsabend Section */
+        .innovationsabend {
+            background: var(--light);
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .event-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 2px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .event-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .event-card h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .event-card p {
+            color: var(--secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Network Section */
+        .network {
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .network-slider-container {
+            position: relative;
+            max-width: 1600px;
+            margin: 2rem auto 0;
+            padding: 0 5rem;
+        }
+
+        .people-slider {
+            display: flex;
+            gap: 1.5rem;
+            transition: transform 0.5s ease-in-out;
+            will-change: transform;
+        }
+
+        .person-card {
+            flex: 0 0 calc(20% - 1.6rem);
+            min-width: 0;
+            background: #e3f2fd;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 320px;
+            min-width: 280px;
+        }
+
+        .person-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .person-image-container {
+            width: 100%;
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 400px;
+        }
+
+        .person-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .person-card.clicked .person-image {
+            opacity: 1;
+        }
+
+        .person-image-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 3rem;
+            font-weight: 200;
+            z-index: 1;
+        }
+
+        .person-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .person-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+            color: var(--primary);
+        }
+
+        .person-role {
+            font-size: 0.95rem;
+            color: var(--secondary);
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+        }
+
+        .person-info {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 300;
+        }
+
+        .slider-nav:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-nav.prev {
+            left: 0;
+        }
+
+        .slider-nav.next {
+            right: 0;
+        }
+
+        .slider-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slider-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        .pagination-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-dot.active {
+            background: var(--primary);
+            width: 12px;
+            height: 12px;
+        }
+
+        .network-community-text {
+            max-width: 900px;
+            margin: 2rem auto 0;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .community-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            letter-spacing: -0.01em;
+        }
+
+        .community-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--secondary);
+            font-weight: 300;
+        }
+
+        /* Person Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .modal-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 200;
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1;
+        }
+
+        .modal-header-info {
+            flex: 1;
+        }
+
+        .modal-name {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: var(--primary);
+        }
+
+        .modal-role {
+            font-size: 1rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .modal-body {
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .modal-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--primary);
+        }
+
+        .modal-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .modal-topic-tag {
+            background: #f5f5f5;
+            color: var(--secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        .modal-linkedin {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0077b5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .modal-linkedin:hover {
+            opacity: 0.8;
+        }
+
+        .modal-linkedin-icon {
+            width: 20px;
+            height: 20px;
+            background: #0077b5;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Topics Section */
+        .topics {
+            background: var(--light);
+        }
+
+        .topics-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+        }
+
+        .topic-item {
+            display: flex;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--white);
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s;
+        }
+
+        .topic-item:hover {
+            border-left-width: 6px;
+            padding-left: 1.85rem;
+        }
+
+        .topic-number {
+            font-size: 2rem;
+            font-weight: 200;
+            color: var(--accent);
+            opacity: 0.6;
+        }
+
+        .topic-content h4 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-content p {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        /* Dates Section */
+        .dates {
+            background: var(--white);
+        }
+
+        .dates-intro {
+            margin-bottom: 5rem;
+        }
+
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin-top: 3rem;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: stepFadeIn 0.8s ease-out forwards;
+        }
+
+        .step-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .step-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .step-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes stepFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            transition: all 0.4s;
+            position: relative;
+        }
+
+        .step-card:hover .step-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: #0a0a0a;
+        }
+
+        .step-card:hover .step-icon::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .step-icon::after {
+            content: '';
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            border: 2px solid #0a0a0a;
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.4s;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 35px;
+            height: 35px;
+            background: #0a0a0a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.01em;
+        }
+
+        .step-card p {
+            color: var(--secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .step-arrow {
+            position: absolute;
+            top: 50px;
+            right: -1.5rem;
+            font-size: 2rem;
+            color: var(--secondary);
+            opacity: 0.3;
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+
+        .step-card:last-child .step-arrow {
+            display: none;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% {
+                transform: translateX(0);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateX(5px);
+                opacity: 0.6;
+            }
+        }
+
+        .calendar-section {
+            margin-top: 5rem;
+        }
+
+        .calendar-filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--light);
+            background: transparent;
+            color: var(--secondary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .dates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .date-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.4s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .date-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .date-card.innovationsabend {
+            border-color: rgba(34, 139, 34, 0.3);
+        }
+
+        .date-card.innovationsabend .date-header {
+            background: rgba(34, 139, 34, 0.15);
+            border-left: 5px solid rgba(34, 139, 34, 0.8);
+        }
+
+        .date-card.workshop {
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .date-card.workshop .date-header {
+            background: rgba(255, 193, 7, 0.15);
+            border-left: 5px solid rgba(255, 193, 7, 0.9);
+        }
+
+        .date-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .date-type {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .innovationsabend .date-type {
+            background: rgba(34, 139, 34, 0.9);
+            color: white;
+        }
+
+        .workshop .date-type {
+            background: rgba(255, 193, 7, 0.9);
+            color: #0a0a0a;
+        }
+
+        .date-body {
+            padding: 1.5rem;
+        }
+
+        .date-body h4 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .date-body p {
+            color: var(--secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .meta-value {
+            font-weight: 500;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .date-footer {
+            padding: 1.5rem;
+            background: var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slots {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .slots-indicator {
+            display: flex;
+            gap: 3px;
+        }
+
+        .slot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--light);
+            border: 1px solid var(--secondary);
+        }
+
+        .slot.filled {
+            background: var(--primary);
+        }
+
+        .register-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .register-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
+        .register-btn:disabled {
+            background: var(--secondary);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .register-btn:disabled:hover {
+            transform: scale(1);
+        }
+
+        .dates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dates-list {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 2rem;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            transition: background 0.2s ease;
+        }
+
+        .date-row:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .date-row:last-child {
+            border-bottom: none;
+        }
+
+        .date-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .date-title {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .date-subtitle {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 300;
+        }
+
+        .date-meta {
+            text-align: right;
+            min-width: 140px;
+        }
+
+        .date-meta-date {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .date-meta-time {
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+
+        .date-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-details {
+            padding: 0.5rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-details:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .actions-dropdown {
+            position: relative;
+        }
+
+        .btn-actions {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-actions:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .actions-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 400;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            padding: 0.7rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            background: var(--white);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .dashboard-module {
+            background: var(--light);
+            padding: 2rem;
+            border-radius: 4px;
+        }
+
+        .dashboard-module h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .next-session {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        .next-session h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .next-session-date {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .next-session-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .topic-chip {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 0.3rem 0.3rem 0.3rem 0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .topic-chip:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Updates Section */
+        .updates {
+            background: #0a0a0a;
+            color: white;
+        }
+
+        .updates-hero {
+            text-align: center;
+            padding: 1.5rem 0 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .updates.active .updates-hero {
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .updates-hero h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .updates-hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-left: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 4rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .timeline-month {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .timeline-summary {
+            font-size: 1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-topic-tag {
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .timeline-insights {
+            margin-top: 1.5rem;
+        }
+
+        .timeline-insights-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-insights ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-insights li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            opacity: 0.9;
+        }
+
+        .timeline-insights li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+        }
+
+        .timeline-accordion {
+            margin-top: 1rem;
+        }
+
+        .accordion-toggle {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .accordion-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-content {
+            display: none;
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        /* About Section */
+        .about-hero {
+            background: #0a0a0a;
+            color: white;
+            text-align: center;
+            padding: 4rem 3rem;
+        }
+
+        .about-hero h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .about-hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-icons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 4rem auto;
+        }
+
+        .about-icon-item {
+            text-align: center;
+        }
+
+        .about-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .about-icon-item h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.8rem;
+        }
+
+        .about-icon-item p {
+            font-size: 0.95rem;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        .about-visual {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.1) 100%);
+            border-radius: 8px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .founders-block {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 4rem auto;
+            align-items: center;
+        }
+
+        .founders-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .founders-content h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .founders-content p {
+            font-size: 1rem;
+            color: var(--secondary);
+            line-height: 1.7;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--white);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 400;
+            border-radius: 2px;
+            transition: all 0.3s;
+            letter-spacing: 0.02em;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.7);
+            padding: 4rem 3rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h4 {
+            color: var(--white);
+            font-weight: 400;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            line-height: 2;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--white);
+        }
+
+        .footer-section p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .person-card {
+                flex: 0 0 calc(33.333% - 1.4rem);
+            }
+            .event-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .network-slider-container {
+                padding: 0 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem 1.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .hero {
+                height: 70vh;
+                margin-top: 60px;
+            }
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            .headline-stage {
+                max-width: 100%;
+            }
+            .headline-phrase {
+                font-size: 3rem;
+            }
+            section:not(.hero) {
+                padding: 1.5rem 1.5rem;
+                padding-top: calc(60px + 1rem);
+            }
+            
+            .network.active,
+            .updates.active,
+            .dates.active {
+                padding-top: calc(60px + 1rem);
+            }
+            
+            .network.active .section-title,
+            .updates.active .updates-hero,
+            .dates.active .dates-header {
+                margin-top: 0;
+                padding-top: 0;
+            }
+            .person-card {
+                flex: 0 0 calc(50% - 1rem);
+            }
+            .event-grid {
+                grid-template-columns: 1fr;
+            }
+            .topics-list {
+                grid-template-columns: 1fr;
+            }
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dates-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .date-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .date-meta {
+                text-align: left;
+            }
+            .date-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            .btn-details,
+            .btn-actions {
+                width: 100%;
+                text-align: center;
+            }
+            .network-slider-container {
+                padding: 0 2.5rem;
+            }
+            .slider-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .person-card {
+                flex: 0 0 100%;
+            }
+            .network-slider-container {
+                padding: 0 1.5rem;
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .headline-phrase {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#home" class="logo">…undbauen</a>
+            <div class="nav-right">
+                <button class="nav-icon hamburger-icon" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="account-dropdown" id="accountDropdown" style="display: none;">
+                    <button class="nav-icon" id="accountToggle">👤</button>
+                    <div class="account-menu">
+                        <a href="#dashboard" class="account-menu-item">Dashboard</a>
+                        <a href="#profil" class="account-menu-item">Profil</a>
+                        <a href="#einstellungen" class="account-menu-item">Einstellungen</a>
+                        <a href="#" class="account-menu-item" id="logoutBtn">Logout</a>
+                    </div>
+                </div>
+                <button class="nav-icon" id="loginBtn" style="display: none;">🔓</button>
+                <button class="nav-icon" id="registerBtn" style="display: none;">📝</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-content">
+            <div class="menu-header">
+                <h2 style="color: white; font-weight: 300; font-size: 1.5rem;">Menü</h2>
+                <button class="menu-close" id="menuClose">×</button>
+                </div>
+            <ul class="menu-links">
+                <li><a href="#home" class="menu-link">Home</a></li>
+                <li><a href="#netzwerk" class="menu-link">Netzwerk</a></li>
+                <li><a href="#termine" class="menu-link">Termine</a></li>
+                <li><a href="#updates" class="menu-link">Monats-Updates</a></li>
+                <li><a href="#publikationen" class="menu-link">Publikationen</a></li>
+                <li><a href="#ueber" class="menu-link">Über uns</a></li>
+                <li><a href="#kontakt" class="menu-link">Kontakt</a></li>
+                <li><a href="#impressum" class="menu-link">Impressum</a></li>
+                <li><a href="#datenschutz" class="menu-link">Datenschutz</a></li>
+            </ul>
+                </div>
+                </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" id="loginModalClose">×</button>
+            <h2 class="modal-title">Anmelden</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+            </div>
+                <div class="form-group">
+                    <label for="loginPassword">Passwort</label>
+                    <input type="password" id="loginPassword" required>
+        </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-modal btn-modal-primary">Anmelden</button>
+                </div>
+                <div class="form-links">
+                    <a href="#" id="forgotPasswordLink">Passwort vergessen?</a> | 
+                    <a href="#" id="showRegisterLink">Registrieren</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close" id="registerModalClose">×</button>
+            <h2 class="modal-title">Konto erstellen</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Passwort</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Passwort bestätigen</label>
+                    <input type="password" id="registerPasswordConfirm" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-modal btn-modal-primary">Konto erstellen</button>
+                </div>
+                <div class="form-links">
+                    <a href="#" id="showLoginLink">Bereits ein Konto? Anmelden</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <!-- Network Visual Background -->
+        <div class="hero-network-visual">
+            <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Nodes -->
+                <circle cx="200" cy="150" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="400" cy="120" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="600" cy="180" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="800" cy="140" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="1000" cy="160" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="150" cy="350" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="350" cy="380" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="550" cy="350" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="750" cy="370" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="950" cy="360" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="250" cy="550" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="450" cy="580" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="650" cy="550" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="850" cy="570" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="1050" cy="560" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="300" cy="700" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="500" cy="720" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="700" cy="690" r="2.5" fill="rgba(255,255,255,0.3)"/>
+                <circle cx="900" cy="710" r="3" fill="rgba(255,255,255,0.4)"/>
+                <!-- Connections -->
+                <line x1="200" y1="150" x2="400" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="400" y1="120" x2="600" y2="180" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="600" y1="180" x2="800" y2="140" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="800" y1="140" x2="1000" y2="160" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="150" y1="350" x2="350" y2="380" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="350" y1="380" x2="550" y2="350" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="550" y1="350" x2="750" y2="370" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="750" y1="370" x2="950" y2="360" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="250" y1="550" x2="450" y2="580" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="450" y1="580" x2="650" y2="550" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="650" y1="550" x2="850" y2="570" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="850" y1="570" x2="1050" y2="560" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <line x1="200" y1="150" x2="150" y2="350" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="600" y1="180" x2="550" y2="350" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="1000" y1="160" x2="950" y2="360" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="350" y1="380" x2="450" y2="580" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="750" y1="370" x2="850" y2="570" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="500" y1="720" x2="450" y2="580" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <line x1="900" y1="710" x2="850" y2="570" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            </svg>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>
+                <div class="headline-wrapper">
+                    <span class="dots-container">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </span>
+                    <span class="static-suffix">und bauen</span>
+                </div>
+            </h1>
+            <p>Ein kuratiertes Innovations- und Netzwerkformat für Architektur, Ingenieurwesen, Bau & Digitalisierung</p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission">
+        <div class="container">
+            <div class="mission-text">
+                <p>Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Querdenkern der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.</p>
+                <p>…undbauen ist mehr als ein Netzwerk. Es ist eine Haltung.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Innovationsabend Section -->
+    <section class="innovationsabend">
+        <div class="container">
+            <h2 class="section-title">Der monatliche Innovationsabend</h2>
+            <p class="section-subtitle">Jeden Monat laden wir zu einem kuratierten Abend ein, der Raum für Austausch, Inspiration und echte Begegnungen schafft. Kein Marketing, keine Produktpräsentationen – nur Menschen, Ideen und Dialog.</p>
+            
+            <div class="event-grid">
+                <div class="event-card">
+                    <div class="event-icon">💭</div>
+                    <h3>Dialog & Austausch</h3>
+                    <p>Impulsvortrag eines Pioniers aus Architektur, Bau oder Digitalisierung, gefolgt von moderierten Gesprächen auf Augenhöhe.</p>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">🤝</div>
+                    <h3>Kuratiertes Netzwerk</h3>
+                    <p>Wir bringen bewusst Menschen zusammen, die voneinander lernen können und deren Perspektiven sich ergänzen.</p>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">🔮</div>
+                    <h3>Zukunft gestalten</h3>
+                    <p>Fokus auf die wirklich relevanten Fragen: Wie bauen wir morgen? Wie arbeiten wir zusammen? Welche Prozesse brauchen wir?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Network Section -->
+    <section class="network" id="netzwerk">
+        <div class="container">
+            <h2 class="section-title">Das Netzwerk</h2>
+            <p class="section-subtitle">Lerne die Fachleute kennen, die Innovation im Bauwesen und der gebauten Umwelt vorantreiben. Eine vielfältige Community, vereint durch Neugier und Engagement für digitale Transformation.</p>
+            
+            <div id="networkGuestNotice" style="text-align: center; padding: 1.5rem; background: rgba(0, 0, 0, 0.03); border-radius: 4px; margin-bottom: 2rem; display: none;">
+                <p style="color: var(--secondary); font-size: 0.9rem;">Weitere Informationen zu den Profilen sind nach der Anmeldung sichtbar.</p>
+            </div>
+            
+            <div class="network-slider-container">
+                <button class="slider-nav prev" id="prevBtn">‹</button>
+                <div class="people-slider" id="peopleSlider">
+                    <div class="person-card" data-person='{"initials":"AM","name":"Anna Müller","role":"Architektin","field":"Bauingenieurwesen","about":"Leidenschaftlich daran interessiert, nachhaltige Holzbauweise und zirkuläres Design in die Praxis umzusetzen. Über 10 Jahre Erfahrung in innovativen Architekturprojekten.","topics":["Nachhaltiges Bauen","Holzbauweise","Zirkuläres Design"],"image":"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop" alt="Anna Müller" class="person-image">
+                            <div class="person-image-placeholder">AM</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Anna Müller</div>
+                            <div class="person-role">Architektin</div>
+                            <div class="person-info">Spezialisiert auf nachhaltige Holzbauweise und zirkuläres Design</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"TK","name":"Thomas Klein","role":"BIM-Manager","field":"Bauingenieurwesen","about":"Leidenschaftlich daran interessiert, BIM-Workflows effizienter und zugänglicher zu machen. Über 10 Jahre Erfahrung in Infrastrukturprojekten.","topics":["BIM-Koordination","Digitale Planung","Offene Standards"],"image":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop" alt="Thomas Klein" class="person-image">
+                            <div class="person-image-placeholder">TK</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Thomas Klein</div>
+                            <div class="person-role">BIM-Manager</div>
+                            <div class="person-info">Entwickelt digitale Prozesse für integrierte Planungsmethoden</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"SB","name":"Sarah Berg","role":"Bauingenieurin","field":"Forschung","about":"Forschung zu adaptiven Tragwerkssystemen und Materialtransparenz. Entwickelt innovative Lösungen für nachhaltige Baukonstruktionen.","topics":["Tragwerksplanung","Materialforschung","Adaptive Systeme"],"image":"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop" alt="Sarah Berg" class="person-image">
+                            <div class="person-image-placeholder">SB</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Sarah Berg</div>
+                            <div class="person-role">Bauingenieurin</div>
+                            <div class="person-info">Forschung zu adaptiven Tragwerkssystemen und Materialtransparenz</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"MR","name":"Markus Roth","role":"Tech-Innovator","field":"PropTech","about":"Gründer eines PropTech-Startups für kollaborative Bauprozesse. Entwickelt digitale Plattformen für effiziente Projektabwicklung.","topics":["PropTech","Kollaboration","Digitale Plattformen"],"image":"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop" alt="Markus Roth" class="person-image">
+                            <div class="person-image-placeholder">MR</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Markus Roth</div>
+                            <div class="person-role">Tech-Innovator</div>
+                            <div class="person-info">Gründer eines PropTech-Startups für kollaborative Bauprozesse</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"LW","name":"Lisa Weber","role":"Stadtplanerin","field":"Stadtentwicklung","about":"Expertin für partizipative Quartiersentwicklung und soziale Infrastruktur. Gestaltet nachhaltige und inklusive Stadtquartiere.","topics":["Stadtplanung","Partizipation","Soziale Infrastruktur"],"image":"https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop" alt="Lisa Weber" class="person-image">
+                            <div class="person-image-placeholder">LW</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Lisa Weber</div>
+                            <div class="person-role">Stadtplanerin</div>
+                            <div class="person-info">Expertin für partizipative Quartiersentwicklung und soziale Infrastruktur</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"JH","name":"Jonas Hoffmann","role":"Digital Architect","field":"Parametrisches Design","about":"Verbindet parametrisches Design mit KI-gestützter Optimierung. Entwickelt innovative Entwurfsmethoden für komplexe Bauaufgaben.","topics":["Parametrisches Design","KI","Entwurfsoptimierung"],"image":"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop" alt="Jonas Hoffmann" class="person-image">
+                            <div class="person-image-placeholder">JH</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Jonas Hoffmann</div>
+                            <div class="person-role">Digital Architect</div>
+                            <div class="person-info">Verbindet parametrisches Design mit KI-gestützter Optimierung</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"KS","name":"Kathrin Schmitt","role":"Nachhaltigkeitsberaterin","field":"Gebäudezertifizierung","about":"Cradle to Cradle-Expertin mit Fokus auf Gebäudezertifizierung. Berät Projekte zu nachhaltigen Baukonzepten und Materialkreisläufen.","topics":["Cradle to Cradle","Nachhaltigkeit","Zertifizierung"],"image":"https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=600&fit=crop" alt="Kathrin Schmitt" class="person-image">
+                            <div class="person-image-placeholder">KS</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Kathrin Schmitt</div>
+                            <div class="person-role">Nachhaltigkeitsberaterin</div>
+                            <div class="person-info">Cradle to Cradle-Expertin mit Fokus auf Gebäudezertifizierung</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"DL","name":"David Lang","role":"Projektentwickler","field":"Wohnungsbau","about":"Pioniert neue Finanzierungs- und Betreibermodelle im Wohnungsbau. Entwickelt innovative Konzepte für bezahlbaren Wohnraum.","topics":["Projektentwicklung","Finanzierung","Wohnungsbau"],"image":"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop" alt="David Lang" class="person-image">
+                            <div class="person-image-placeholder">DL</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">David Lang</div>
+                            <div class="person-role">Projektentwickler</div>
+                            <div class="person-info">Pioniert neue Finanzierungs- und Betreibermodelle im Wohnungsbau</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"EM","name":"Elena Martinez","role":"Bauphysikerin","field":"Energieeffizienz","about":"Spezialistin für energieeffiziente Gebäudehüllen und nachhaltige Klimatisierungskonzepte. Über 8 Jahre Erfahrung in der Gebäudeoptimierung.","topics":["Bauphysik","Energieeffizienz","Gebäudeoptimierung"],"image":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop" alt="Elena Martinez" class="person-image">
+                            <div class="person-image-placeholder">EM</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Elena Martinez</div>
+                            <div class="person-role">Bauphysikerin</div>
+                            <div class="person-info">Spezialistin für energieeffiziente Gebäudehüllen und nachhaltige Klimatisierung</div>
+                        </div>
+                    </div>
+                    <div class="person-card" data-person='{"initials":"PF","name":"Philipp Fischer","role":"Bauleiter","field":"Projektmanagement","about":"Erfahrener Bauleiter mit Expertise in digitalen Bauprozessen und Lean Construction. Führt komplexe Großprojekte erfolgreich zum Abschluss.","topics":["Projektmanagement","Lean Construction","Digitale Prozesse"],"image":"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop"}'>
+                        <div class="person-image-container">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop" alt="Philipp Fischer" class="person-image">
+                            <div class="person-image-placeholder">PF</div>
+                        </div>
+                        <div class="person-card-content">
+                            <div class="person-name">Philipp Fischer</div>
+                            <div class="person-role">Bauleiter</div>
+                            <div class="person-info">Erfahrener Bauleiter mit Expertise in digitalen Bauprozessen</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-nav next" id="nextBtn">›</button>
+                <div class="slider-pagination" id="pagination"></div>
+            </div>
+            <div class="network-community-text">
+                <h3 class="community-title">Community, keine Hierarchie</h3>
+                <p class="community-description">Unser Netzwerk bringt Fachleute aus allen Bereichen und Karrierestufen zusammen. Was uns vereint, ist der Drang zu lernen, zu teilen und die digitale Transformation der gebauten Umwelt voranzutreiben—gemeinsam.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard" id="dashboard" data-member-only>
+        <div class="container">
+            <h2 class="section-title">Dashboard</h2>
+            
+            <div class="next-session">
+                <h3>Nächste Session</h3>
+                <div class="next-session-date">25. Januar 2025, 18:00 Uhr</div>
+                <div class="next-session-title">KI in frühen Entwurfsphasen</div>
+                <a href="#termine" class="btn-modal btn-modal-primary" style="display: inline-block; margin-top: 1rem;">Teilnehmen / Details</a>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-module">
+                    <h3>Meine Termine</h3>
+                    <div class="date-row">
+                        <div class="date-content">
+                            <h3 class="date-title">KI in frühen Entwurfsphasen</h3>
+                            <p class="date-subtitle">Status: Gebucht</p>
+                        </div>
+                        <div class="date-meta">
+                            <div class="date-meta-date">25. Januar 2025</div>
+                            <div class="date-meta-time">18:00 Uhr</div>
+                        </div>
+                        <div class="date-actions">
+                            <a href="#details-1" class="btn-details">Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-module">
+                    <h3>Meine Benachrichtigungen</h3>
+                    <div class="notification-item">
+                        <span>Neue Termine</span>
+                        <div class="toggle-switch active"></div>
+                    </div>
+                    <div class="notification-item">
+                        <span>Reminder 24h vorher</span>
+                        <div class="toggle-switch active"></div>
+                    </div>
+                    <div class="notification-item">
+                        <span>Monats-Updates</span>
+                        <div class="toggle-switch"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-module" style="margin-top: 2rem;">
+                <h3>Empfohlene Themen</h3>
+                <div>
+                    <span class="topic-chip">BIM</span>
+                    <span class="topic-chip">KI</span>
+                    <span class="topic-chip">Nachhaltigkeit</span>
+                    <span class="topic-chip">Digitale Planung</span>
+                    <span class="topic-chip">Open Standards</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topics Section -->
+    <section class="topics">
+        <div class="container">
+            <h2 class="section-title">Themen & Inhalte</h2>
+            <p class="section-subtitle">Wir setzen uns mit den Fragen auseinander, die unsere Branche bewegen.</p>
+            
+            <div class="topics-list">
+                <div class="topic-item">
+                    <div class="topic-number">01</div>
+                    <div class="topic-content">
+                        <h4>Digitale Transformation</h4>
+                        <p>BIM, KI, IoT – wie verändern neue Technologien unsere Planungs- und Bauprozesse nachhaltig?</p>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-number">02</div>
+                    <div class="topic-content">
+                        <h4>Nachhaltigkeit & Kreislaufwirtschaft</h4>
+                        <p>Vom linearen zum zirkulären Bauen – Materialien, Konzepte und Best Practices.</p>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-number">03</div>
+                    <div class="topic-content">
+                        <h4>Neue Arbeitswelten</h4>
+                        <p>Kollaboration, agile Methoden und neue Rollenbilder in interdisziplinären Teams.</p>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-number">04</div>
+                    <div class="topic-content">
+                        <h4>Zukunft der Stadt</h4>
+                        <p>Urbane Verdichtung, soziale Gerechtigkeit und resiliente Stadtentwicklung.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dates Section -->
+    <section class="dates" id="termine">
+        <div class="container">
+            <div class="dates-header">
+                <div>
+                    <h2 class="section-title">Kommende Termine</h2>
+                    <p class="section-subtitle">Unsere nächsten Innovationsabende – vormerken und dabei sein.</p>
+                </div>
+                <a href="#anmeldung" class="btn-primary" data-member-only>Termin buchen</a>
+            </div>
+            
+            <div class="dates-list">
+                <div class="date-row">
+                    <div class="date-content">
+                        <h3 class="date-title">KI in frühen Entwurfsphasen</h3>
+                        <p class="date-subtitle">Innovationsabend • Mit Dr. Elena Krause</p>
+                    </div>
+                    <div class="date-meta">
+                        <div class="date-meta-date">25. Januar 2025</div>
+                        <div class="date-meta-time">18:00 Uhr</div>
+                    </div>
+                    <div class="date-actions" data-member-only>
+                        <a href="#details-1" class="btn-details">Details</a>
+                        <div class="actions-dropdown">
+                            <button class="btn-actions">Aktionen <span>▼</span></button>
+                            <div class="dropdown-menu">
+                                <a href="#anmelden-1" class="dropdown-item">Anmelden / Teilnehmen</a>
+                                <a href="#benachrichtigen-1" class="dropdown-item">Benachrichtigen</a>
+                                <a href="#kalender-1" class="dropdown-item">Zum Kalender hinzufügen (ICS)</a>
+                                <a href="#link-1" class="dropdown-item">Link kopieren</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div class="date-content">
+                        <h3 class="date-title">Cradle to Cradle im Bauwesen</h3>
+                        <p class="date-subtitle">Innovationsabend • Mit Architekt Philipp Meier</p>
+                    </div>
+                    <div class="date-meta">
+                        <div class="date-meta-date">22. Februar 2025</div>
+                        <div class="date-meta-time">18:00 Uhr</div>
+                    </div>
+                    <div class="date-actions" data-member-only>
+                        <a href="#details-2" class="btn-details">Details</a>
+                        <div class="actions-dropdown">
+                            <button class="btn-actions">Aktionen <span>▼</span></button>
+                            <div class="dropdown-menu">
+                                <a href="#anmelden-2" class="dropdown-item">Anmelden / Teilnehmen</a>
+                                <a href="#benachrichtigen-2" class="dropdown-item">Benachrichtigen</a>
+                                <a href="#kalender-2" class="dropdown-item">Zum Kalender hinzufügen (ICS)</a>
+                                <a href="#link-2" class="dropdown-item">Link kopieren</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div class="date-content">
+                        <h3 class="date-title">Partizipation neu gedacht</h3>
+                        <p class="date-subtitle">Workshop • Mit Stadtplanerin Julia Stein</p>
+                    </div>
+                    <div class="date-meta">
+                        <div class="date-meta-date">29. März 2025</div>
+                        <div class="date-meta-time">18:00 Uhr</div>
+                    </div>
+                    <div class="date-actions" data-member-only>
+                        <a href="#details-3" class="btn-details">Details</a>
+                        <div class="actions-dropdown">
+                            <button class="btn-actions">Aktionen <span>▼</span></button>
+                            <div class="dropdown-menu">
+                                <a href="#anmelden-3" class="dropdown-item">Anmelden / Teilnehmen</a>
+                                <a href="#benachrichtigen-3" class="dropdown-item">Benachrichtigen</a>
+                                <a href="#kalender-3" class="dropdown-item">Zum Kalender hinzufügen (ICS)</a>
+                                <a href="#link-3" class="dropdown-item">Link kopieren</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monats-Updates Section -->
+    <section class="updates" id="updates">
+        <div class="container">
+            <div class="updates-hero">
+                <h2>Monats-Updates</h2>
+                <p>Kurze Zusammenfassungen unserer Diskussionen, wichtige Erkenntnisse und kommende Themen.</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-month">Januar 2025</div>
+                    <h3 class="timeline-title">KI in frühen Entwurfsphasen</h3>
+                    <p class="timeline-summary">Wie künstliche Intelligenz Entwurfsprozesse erweitert und neue Möglichkeiten für Architekten schafft. Diskussion über praktische Anwendungen und ethische Fragen.</p>
+                    <div class="timeline-topics">
+                        <span class="timeline-topic-tag">KI</span>
+                        <span class="timeline-topic-tag">Digitale Planung</span>
+                        <span class="timeline-topic-tag">Innovation</span>
+                    </div>
+                    <div class="timeline-insights">
+                        <div class="timeline-insights-title">Wichtige Erkenntnisse</div>
+                        <ul>
+                            <li>KI kann Entwurfsprozesse beschleunigen, ersetzt aber nicht die kreative Entscheidung</li>
+                            <li>Transparenz bei KI-gestützten Tools ist essentiell für Vertrauen</li>
+                            <li>Interdisziplinäre Teams profitieren am meisten von KI-Unterstützung</li>
+                            <li>Datenqualität ist der Schlüssel für erfolgreiche KI-Anwendungen</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-accordion">
+                        <button class="accordion-toggle">Details anzeigen</button>
+                        <div class="accordion-content">
+                            <p>Vollständige Zusammenfassung der Diskussion, Teilnehmer-Statements und weiterführende Ressourcen.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-month">Dezember 2024</div>
+                    <h3 class="timeline-title">OpenBIM und offene Standards</h3>
+                    <p class="timeline-summary">Die Bedeutung offener Standards für die Zukunft des Bauwesens. Erfahrungen mit IFC und der Weg zu mehr Interoperabilität.</p>
+                    <div class="timeline-topics">
+                        <span class="timeline-topic-tag">BIM</span>
+                        <span class="timeline-topic-tag">Open Standards</span>
+                        <span class="timeline-topic-tag">Interoperabilität</span>
+                    </div>
+                    <div class="timeline-insights">
+                        <div class="timeline-insights-title">Wichtige Erkenntnisse</div>
+                        <ul>
+                            <li>Offene Standards reduzieren Vendor-Lock-in erheblich</li>
+                            <li>IFC entwickelt sich weiter, aber noch nicht perfekt</li>
+                            <li>Kollaboration zwischen Software-Herstellern nimmt zu</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-accordion">
+                        <button class="accordion-toggle">Details anzeigen</button>
+                        <div class="accordion-content">
+                            <p>Vollständige Zusammenfassung der Diskussion, Teilnehmer-Statements und weiterführende Ressourcen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Über-uns Section -->
+    <section class="about" id="ueber">
+        <div class="about-hero">
+            <h2>Über uns</h2>
+            <p>Warum wir das tun</p>
+        </div>
+        
+        <div class="container">
+            <div class="about-icons">
+                <div class="about-icon-item">
+                    <div class="about-icon">📚</div>
+                    <h3>Wissensaustausch ist wichtig</h3>
+                    <p>In einer sich schnell wandelnden Branche braucht es Räume für echten Austausch jenseits von Marketing und Verkaufsgesprächen.</p>
+                </div>
+                <div class="about-icon-item">
+                    <div class="about-icon">🔓</div>
+                    <h3>Die Notwendigkeit von Offenheit</h3>
+                    <p>Offene Standards, transparente Prozesse und geteiltes Wissen sind die Grundlage für nachhaltige Innovation.</p>
+                </div>
+                <div class="about-icon-item">
+                    <div class="about-icon">💻</div>
+                    <h3>Digitale Transformation ist unverzichtbar</h3>
+                    <p>Die Digitalisierung des Bauwesens ist keine Option mehr, sondern eine Notwendigkeit für zukunftsfähiges Arbeiten.</p>
+                </div>
+                <div class="about-icon-item">
+                    <div class="about-icon">🤝</div>
+                    <h3>Community-getrieben, nicht-kommerziell</h3>
+                    <p>Wir sind eine Community von Praktikern für Praktiker, ohne kommerzielle Interessen im Vordergrund.</p>
+                </div>
+            </div>
+
+            <div class="about-visual">
+                <p style="text-align: center; opacity: 0.6;">Why-we-do-it-Visual<br>Architektur + Digitalisierung<br>Nodes / Linien / Blueprint-Look</p>
+            </div>
+
+            <div class="founders-block">
+                <div class="founders-image">👥</div>
+                <div class="founders-content">
+                    <h3>Gegründet von</h3>
+                    <p>Zwei jungen Visionären, die die Notwendigkeit eines echten Austauschs im Bauwesen erkannt haben. Gemeinsam schaffen wir Räume für Dialog, Innovation und echte Community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Publikationen Section -->
+    <section class="dates" id="publikationen">
+        <div class="container">
+            <h2 class="section-title">Publikationen</h2>
+            <p class="section-subtitle">Ausgewählte Artikel, Studien und Ressourcen zu Innovation im Bauwesen.</p>
+            
+            <div class="dates-list" style="margin-top: 2rem;">
+                <div class="date-row">
+                    <div class="date-content">
+                        <h3 class="date-title">BIM in der Praxis: Erfahrungen aus 10 Jahren</h3>
+                        <p class="date-subtitle">Artikel • Von Thomas Klein</p>
+                    </div>
+                    <div class="date-meta">
+                        <div class="date-meta-date">Januar 2025</div>
+                    </div>
+                    <div class="date-actions">
+                        <a href="#read-1" class="btn-details">Lesen</a>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div class="date-content">
+                        <h3 class="date-title">Nachhaltiges Bauen: Materialkreisläufe</h3>
+                        <p class="date-subtitle">Studie • Von Kathrin Schmitt</p>
+                    </div>
+                    <div class="date-meta">
+                        <div class="date-meta-date">Dezember 2024</div>
+                    </div>
+                    <div class="date-actions">
+                        <a href="#read-2" class="btn-details">Lesen</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontakt Section -->
+    <section class="dates" id="kontakt">
+        <div class="container">
+            <h2 class="section-title">Kontakt</h2>
+            <p class="section-subtitle">Hast du Fragen oder Anregungen? Wir freuen uns auf deine Nachricht.</p>
+            
+            <form style="max-width: 600px; margin: 0 auto;">
+                <div class="form-group">
+                    <label for="contactName">Name</label>
+                    <input type="text" id="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Nachricht</label>
+                    <textarea id="contactMessage" rows="6" required style="width: 100%; padding: 0.8rem; border: 1px solid rgba(0, 0, 0, 0.2); border-radius: 4px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-modal btn-modal-primary">Nachricht senden</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Impressum Section -->
+    <section class="dates" id="impressum">
+        <div class="container">
+            <h2 class="section-title">Impressum</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">Angaben gemäß § 5 TMG</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.7;">
+                    …undbauen<br>
+                    Innovations- und Netzwerkformat<br>
+                    [Adresse]<br>
+                    [PLZ] [Ort]
+                </p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">Kontakt</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.7;">
+                    E-Mail: kontakt@undbauen.de
+                </p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">Verantwortlich für den Inhalt</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.7;">
+                    [Name]<br>
+                    [Adresse]<br>
+                    [PLZ] [Ort]
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Datenschutz Section -->
+    <section class="dates" id="datenschutz">
+        <div class="container">
+            <h2 class="section-title">Datenschutz</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">1. Datenschutz auf einen Blick</h3>
+                <p style="margin-bottom: 1.5rem; line-height: 1.7;">
+                    Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.
+                </p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">2. Verantwortliche Stelle</h3>
+                <p style="margin-bottom: 1.5rem; line-height: 1.7;">
+                    Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:<br><br>
+                    …undbauen<br>
+                    [Adresse]<br>
+                    [PLZ] [Ort]<br><br>
+                    E-Mail: kontakt@undbauen.de
+                </p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">3. Datenerfassung auf dieser Website</h3>
+                <p style="margin-bottom: 1.5rem; line-height: 1.7;">
+                    Wir erheben und speichern nur die Daten, die für die Bereitstellung unserer Dienste notwendig sind. Ihre Daten werden nicht an Dritte weitergegeben.
+                </p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; margin-top: 2rem;">4. Ihre Rechte</h3>
+                <p style="margin-bottom: 1.5rem; line-height: 1.7;">
+                    Sie haben jederzeit das Recht, Auskunft über Ihre bei uns gespeicherten personenbezogenen Daten zu erhalten. Außerdem haben Sie ein Recht auf Berichtigung, Löschung oder Einschränkung der Verarbeitung Ihrer Daten.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Teil werden</h2>
+            <p>Interessiert an unserem nächsten Innovationsabend? Wir freuen uns auf Deine Kontaktaufnahme.</p>
+            <a href="mailto:kontakt@undbauen.de" class="cta-button">Kontakt aufnehmen</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>…undbauen</h4>
+                <p>Innovations- und Netzwerkformat für die gebaute Umwelt</p>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#netzwerk">Netzwerk</a></li>
+                    <li><a href="#termine">Termine</a></li>
+                    <li><a href="#publikationen">Publikationen</a></li>
+            </ul>
+        </div>
+            <div class="footer-section">
+                <h4>Kontakt</h4>
+                <ul>
+                    <li><a href="mailto:kontakt@undbauen.de">kontakt@undbauen.de</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Instagram</a></li>
+            </ul>
+        </div>
+            <div class="footer-section">
+                <h4>Rechtliches</h4>
+                <ul>
+                    <li><a href="#">Impressum</a></li>
+                    <li><a href="#">Datenschutz</a></li>
+                </ul>
+        </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 …undbauen. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- Person Modal -->
+    <div class="modal-overlay" id="personModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <div class="modal-avatar" id="modalAvatar"></div>
+                <div class="modal-header-info">
+                    <div class="modal-name" id="modalName"></div>
+                    <div class="modal-role" id="modalRole"></div>
+                    <div class="modal-role" id="modalField" style="font-size: 0.9rem; opacity: 0.7;"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <div class="modal-section-title">ÜBER</div>
+                    <div class="modal-section-content" id="modalAbout"></div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-section-title">SCHWERPUNKTTHEMEN</div>
+                    <div class="modal-topics" id="modalTopics"></div>
+                </div>
+                <a href="#" class="modal-linkedin" id="modalLinkedIn" target="_blank" data-member-only>
+                    <div class="modal-linkedin-icon">in</div>
+                    <span>Auf LinkedIn vernetzen</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Network visual subtle animation (optional, performance-aware)
+        const networkVisual = document.querySelector('.hero-network-visual svg');
+        if (networkVisual && window.innerWidth > 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            let animationFrame;
+            let time = 0;
+            let isAnimating = false;
+            const nodes = networkVisual.querySelectorAll('circle');
+            const basePositions = Array.from(nodes).map(node => ({
+                cx: parseFloat(node.getAttribute('cx')),
+                cy: parseFloat(node.getAttribute('cy'))
+            }));
+            
+            function animateNetwork() {
+                if (!isAnimating) return;
+                
+                time += 0.001; // Slower animation
+                
+                // Very subtle floating animation for nodes
+                nodes.forEach((node, index) => {
+                    const base = basePositions[index];
+                    const offsetX = Math.sin(time + index * 0.5) * 1.5; // Reduced movement
+                    const offsetY = Math.cos(time + index * 0.3) * 1.5;
+                    node.setAttribute('cx', base.cx + offsetX);
+                    node.setAttribute('cy', base.cy + offsetY);
+                });
+                
+                animationFrame = requestAnimationFrame(animateNetwork);
+            }
+            
+            // Start animation with delay to check performance
+            setTimeout(() => {
+                isAnimating = true;
+                animateNetwork();
+            }, 1000);
+            
+            // Pause animation when tab is not visible
+            document.addEventListener('visibilitychange', () => {
+                isAnimating = !document.hidden;
+                if (isAnimating && !animationFrame) {
+                    animateNetwork();
+                }
+            });
+        }
+
+        // Person Modal functionality
+        const modal = document.getElementById('personModal');
+        const modalClose = document.getElementById('modalClose');
+        const personCards = document.querySelectorAll('.person-card');
+
+        function openModal(personData, cardElement) {
+            const modalAvatar = document.getElementById('modalAvatar');
+            modalAvatar.innerHTML = '';
+            
+            if (personData.image) {
+                const img = document.createElement('img');
+                img.src = personData.image;
+                img.alt = personData.name;
+                modalAvatar.appendChild(img);
+            } else {
+                modalAvatar.textContent = personData.initials;
+            }
+            
+            document.getElementById('modalName').textContent = personData.name;
+            document.getElementById('modalRole').textContent = personData.role;
+            document.getElementById('modalField').textContent = personData.field;
+            document.getElementById('modalAbout').textContent = personData.about;
+            
+            const topicsContainer = document.getElementById('modalTopics');
+            topicsContainer.innerHTML = '';
+            personData.topics.forEach(topic => {
+                const tag = document.createElement('div');
+                tag.className = 'modal-topic-tag';
+                tag.textContent = topic;
+                topicsContainer.appendChild(tag);
+            });
+
+            document.getElementById('modalLinkedIn').href = `https://linkedin.com/in/${personData.name.toLowerCase().replace(' ', '-')}`;
+            
+            // Mark card as clicked and make image visible
+            if (cardElement) {
+                cardElement.classList.add('clicked');
+            }
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        personCards.forEach(card => {
+            card.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    // Guest: Show login modal
+                    loginModal.classList.add('active');
+                    return;
+                }
+                // Member: Show full profile
+                const personData = JSON.parse(this.getAttribute('data-person'));
+                openModal(personData, this);
+            });
+        });
+
+        // Slider functionality
+        const slider = document.getElementById('peopleSlider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pagination = document.getElementById('pagination');
+        const cards = document.querySelectorAll('.person-card');
+        
+        function getCardsPerView() {
+            if (window.innerWidth <= 480) return 1;
+            if (window.innerWidth <= 768) return 2;
+            if (window.innerWidth <= 1024) return 3;
+            return 5;
+        }
+        
+        let cardsPerView = getCardsPerView();
+        const totalCards = cards.length;
+        let totalPages = Math.ceil(totalCards / cardsPerView);
+        let currentPage = 0;
+
+        function updateSlider() {
+            cardsPerView = getCardsPerView();
+            totalPages = Math.ceil(totalCards / cardsPerView);
+            
+            // Reset to first page if current page is out of bounds
+            if (currentPage >= totalPages) {
+                currentPage = 0;
+            }
+            
+            const translateX = -(currentPage * (100 / cardsPerView));
+            slider.style.transform = `translateX(${translateX}%)`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage >= totalPages - 1;
+            
+            // Update pagination
+            updatePagination();
+        }
+
+        function updatePagination() {
+            pagination.innerHTML = '';
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'pagination-dot';
+                if (i === currentPage) {
+                    dot.classList.add('active');
+                }
+                dot.addEventListener('click', () => {
+                    currentPage = i;
+                    updateSlider();
+                });
+                pagination.appendChild(dot);
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                updateSlider();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updateSlider();
+            }
+        });
+
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                updateSlider();
+            }, 250);
+        });
+
+        // Initialize slider
+        updateSlider();
+
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Page Navigation System
+        const heroSection = document.querySelector('.hero');
+        const allSections = document.querySelectorAll('section');
+        let currentNavPage = 'home';
+
+        function showPage(pageId) {
+            // Check if page requires member access
+            const targetSection = document.querySelector(`#${pageId}`);
+            if (targetSection && targetSection.hasAttribute('data-member-only') && !isLoggedIn()) {
+                // Guest trying to access member-only page: show login modal
+                loginModal.classList.add('active');
+                return;
+            }
+
+            // Hero je nach Zielseite ein-/ausblenden
+            if (pageId !== 'home') {
+                // Hero vollständig ausblenden
+                heroSection.classList.add('hidden');
+            } else {
+                heroSection.classList.remove('hidden');
+            }
+
+            // Hide all sections
+            allSections.forEach(section => {
+                section.classList.remove('active');
+                section.classList.add('fade-out');
+            });
+
+            // Show target section after fade out
+            setTimeout(() => {
+                allSections.forEach(section => {
+                    section.classList.remove('fade-out');
+                });
+
+                if (pageId === 'home') {
+                    // Home: mehrere Abschnitte zeigen
+                    heroSection.classList.remove('hidden');
+                    const homeSections = document.querySelectorAll('.mission, .innovationsabend');
+                    homeSections.forEach(section => {
+                        section.classList.add('active');
+                    });
+                } else {
+                    // Nur die gewünschte Seite anzeigen
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                }
+
+                // CTA und Footer immer anzeigen
+                const ctaSection = document.querySelector('.cta');
+                const footerSection = document.querySelector('footer');
+                if (ctaSection) ctaSection.style.display = 'block';
+                if (footerSection) footerSection.style.display = 'block';
+
+                // Nach oben scrollen
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 300);
+
+            // Update active nav link (menu and account dropdown)
+            const allNavLinks = document.querySelectorAll('.menu-link, .account-menu-item');
+            allNavLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href === `#${pageId}`) {
+                    link.classList.add('active');
+                }
+            });
+
+            currentNavPage = pageId;
+        }
+
+        // Initialize: show home page
+        window.addEventListener('DOMContentLoaded', () => {
+            heroSection.classList.remove('hidden');
+            const homeSections = document.querySelectorAll('.mission, .innovationsabend');
+            homeSections.forEach(section => {
+                section.classList.add('active');
+            });
+        });
+
+        // Also initialize on page load if hash exists
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            setTimeout(() => showPage(hash), 100);
+        }
+
+
+        // Handle hash on page load
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            showPage(hash);
+        }
+
+        // Actions dropdown functionality
+        const actionDropdowns = document.querySelectorAll('.actions-dropdown');
+        
+        actionDropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('.btn-actions');
+            
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Close all other dropdowns
+                actionDropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('active');
+                    }
+                });
+                // Toggle current dropdown
+                dropdown.classList.toggle('active');
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.actions-dropdown')) {
+                actionDropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+
+        // ============================================
+        // AUTHENTICATION & ROLE MANAGEMENT
+        // ============================================
+        
+        // Check if user is logged in (MVP: LocalStorage)
+        function isLoggedIn() {
+            return localStorage.getItem('userLoggedIn') === 'true';
+        }
+
+        function getCurrentUser() {
+            const userData = localStorage.getItem('currentUser');
+            return userData ? JSON.parse(userData) : null;
+        }
+
+        function setLoggedIn(user) {
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            updateUIForRole('member');
+        }
+
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            localStorage.removeItem('currentUser');
+            updateUIForRole('guest');
+        }
+
+        function updateUIForRole(role) {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const accountDropdown = document.getElementById('accountDropdown');
+            
+            if (role === 'member') {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                accountDropdown.style.display = 'block';
+            } else {
+                loginBtn.style.display = 'block';
+                registerBtn.style.display = 'block';
+                accountDropdown.style.display = 'none';
+            }
+            
+            // Update page content based on role
+            updatePageContentForRole(role);
+        }
+
+        function updatePageContentForRole(role) {
+            // Handle sections with data-member-only (hide completely for guests)
+            const memberOnlySections = document.querySelectorAll('section[data-member-only]');
+            memberOnlySections.forEach(section => {
+                if (role === 'guest') {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+
+            // Add guest-disabled class to restricted elements (buttons, links, etc.)
+            const restrictedElements = document.querySelectorAll('[data-member-only]:not(section)');
+            restrictedElements.forEach(el => {
+                if (role === 'guest') {
+                    el.classList.add('guest-disabled');
+                    // Add login prompt
+                    if (!el.querySelector('.login-prompt')) {
+                        const prompt = document.createElement('div');
+                        prompt.className = 'login-prompt';
+                        prompt.textContent = 'Anmelden, um teilzunehmen';
+                        el.appendChild(prompt);
+                    }
+                } else {
+                    el.classList.remove('guest-disabled');
+                    const prompt = el.querySelector('.login-prompt');
+                    if (prompt) prompt.remove();
+                }
+            });
+
+            // Show/hide guest notice on network page
+            const networkGuestNotice = document.getElementById('networkGuestNotice');
+            if (networkGuestNotice) {
+                networkGuestNotice.style.display = role === 'guest' ? 'block' : 'none';
+            }
+        }
+
+        // Logo navigation
+        const logo = document.querySelector('.logo');
+        if (logo) {
+            logo.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+        }
+
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuClose = document.getElementById('menuClose');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        menuToggle.addEventListener('click', () => {
+            menuOverlay.classList.add('active');
+        });
+
+        menuClose.addEventListener('click', () => {
+            menuOverlay.classList.remove('active');
+        });
+
+        menuOverlay.addEventListener('click', (e) => {
+            if (e.target === menuOverlay) {
+                menuOverlay.classList.remove('active');
+            }
+        });
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                menuOverlay.classList.remove('active');
+                showPage(targetId);
+            });
+        });
+
+        // Account menu links
+        const accountMenuLinks = document.querySelectorAll('.account-menu-item');
+        accountMenuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                accountDropdown.classList.remove('active');
+                if (targetId) {
+                    showPage(targetId);
+                }
+            });
+        });
+
+        // Login Modal
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const loginModalClose = document.getElementById('loginModalClose');
+        const loginForm = document.getElementById('loginForm');
+        const showRegisterLink = document.getElementById('showRegisterLink');
+        const registerModal = document.getElementById('registerModal');
+
+        loginBtn.addEventListener('click', () => {
+            loginModal.classList.add('active');
+        });
+
+        loginModalClose.addEventListener('click', () => {
+            loginModal.classList.remove('active');
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Test login (MVP)
+            if (email === '1234@1234.com' && password === '1234') {
+                setLoggedIn({ email, name: 'Test User' });
+                loginModal.classList.remove('active');
+                alert('Erfolgreich angemeldet!');
+            } else {
+                alert('Ungültige Anmeldedaten. Test: 1234@1234.com / 1234');
+            }
+        });
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.classList.remove('active');
+            registerModal.classList.add('active');
+        });
+
+        // Register Modal
+        const registerBtn = document.getElementById('registerBtn');
+        const registerModalClose = document.getElementById('registerModalClose');
+        const registerForm = document.getElementById('registerForm');
+        const showLoginLink = document.getElementById('showLoginLink');
+
+        registerBtn.addEventListener('click', () => {
+            registerModal.classList.add('active');
+        });
+
+        registerModalClose.addEventListener('click', () => {
+            registerModal.classList.remove('active');
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (password !== passwordConfirm) {
+                alert('Passwörter stimmen nicht überein');
+                return;
+            }
+            
+            // MVP: Just log in after registration
+            setLoggedIn({ email, name: email.split('@')[0] });
+            registerModal.classList.remove('active');
+            alert('Konto erstellt und angemeldet!');
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerModal.classList.remove('active');
+            loginModal.classList.add('active');
+        });
+
+        // Account Dropdown
+        const accountToggle = document.getElementById('accountToggle');
+        const accountDropdown = document.getElementById('accountDropdown');
+        
+        accountToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            accountDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.account-dropdown')) {
+                accountDropdown.classList.remove('active');
+            }
+        });
+
+        // Logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+            alert('Erfolgreich abgemeldet');
+        });
+
+        // Initialize on page load
+        if (isLoggedIn()) {
+            updateUIForRole('member');
+        } else {
+            updateUIForRole('guest');
+        }
+
+        // Accordion functionality
+        const accordionToggles = document.querySelectorAll('.accordion-toggle');
+        accordionToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const isActive = content.classList.contains('active');
+                
+                // Close all accordions
+                document.querySelectorAll('.accordion-content').forEach(acc => {
+                    acc.classList.remove('active');
+                });
+                
+                // Toggle current
+                if (!isActive) {
+                    content.classList.add('active');
+                    this.textContent = 'Details ausblenden';
+                } else {
+                    this.textContent = 'Details anzeigen';
+                }
+            });
+        });
+
+        // Toggle switches
+        const toggleSwitches = document.querySelectorAll('.toggle-switch');
+        toggleSwitches.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Topic chips filter (placeholder)
+        const topicChips = document.querySelectorAll('.topic-chip');
+        topicChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                // Filter functionality would go here
+                console.log('Filter by:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

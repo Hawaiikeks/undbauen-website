@@ -1,0 +1,98 @@
+/* Public Navigation */
+.publicNav{
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+.publicNavInner{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.5rem 0;
+}
+@media(max-width: 768px){
+  .publicNavInner{
+    padding:1rem 0;
+  }
+  .navLinks{
+    gap:8px;
+  }
+  .navLinks a{
+    font-size:0.85rem;
+  }
+}
+.brand{ 
+  font-weight: 600; 
+  letter-spacing: -0.01em; 
+  font-size: 18px; 
+  color: var(--text-primary); 
+}
+
+.navLinks{ 
+  display: flex; 
+  gap: 24px; 
+  align-items: center; 
+  flex-wrap: wrap; 
+}
+
+.navLinks a{ 
+  color: var(--text-secondary); 
+  font-weight: 400; 
+  font-size: 16px; 
+  transition: color 0.2s ease; 
+  text-transform: none;
+  position: relative;
+}
+
+.navLinks a:hover{ 
+  color: var(--text-primary); 
+}
+
+.navLinks a.active,
+.navLinks a[aria-current="page"]{
+  color: var(--primary);
+}
+
+.navLinks a.active::after,
+.navLinks a[aria-current="page"]::after{
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* Hero styles moved to base.css */
+
+.publicCards .card{ padding:2rem; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); }
+[data-theme="light"] .publicCards .card{ background:var(--white); border:1px solid rgba(0,0,0,0.12); }
+.metaLine{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:#ffffff; font-size:.92rem; }
+[data-theme="light"] .metaLine{ color:#000000; }
+
+.legalGrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media(max-width:900px){ .legalGrid{ grid-template-columns:1fr; } }
+.legalGrid .card{ 
+  padding: 24px; 
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+}
+
+.legalGrid h3{ 
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--text-primary); 
+}
+
+.legalGrid p{ 
+  margin: 0 0 12px; 
+  color: var(--text-secondary); 
+  line-height: 1.6; 
+  font-size: 16px; 
+}
+
+
