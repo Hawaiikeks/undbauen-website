@@ -100,3 +100,4 @@ Das Projekt verwendet **KEIN echtes Backend**, sondern:
 **Für Full-Stack-Team:**
 > "Frontend komplett, Backend-Mock vorhanden. Migration zu echtem Backend nötig."
 
+

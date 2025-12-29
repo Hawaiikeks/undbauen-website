@@ -1,4 +1,5 @@
 import { api } from "./services/apiClient.js";
+import { breadcrumbs } from "./components/breadcrumbs.js";
 
 const $ = (s)=>document.querySelector(s);
 const qs = new URLSearchParams(location.search);
@@ -548,9 +549,67 @@ function commonTags(a,b){
 }
 
 /* ========== MY PROFILE ========== */
+function renderProfileProgress(){
+  const container = $("#profileProgress");
+  if(!container) return;
+  
+  const u = api.me();
+  const p = api.getProfileByEmail(u.email);
+  
+  // Checkliste der Profil-Felder
+  const checks = [
+    { key: 'name', label: 'Name', value: u?.name, field: null },
+    { key: 'headline', label: 'Headline', value: p?.headline, field: 'pHeadline' },
+    { key: 'bio', label: 'Bio', value: p?.bio, field: 'pBio' },
+    { key: 'skills', label: 'Skills', value: p?.skills?.length > 0, field: 'pSkills' },
+    { key: 'interests', label: 'Interessen', value: p?.interests?.length > 0, field: 'pInterests' },
+    { key: 'avatar', label: 'Profilbild', value: false, field: null } // Placeholder, da aktuell keine Upload-Funktion
+  ];
+  
+  const completed = checks.filter(c => c.value && c.value !== '').length;
+  const total = checks.length;
+  const percentage = Math.round((completed / total) * 100);
+  
+  const missingFields = checks.filter(c => !c.value || c.value === '').filter(c => c.field);
+  
+  container.innerHTML = `
+    <div class="profile-progress-card">
+      <div class="profile-progress-header">
+        <h3 class="h3">Profil-Vollständigkeit</h3>
+        <span class="profile-progress-percentage">${percentage}%</span>
+      </div>
+      <div class="profile-progress-bar">
+        <div class="profile-progress-fill" style="width: ${percentage}%"></div>
+      </div>
+      <div class="profile-progress-checklist">
+        ${checks.map(c => `
+          <div class="profile-progress-item ${c.value && c.value !== '' ? 'completed' : ''}">
+            <span class="profile-progress-icon">${c.value && c.value !== '' ? '✓' : '○'}</span>
+            <span class="profile-progress-label">${c.label}</span>
+          </div>
+        `).join('')}
+      </div>
+      ${missingFields.length > 0 ? `
+        <div class="profile-progress-actions">
+          <p class="small text-muted">Vervollständigen Sie Ihr Profil für bessere Sichtbarkeit im Netzwerk:</p>
+          ${missingFields.map(f => `
+            <button class="btn ghost small" onclick="document.getElementById('${f.field}')?.focus()">
+              ${f.label} hinzufügen
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
 function renderMyProfile(){
   const u = api.me();
   const p = api.getProfileByEmail(u.email);
+  
+  // Render profile progress
+  renderProfileProgress();
+  
   $("#pHeadline").value = p.headline||"";
   $("#pLoc").value = p.location||"";
   $("#pBio").value = p.bio||"";
@@ -579,6 +638,8 @@ function renderMyProfile(){
     });
     if(!res.ok){ $("#pErr").textContent=res.error; return; }
     $("#pOk").textContent="Gespeichert ✅";
+    // Update progress after save
+    setTimeout(() => renderProfileProgress(), 100);
   });
 }
 
@@ -774,9 +835,23 @@ function renderAdmin(){
 }
 
 /* ========== ROUTER ========== */
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", async ()=>{
   if(!guard()) return;
   setShell();
+  
+  // Initialize breadcrumbs
+  breadcrumbs.init();
+  
+  // Lazy-load onboarding for new users
+  const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+  if (onboardingCompleted !== 'true') {
+    try {
+      const { initOnboarding } = await import('./components/onboarding.js');
+      initOnboarding();
+    } catch (error) {
+      console.warn('Onboarding konnte nicht geladen werden:', error);
+    }
+  }
 
   const page = document.body.dataset.page;
   switch(page){

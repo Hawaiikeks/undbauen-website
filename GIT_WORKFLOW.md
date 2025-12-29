@@ -153,3 +153,6 @@ git push origin feature/mein-feature
 4. **Parallel:** Mehrere Features gleichzeitig entwickeln
 5. **Geschichte:** Klare Historie, was wann warum geändert wurde
 
+
+
+

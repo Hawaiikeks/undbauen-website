@@ -11,27 +11,28 @@
   <link rel="stylesheet" href="../assets/css/app.css"/>
 </head>
 <body data-page="dashboard">
-  <header class="appHeader">
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+  <header class="appHeader" role="banner">
     <div class="container appHeaderInner">
-      <a class="brand" href="dashboard.html">…undbauen</a>
-      <nav class="appNav" id="appNav">
-        <a href="dashboard.html" data-nav="dashboard">Dashboard</a>
+      <a class="brand" href="dashboard.html" aria-label="…undbauen Dashboard">…undbauen</a>
+      <nav class="appNav" id="appNav" aria-label="Hauptnavigation" role="navigation">
+        <a href="dashboard.html" data-nav="dashboard" aria-current="page">Dashboard</a>
         <a href="termine.html" data-nav="termine">Termine</a>
         <a href="forum.html" data-nav="forum">Forum</a>
         <a href="nachrichten.html" data-nav="nachrichten">Nachrichten</a>
         <a href="mitglieder.html" data-nav="mitglieder">Mitglieder</a>
         <a href="einstellungen.html" data-nav="einstellungen">Einstellungen</a>
-        <a href="admin.html" data-nav="admin" id="adminLink" style="display:none">Admin</a>
+        <a href="admin.html" data-nav="admin" id="adminLink" style="display:none" aria-label="Admin-Bereich">Admin</a>
       </nav>
       <div class="appRight">
-        <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>
-        <div class="userPill"><span class="dot"></span><span id="userLabel">Member</span></div>
-        <button class="btn" id="logoutBtn">⎋ Logout</button>
+        <button class="btn" id="themeToggle" aria-label="Theme wechseln" aria-pressed="false" title="Theme wechseln">🌓</button>
+        <div class="userPill" aria-label="Benutzer-Informationen"><span class="dot" aria-hidden="true"></span><span id="userLabel">Member</span></div>
+        <button class="btn" id="logoutBtn" aria-label="Ausloggen">⎋ Logout</button>
       </div>
     </div>
   </header>
 
-  <main class="container pageWrap">
+  <main id="main-content" class="container pageWrap" role="main">
     <div class="h2">Dashboard</div>
     <p class="p">Überblick & nächste Schritte.</p>
 

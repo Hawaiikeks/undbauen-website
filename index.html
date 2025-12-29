@@ -9,27 +9,53 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/public.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered:', registration);
+          })
+          .catch((error) => {
+            console.log('SW registration failed:', error);
+          });
+      });
+    }
+  </script>
 </head>
 <body>
-  <header class="publicNav">
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+  <header class="publicNav" role="banner">
     <div class="container publicNavInner">
-      <a class="brand" href="#home">…undbauen</a>
-      <nav class="navLinks">
+      <a class="brand" href="#home" aria-label="…undbauen Startseite">…undbauen</a>
+      <button class="btn ghost search-trigger" id="searchTrigger" aria-label="Globale Suche öffnen (Strg+K)" title="Suche (Strg+K)">
+        <svg class="icon icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+      </button>
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navLinks">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="navLinks" id="navLinks" aria-label="Hauptnavigation" role="navigation">
         <a href="#netzwerk">Netzwerk</a>
         <a href="#termine">Termine</a>
         <a href="#updates">Monatsupdates</a>
         <a href="#publikationen">Publikationen</a>
         <a href="#ueber">Über uns</a>
         <a href="#kontakt">Kontakt</a>
-        <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>
-        <button class="btn primary" id="openAuth">Login</button>
+        <button class="btn icon-btn" id="themeToggle" aria-label="Theme wechseln" aria-pressed="false" title="Theme wechseln">
+          <svg class="icon icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+        </button>
+        <button class="btn primary" id="openAuth" aria-label="Login oder Registrierung öffnen">Login</button>
       </nav>
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <section id="home" class="hero" aria-labelledby="hero-heading" role="region">
       <!-- Network Visual Background -->
       <div class="hero-network-visual">
         <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
@@ -83,17 +109,10 @@
       </div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
-        <h1>
+        <h1 id="hero-heading">
           <div class="headline-wrapper">
-            <span class="dots-container">
-              <span class="dot dot-1"></span>
-              <span class="dot dot-2"></span>
-              <span class="dot dot-3"></span>
-            </span>
-            <span class="static-suffix">
-              <span class="word word-und">und</span>
-              <span class="word word-bauen">bauen</span>
-            </span>
+            <span class="word word-und">und</span>
+            <span class="word word-bauen">bauen</span>
           </div>
         </h1>
         <p class="hero-subtitle">Ein kuratiertes Innovations- und Netzwerkformat für Architektur, Ingenieurwesen, Bau & Digitalisierung</p>
@@ -101,8 +120,9 @@
     </section>
 
     <!-- Mission Section -->
-    <section class="mission">
+    <section class="mission" aria-labelledby="mission-heading" role="region">
       <div class="container">
+        <h2 id="mission-heading" class="sr-only">Unsere Mission</h2>
         <div class="mission-text">
           <p>Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Querdenkern der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.</p>
           <p>…undbauen ist mehr als ein Netzwerk. Es ist eine Haltung.</p>
@@ -111,24 +131,24 @@
     </section>
 
     <!-- Innovationsabend Section -->
-    <section class="innovationsabend">
+    <section class="innovationsabend" aria-labelledby="innovationsabend-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Der monatliche Innovationsabend</h2>
+        <h2 id="innovationsabend-heading" class="section-title">Der monatliche Innovationsabend</h2>
         <p class="section-subtitle">Jeden Monat laden wir zu einem kuratierten Abend ein, der Raum für Austausch, Inspiration und echte Begegnungen schafft. Kein Marketing, keine Produktpräsentationen – nur Menschen, Ideen und Dialog.</p>
         
         <div class="event-grid">
           <div class="event-card">
-            <div class="event-icon">💭</div>
+            <div class="event-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 4-3 6-3 6H9s-3-2-3-6a6 6 0 0 1 6-6z"></path><path d="M12 9v6"></path></svg></div>
             <h3>Dialog & Austausch</h3>
             <p>Impulsvortrag eines Pioniers aus Architektur, Bau oder Digitalisierung, gefolgt von moderierten Gesprächen auf Augenhöhe.</p>
           </div>
           <div class="event-card">
-            <div class="event-icon">🤝</div>
+            <div class="event-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="16" y="7" width="4" height="4" rx="1"></rect><rect x="4" y="7" width="4" height="4" rx="1"></rect><rect x="10" y="13" width="4" height="4" rx="1"></rect><path d="M6 9v4"></path><path d="M18 9v4"></path><path d="M8 15h8"></path></svg></div>
             <h3>Kuratiertes Netzwerk</h3>
             <p>Wir bringen bewusst Menschen zusammen, die voneinander lernen können und deren Perspektiven sich ergänzen.</p>
           </div>
           <div class="event-card">
-            <div class="event-icon">🔮</div>
+            <div class="event-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg></div>
             <h3>Zukunft gestalten</h3>
             <p>Fokus auf die wirklich relevanten Fragen: Wie bauen wir morgen? Wie arbeiten wir zusammen? Welche Prozesse brauchen wir?</p>
           </div>
@@ -137,115 +157,224 @@
     </section>
 
     <!-- Network Section -->
-    <section class="network section" id="netzwerk">
+    <section id="netzwerk" class="network" aria-labelledby="netzwerk-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Das Netzwerk</h2>
-        <p class="section-subtitle">Lerne die Fachleute kennen, die Innovation im Bauwesen und der gebauten Umwelt vorantreiben. Eine vielfältige Community, vereint durch Neugier und Engagement für digitale Transformation.</p>
+        <h2 id="netzwerk-heading" class="section-title">Netzwerk</h2>
+        <div class="social-proof-stats" id="socialProofStats">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
         
-        <div class="network-slider-container">
-          <button class="slider-nav prev" id="prevBtn">‹</button>
-          <div class="people-slider" id="peopleSlider">
+        <!-- Filter & Sortierung -->
+        <div class="network-filters" id="networkFilters">
+          <div class="filter-group">
+            <label class="filter-label">Filter:</label>
+            <div class="filter-chips" id="filterChips">
+              <button class="filter-chip active" data-filter="all">Alle</button>
+            </div>
+          </div>
+          <div class="sort-group">
+            <label class="filter-label" for="sortSelect">Sortieren:</label>
+            <select class="select" id="sortSelect" aria-label="Sortierung">
+              <option value="newest">Neueste zuerst</option>
+              <option value="alphabetical">Alphabetisch</option>
+              <option value="activity">Aktivität</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="max-w-900 mb-lg">
+          <p class="p">Das Netzwerk von …undbauen besteht aus Fachleuten unterschiedlicher Disziplinen, Erfahrungsstufen und Perspektiven. Mitglieder können Profile anlegen, Schwerpunkte sichtbar machen und gezielt Kontakt aufnehmen. Ziel ist es, Verbindungen zu schaffen, die über einzelne Veranstaltungen hinaus Bestand haben.</p>
+        </div>
+        
+        <div class="network-slider-container" role="region" aria-label="Mitglieder-Netzwerk">
+          <button class="slider-nav prev" id="prevBtn" aria-label="Zur vorherigen Seite im Netzwerk-Slider" aria-controls="peopleSlider">‹</button>
+          <div class="people-slider" id="peopleSlider" role="list" aria-label="Mitglieder des Netzwerks">
             <!-- Person cards werden per JavaScript befüllt -->
           </div>
-          <button class="slider-nav next" id="nextBtn">›</button>
-          <div class="slider-pagination" id="pagination"></div>
+          <button class="slider-nav next" id="nextBtn" aria-label="Zur nächsten Seite im Netzwerk-Slider" aria-controls="peopleSlider">›</button>
+          <div class="slider-pagination" id="pagination" role="tablist" aria-label="Slider-Pagination"></div>
         </div>
-        <div class="network-community-text">
-          <h3 class="community-title">Community, keine Hierarchie</h3>
-          <p class="community-description">Unser Netzwerk bringt Fachleute aus allen Bereichen und Karrierestufen zusammen. Was uns vereint, ist der Drang zu lernen, zu teilen und die digitale Transformation der gebauten Umwelt voranzutreiben—gemeinsam.</p>
+        <div class="network-community-text mt-2xl text-center">
+          <h3 class="community-title">Werde Teil unserer Community</h3>
+          <p class="community-description">Tausche dich mit Gleichgesinnten aus, erweitere dein Wissen und gestalte die Zukunft der gebauten Umwelt mit.</p>
+          <div class="mt-lg">
+            <button class="btn primary" id="openAuth2" aria-label="Mitglied werden oder einloggen">Mitglied werden / Einloggen</button>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Topics Section -->
-    <section class="topics">
+    <section class="topics" aria-labelledby="topics-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Themen & Inhalte</h2>
-        <p class="section-subtitle">Wir setzen uns mit den Fragen auseinander, die unsere Branche bewegen.</p>
+        <div class="topics-header">
+          <h2 id="topics-heading" class="section-title">Themen & Inhalte</h2>
+          <p class="topics-intro">Die Inhalte von …undbauen orientieren sich an den zentralen Fragestellungen der gebauten Umwelt. Die thematische Ausrichtung entwickelt sich gemeinsam mit dem Netzwerk weiter und greift sowohl aktuelle Trends als auch langfristige Herausforderungen auf.</p>
+        </div>
         
-        <div class="topics-list">
-          <div class="topic-item">
+        <div class="topics-grid">
+          <div class="topic-card">
             <div class="topic-number">01</div>
-            <div class="topic-content">
-              <h4>Digitale Transformation</h4>
-              <p>BIM, KI, IoT – wie verändern neue Technologien unsere Planungs- und Bauprozesse nachhaltig?</p>
-            </div>
+            <h3 class="topic-title">Digitale Transformation</h3>
+            <p class="topic-description">BIM, KI, IoT – wie verändern neue Technologien unsere Planungs- und Bauprozesse nachhaltig?</p>
           </div>
-          <div class="topic-item">
+          <div class="topic-card">
             <div class="topic-number">02</div>
-            <div class="topic-content">
-              <h4>Nachhaltigkeit & Kreislaufwirtschaft</h4>
-              <p>Vom linearen zum zirkulären Bauen – Materialien, Konzepte und Best Practices.</p>
-            </div>
+            <h3 class="topic-title">Nachhaltigkeit & Kreislaufwirtschaft</h3>
+            <p class="topic-description">Vom linearen zum zirkulären Bauen – Materialien, Konzepte und Best Practices.</p>
           </div>
-          <div class="topic-item">
+          <div class="topic-card">
             <div class="topic-number">03</div>
-            <div class="topic-content">
-              <h4>Neue Arbeitswelten</h4>
-              <p>Kollaboration, agile Methoden und neue Rollenbilder in interdisziplinären Teams.</p>
+            <h3 class="topic-title">Neue Arbeitswelten</h3>
+            <p class="topic-description">Kollaboration, agile Methoden und neue Rollenbilder in interdisziplinären Teams.</p>
+          </div>
+          <div class="topic-card">
+            <div class="topic-number">04</div>
+            <h3 class="topic-title">Zukunft der Stadt</h3>
+            <p class="topic-description">Urbane Verdichtung, soziale Gerechtigkeit und resiliente Stadtentwicklung.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="termine" class="section publicCards" aria-labelledby="termine-heading" role="region">
+      <div class="container">
+        <div class="events-header">
+          <h2 id="termine-heading" class="section-title">Termine & Formate</h2>
+          <div class="events-intro">
+            <p class="p">Im Rahmen von …undbauen finden regelmäßig Innovationsabende, Workshops und Diskussionsformate statt. Die Termine greifen aktuelle Fragestellungen aus Planung, Baupraxis, Digitalisierung und Nachhaltigkeit auf. Inhalte werden von eingeladenen Expert:innen, Praktiker:innen oder im gemeinsamen Austausch erarbeitet. Im öffentlichen Bereich werden kommende Termine als Überblick dargestellt. Mitglieder können Termine vormerken, buchen, Materialien einsehen und sich vor sowie nach den Veranstaltungen fachlich austauschen.</p>
+          </div>
+        </div>
+        <div class="events-grid" id="publicEvents"></div>
+      </div>
+    </section>
+
+    <section id="updates" class="section publicCards" aria-labelledby="updates-heading" role="region">
+      <div class="container">
+        <div class="updates-header">
+          <h2 id="updates-heading" class="section-title">Forum & Diskussionen</h2>
+          <div class="updates-intro">
+            <p class="p">Das Forum bildet den inhaltlichen Kern des Netzwerks. Hier können Mitglieder Themen vertiefen, Fragen stellen, Erfahrungen teilen und Diskussionen fortführen – unabhängig von einzelnen Veranstaltungen. Zu ausgewählten Terminen entstehen eigene Diskussionsräume, in denen Inhalte vorbereitet, begleitet und dokumentiert werden. Das Forum ist moderiert und auf einen sachlichen, konstruktiven Austausch ausgelegt.</p>
+          </div>
+        </div>
+        <div class="updates-section">
+          <h3 class="updates-subtitle">Monatsupdates</h3>
+          <div class="updates-grid" id="publicUpdates"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="publikationen" class="section publicCards" aria-labelledby="publikationen-heading" role="region">
+      <div class="container">
+        <h2 id="publikationen-heading" class="section-title">Publikationen</h2>
+        <div class="grid grid-3 mt-lg" id="publicPubs"></div>
+      </div>
+    </section>
+
+    <section id="ueber" class="section" aria-labelledby="ueber-heading" role="region">
+      <div class="container">
+        <h2 id="ueber-heading" class="section-title">Über uns</h2>
+        <div class="max-w-900">
+          <p class="p mb-lg">…undbauen entstand aus der Frage, warum Vernetzung trotz moderner Tools oft nicht wirklich funktioniert.</p>
+          <p class="p mb-lg">Lukas Gilbert und Philip Deeg haben in ihrer Praxis immer wieder erlebt, dass Wissen vorhanden ist, der echte Austausch jedoch zwischen Meetings, Chats und Zuständigkeiten verloren geht.</p>
+          <p class="p mb-lg">Digitale Kommunikation schafft Effizienz, aber selten nachhaltige Verbindung.</p>
+          <p class="p mb-lg">…undbauen setzt genau hier an und schafft einen offenen Raum für Dialog, Perspektivwechsel und gemeinsames Weiterdenken.</p>
+          <p class="p mb-lg">Menschen aus unterschiedlichen Disziplinen kommen zusammen, um Erfahrungen zu teilen und Fragestellungen gemeinsam zu entwickeln.</p>
+          <p class="p">Nicht als fertiges System, sondern als wachsendes Netzwerk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Founders Section -->
+    <section class="founders-section section" aria-labelledby="founders-heading" role="region">
+      <div class="container">
+        <h2 id="founders-heading" class="section-title">Die Gründer</h2>
+        <div class="founders-grid">
+          <div class="founder-card">
+            <div class="founder-image-wrapper">
+              <img src="assets/images/lukas-gilbert.png" alt="Lukas Gilbert" class="founder-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="founder-placeholder" style="display: none;" aria-hidden="true">LG</div>
+            </div>
+            <div class="founder-info">
+              <h3 class="founder-name">Lukas Gilbert</h3>
+              <p class="founder-role">Gründer & Co-Initiator</p>
             </div>
           </div>
-          <div class="topic-item">
-            <div class="topic-number">04</div>
-            <div class="topic-content">
-              <h4>Zukunft der Stadt</h4>
-              <p>Urbane Verdichtung, soziale Gerechtigkeit und resiliente Stadtentwicklung.</p>
+          <div class="founder-card">
+            <div class="founder-image-wrapper">
+              <img src="assets/images/philip-deeg.png" alt="Philip Deeg" class="founder-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="founder-placeholder" style="display: none;" aria-hidden="true">PD</div>
+            </div>
+            <div class="founder-info">
+              <h3 class="founder-name">Philip Deeg</h3>
+              <p class="founder-role">Gründer & Co-Initiator</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="termine" class="section publicCards">
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section testimonials-section" aria-labelledby="testimonials-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Kommende Termine</h2>
-        <p class="section-subtitle">Ohne Login nur Überblick. Einloggen, um zu buchen, Details zu sehen und Kalender-Export zu nutzen.</p>
-        <div class="grid grid-3" id="publicEvents" style="margin-top:2rem"></div>
+        <h2 id="testimonials-heading" class="section-title">Was unsere Mitglieder sagen</h2>
+        <div class="testimonials-grid" id="testimonialsGrid">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
       </div>
     </section>
 
-    <section id="updates" class="section publicCards">
+    <!-- Partners Section -->
+    <section id="partners" class="section partners-section" aria-labelledby="partners-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Monatsupdates</h2>
-        <div class="grid grid-2" id="publicUpdates" style="margin-top:2rem"></div>
+        <h2 id="partners-heading" class="section-title">Partner & Unterstützer</h2>
+        <div class="partners-grid" id="partnersGrid">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
       </div>
     </section>
 
-    <section id="publikationen" class="section publicCards">
+    <!-- FAQ Section -->
+    <section id="faq" class="section faq-section" aria-labelledby="faq-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Publikationen</h2>
-        <div class="grid grid-3" id="publicPubs" style="margin-top:2rem"></div>
+        <h2 id="faq-heading" class="section-title">Häufige Fragen</h2>
+        <div class="faq-container" id="faqContainer">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
       </div>
     </section>
 
-    <section id="ueber" class="section">
+    <section id="kontakt" class="section" aria-labelledby="kontakt-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Über uns</h2>
-        <p class="section-subtitle">…undbauen verbindet Fachleute aus AEC/BIM/Digitalisierung zu einem fokussierten Austauschformat.</p>
+        <h2 id="kontakt-heading" class="section-title">Kontakt</h2>
+        <div class="max-w-700">
+          <p class="p mb-lg">Für allgemeine Anfragen erreichen Sie uns unter:</p>
+          <p class="p mb-lg contact-email">kontakt@undbauen.de</p>
+          <p class="p">Der fachliche Austausch zwischen Mitgliedern sowie der direkte Dialog erfolgen primär innerhalb des geschützten Memberbereichs.</p>
+        </div>
       </div>
     </section>
 
-    <section id="kontakt" class="section">
+    <section id="legal" class="section legal-section" aria-labelledby="legal-heading" role="region">
       <div class="container">
-        <h2 class="section-title">Kontakt</h2>
-        <p class="section-subtitle">Kontaktformular/Email folgt (MVP). Für jetzt: Netzwerk über Memberbereich.</p>
-      </div>
-    </section>
-
-    <section id="legal" class="section">
-      <div class="container">
-        <h2 class="section-title">Impressum & Datenschutz</h2>
-        <div class="legalGrid" style="margin-top:2rem">
-          <div class="card">
-            <h3>Impressum</h3>
-            <p>Anbieter: …undbauen (Platzhalter)</p>
-            <p>Kontakt: info@undbauen.example</p>
-            <p>Verantwortlich: Lukas Gilbert (Platzhalter)</p>
+        <h2 id="legal-heading" class="section-title">Impressum & Datenschutz</h2>
+        <div class="legal-content">
+          <div class="legal-item">
+            <h3 class="legal-item-title">Impressum</h3>
+            <div class="legal-item-content">
+              <p>…undbauen</p>
+              <p>Kontakt: kontakt@undbauen.de</p>
+              <p>Verantwortlich für den Inhalt gemäß § 55 Abs. 2 RStV:</p>
+              <p>Lukas Gilbert</p>
+            </div>
           </div>
-          <div class="card">
-            <h3>Datenschutz</h3>
-            <p>Wir verarbeiten Daten zur Bereitstellung der Plattform (MVP). Details werden ergänzt (Platzhalter).</p>
-            <p>Public-Bereich zeigt nur Teaser. Member-Bereich ist zugriffsgeschützt.</p>
+          <div class="legal-item">
+            <h3 class="legal-item-title">Datenschutz</h3>
+            <div class="legal-item-content">
+              <p>Der Schutz Ihrer personenbezogenen Daten hat für …undbauen einen hohen Stellenwert. Im öffentlichen Bereich dieser Website werden ausschließlich technisch notwendige Zugriffsdaten verarbeitet, die für den Betrieb der Plattform erforderlich sind.</p>
+              <p>Der Memberbereich ist zugriffsgeschützt. Personenbezogene Daten werden ausschließlich zur Bereitstellung der Netzwerk-, Kommunikations- und Veranstaltungsfunktionen verwendet. Eine Weitergabe an Dritte zu Werbezwecken erfolgt nicht.</p>
+              <p>Weitere Informationen zum Datenschutz werden im Zuge des Ausbaus ergänzt.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -257,49 +386,49 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <div class="modalHeader">
         <div class="modalTitle" id="authTitle">Login</div>
-        <button class="btn" id="closeAuth">✕</button>
+        <button class="btn" id="closeAuth" aria-label="Modal schließen">✕</button>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" data-tab="login">Login</div>
-        <div class="tab" data-tab="register">Registrieren</div>
-        <div class="tab" data-tab="forgot">Passwort</div>
+      <div class="tabs" role="tablist" aria-label="Authentifizierungs-Tabs">
+        <button class="tab active" data-tab="login" role="tab" aria-selected="true" aria-controls="panel-login" id="tab-login">Login</button>
+        <button class="tab" data-tab="register" role="tab" aria-selected="false" aria-controls="panel-register" id="tab-register">Registrieren</button>
+        <button class="tab" data-tab="forgot" role="tab" aria-selected="false" aria-controls="panel-forgot" id="tab-forgot">Passwort</button>
       </div>
 
       <div class="modalBody">
-        <div id="panel-login">
-          <label class="label">E-Mail</label>
-          <input class="input" id="loginEmail" type="email" placeholder="name@domain.de" />
-          <label class="label" style="margin-top:10px">Passwort</label>
-          <input class="input" id="loginPass" type="password" placeholder="••••••••" />
-          <div class="err" id="authErr"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doLogin">Einloggen</button>
+        <div id="panel-login" role="tabpanel" aria-labelledby="tab-login" aria-hidden="false">
+          <label class="label" for="loginEmail">E-Mail</label>
+          <input class="input" id="loginEmail" type="email" placeholder="name@domain.de" aria-required="true" aria-describedby="authErr" />
+          <label class="label mt-sm" for="loginPass">Passwort</label>
+          <input class="input" id="loginPass" type="password" placeholder="••••••••" aria-required="true" aria-describedby="authErr" />
+          <div class="err" id="authErr" role="alert" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doLogin" aria-label="Mit den eingegebenen Daten einloggen">Einloggen</button>
           </div>
-          <p class="small" style="margin-top:10px">Admin Seed: admin@undbauen.local / adminadmin</p>
+          <p class="small mt-sm">Admin Seed: admin@undbauen.local / adminadmin</p>
         </div>
 
-        <div id="panel-register" style="display:none">
-          <label class="label">Name</label>
-          <input class="input" id="regName" placeholder="Vorname Nachname" />
-          <label class="label" style="margin-top:10px">E-Mail</label>
-          <input class="input" id="regEmail" type="email" />
-          <label class="label" style="margin-top:10px">Passwort (min 8)</label>
-          <input class="input" id="regPass" type="password" />
-          <div class="err" id="regErr"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doRegister">Konto erstellen</button>
+        <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" aria-hidden="true" class="tab-panel-hidden">
+          <label class="label" for="regName">Name</label>
+          <input class="input" id="regName" placeholder="Vorname Nachname" aria-required="true" aria-describedby="regErr" />
+          <label class="label mt-sm" for="regEmail">E-Mail</label>
+          <input class="input" id="regEmail" type="email" aria-required="true" aria-describedby="regErr" />
+          <label class="label mt-sm" for="regPass">Passwort (min 8)</label>
+          <input class="input" id="regPass" type="password" aria-required="true" aria-describedby="regErr" />
+          <div class="err" id="regErr" role="alert" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doRegister" aria-label="Neues Konto mit den eingegebenen Daten erstellen">Konto erstellen</button>
           </div>
         </div>
 
-        <div id="panel-forgot" style="display:none">
-          <label class="label">E-Mail</label>
-          <input class="input" id="fpEmail" type="email" />
-          <div class="okmsg" id="fpOk"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doForgot">Link anfordern</button>
+        <div id="panel-forgot" role="tabpanel" aria-labelledby="tab-forgot" aria-hidden="true" class="tab-panel-hidden">
+          <label class="label" for="fpEmail">E-Mail</label>
+          <input class="input" id="fpEmail" type="email" aria-required="true" aria-describedby="fpOk" />
+          <div class="okmsg" id="fpOk" role="status" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doForgot" aria-label="Passwort-Reset-Link anfordern">Link anfordern</button>
           </div>
-          <p class="small" style="margin-top:10px">MVP: kein Mailversand – nur UX.</p>
+          <p class="small mt-sm">MVP: kein Mailversand – nur UX.</p>
         </div>
       </div>
     </div>

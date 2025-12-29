@@ -1,34 +1,84 @@
 import { api } from "./services/apiClient.js";
+import { toast } from "./components/toast.js";
+import { hoverCard } from "./components/hoverCard.js";
+import { scrollNavigation } from "./components/scrollNavigation.js";
+import { globalSearch } from "./components/search.js";
+import { lazyLoader } from "./components/lazyLoad.js";
+import { getIcon } from "./components/icons.js";
+import { memberModal } from "./components/memberModal.js";
 
 const $ = (s)=>document.querySelector(s);
+
+// Make api available globally for search component
+window.api = api;
+
+// Lazy-load Parallax (nur wenn Hero-Section vorhanden)
+let parallaxHero = null;
+if (document.querySelector('.hero-network-visual')) {
+  import('./components/parallax.js').then(module => {
+    parallaxHero = module.parallaxHero;
+  });
+}
 
 function openAuth(){ $("#authOverlay").style.display="flex"; $("#authErr").textContent=""; $("#regErr").textContent=""; }
 function closeAuth(){ $("#authOverlay").style.display="none"; }
 
 function setTab(t){
-  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active", x.dataset.tab===t));
-  $("#panel-login").style.display = (t==="login")?"block":"none";
-  $("#panel-register").style.display = (t==="register")?"block":"none";
-  $("#panel-forgot").style.display = (t==="forgot")?"block":"none";
-  $("#authTitle").textContent = t==="login" ? "Login" : (t==="register" ? "Registrieren" : "Passwort vergessen");
+  document.querySelectorAll(".tab").forEach(x=>{
+    const isActive = x.dataset.tab===t;
+    x.classList.toggle("active", isActive);
+    if(x.hasAttribute("role") && x.getAttribute("role") === "tab"){
+      x.setAttribute("aria-selected", isActive ? "true" : "false");
+    }
+  });
+  const loginPanel = $("#panel-login");
+  const registerPanel = $("#panel-register");
+  const forgotPanel = $("#panel-forgot");
+  
+  if(loginPanel){
+    if(t==="login"){
+      loginPanel.classList.remove("tab-panel-hidden");
+      loginPanel.setAttribute("aria-hidden", "false");
+    } else {
+      loginPanel.classList.add("tab-panel-hidden");
+      loginPanel.setAttribute("aria-hidden", "true");
+    }
+  }
+  if(registerPanel){
+    if(t==="register"){
+      registerPanel.classList.remove("tab-panel-hidden");
+      registerPanel.setAttribute("aria-hidden", "false");
+    } else {
+      registerPanel.classList.add("tab-panel-hidden");
+      registerPanel.setAttribute("aria-hidden", "true");
+    }
+  }
+  if(forgotPanel){
+    if(t==="forgot"){
+      forgotPanel.classList.remove("tab-panel-hidden");
+      forgotPanel.setAttribute("aria-hidden", "false");
+    } else {
+      forgotPanel.classList.add("tab-panel-hidden");
+      forgotPanel.setAttribute("aria-hidden", "true");
+    }
+  }
+  if($("#authTitle")) $("#authTitle").textContent = t==="login" ? "Login" : (t==="register" ? "Registrieren" : "Passwort vergessen");
 }
 
 function renderPublicEvents(){
   const wrap = $("#publicEvents");
   const evs = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3);
   wrap.innerHTML = evs.map(ev => `
-    <div class="card" style="padding:16px">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <div style="font-weight:900">${ev.title}</div>
-        <span class="badge blue">${ev.format}</span>
+    <div class="event-card-compact">
+      <div class="event-card-header">
+        <h3 class="event-card-title">${ev.title}</h3>
+        <span class="event-badge">${ev.format}</span>
       </div>
-      <div class="metaLine" style="margin-top:8px">
-        <span>📅 ${ev.date}</span>
-        <span>⏰ ${ev.time}</span>
+      <div class="event-card-meta">
+        <span class="event-meta-item">${getIcon('calendar', 16)} ${ev.date}</span>
+        <span class="event-meta-item">${getIcon('clock', 16)} ${ev.time}</span>
       </div>
-      <div class="hr"></div>
-      <p class="p">Preview: keine Details / keine Aktionen.</p>
-      <div style="margin-top:10px">
+      <div class="event-card-footer">
         <button class="btn primary" data-open-auth>Einloggen zum Buchen</button>
       </div>
     </div>
@@ -40,16 +90,15 @@ function renderPublicUpdates(){
   const wrap = $("#publicUpdates");
   const items = api.listUpdatesPublic();
   wrap.innerHTML = items.map(x => `
-    <div class="card" style="padding:16px">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <div style="font-weight:900">${x.title}</div>
-        <span class="badge">Member-only</span>
+    <div class="update-card">
+      <div class="update-card-header">
+        <h3 class="update-card-title">${x.title}</h3>
+        <span class="update-badge">Member-only</span>
       </div>
-      <p class="p" style="margin-top:8px">${x.intro}</p>
-      <div class="hr"></div>
-      <div class="chips">${(x.highlights||[]).slice(0,4).map(h=>`<span class="chip">${h}</span>`).join("")}</div>
-      <div style="margin-top:12px">
-        <button class="btn" data-open-auth>Als Mitglied lesen</button>
+      <p class="update-card-intro">${x.intro}</p>
+      ${(x.highlights||[]).length > 0 ? `<div class="update-highlights">${(x.highlights||[]).slice(0,4).map(h=>`<span class="chip">${h}</span>`).join("")}</div>` : ''}
+      <div class="update-card-footer">
+        <button class="btn secondary" data-open-auth>Als Mitglied lesen</button>
       </div>
     </div>
   `).join("");
@@ -60,13 +109,13 @@ function renderPublicPubs(){
   const wrap = $("#publicPubs");
   const items = api.listPublicationsPublic();
   wrap.innerHTML = items.map(x => `
-    <div class="card" style="padding:16px">
-      <div style="font-weight:900">${x.title}</div>
-      <p class="p" style="margin-top:6px">${x.abstract}</p>
-      <div class="chips" style="margin-top:10px">${(x.tags||[]).slice(0,6).map(t=>`<span class="chip">${t}</span>`).join("")}</div>
-      <div style="margin-top:12px">
+    <div class="card p-md">
+      <div class="font-bold">${x.title}</div>
+      <p class="p mt-sm">${x.abstract}</p>
+      <div class="chips mt-sm">${(x.tags||[]).slice(0,6).map(t=>`<span class="chip">${t}</span>`).join("")}</div>
+      <div class="mt-md flex gap-sm flex-center">
         <span class="badge">Member-only</span>
-        <button class="btn" style="margin-left:8px" data-open-auth>Einloggen</button>
+        <button class="btn" data-open-auth>Einloggen</button>
       </div>
     </div>
   `).join("");
@@ -81,6 +130,178 @@ function getCardsPerView(){
   return 5;
 }
 
+function renderSocialProof(){
+  const statsContainer = $("#socialProofStats");
+  if(!statsContainer) return;
+  
+  try {
+    // Versuche verschiedene Methoden, um Mitglieder zu bekommen
+    let members = [];
+    if(api.listMembersPublic){
+      members = api.listMembersPublic("");
+    } else if(api.listMembers){
+      members = api.listMembers("");
+    } else {
+      // Fallback: Hole alle Profile manuell
+      try {
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        for(const user of users){
+          const profileKey = `profile:${user.email.toLowerCase()}`;
+          const profile = JSON.parse(localStorage.getItem(profileKey) || "null");
+          if(profile && (profile.privacy?.visibleInDirectory !== false)){
+            members.push(profile);
+          }
+        }
+      } catch(e){
+        console.error("Error loading members for social proof:", e);
+      }
+    }
+    
+    const totalMembers = members.length;
+    
+    // Berechne "Neue Mitglieder diese Woche" (vereinfacht: letzte 7 Tage)
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const newMembers = members.filter(m => {
+      if(!m.updatedAt) return false;
+      const updated = new Date(m.updatedAt);
+      return updated >= oneWeekAgo;
+    }).length;
+    
+    // Berechne aktive Mitglieder (vereinfacht: haben Profil vervollständigt)
+    const activeMembers = members.filter(m => 
+      m.bio && m.bio.length > 20 && (m.skills?.length > 0 || m.interests?.length > 0)
+    ).length;
+    
+    statsContainer.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-number" id="statTotalMembers">${totalMembers}</div>
+        <div class="stat-label">Mitglieder</div>
+      </div>
+      ${activeMembers > 0 ? `
+        <div class="stat-card">
+          <div class="stat-number">${activeMembers}</div>
+          <div class="stat-label">Aktive Mitglieder</div>
+        </div>
+      ` : ''}
+      ${newMembers > 0 ? `
+        <div class="stat-card">
+          <div class="stat-number">${newMembers}</div>
+          <div class="stat-label">Neu diese Woche</div>
+        </div>
+      ` : ''}
+    `;
+    
+    // Animation für Zahlen
+    const animateNumber = (element, target) => {
+      const duration = 1000;
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      const timer = setInterval(() => {
+        current += increment;
+        if(current >= target){
+          element.textContent = target;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current);
+        }
+      }, 16);
+    };
+    
+    setTimeout(() => {
+      const totalEl = statsContainer.querySelector('#statTotalMembers');
+      if(totalEl) animateNumber(totalEl, totalMembers);
+    }, 300);
+  } catch(e){
+    console.error("Error rendering social proof:", e);
+  }
+}
+
+// Filter & Sort State
+let currentFilter = "all";
+let currentSort = "newest";
+let allMembers = [];
+
+function setupNetworkFilters(){
+  const filterChips = $("#filterChips");
+  const sortSelect = $("#sortSelect");
+  
+  if(!filterChips || !sortSelect) return;
+  
+  // Lade alle verfügbaren Skills für Filter
+  const skills = new Set();
+  allMembers.forEach(m => {
+    if(m.skills && Array.isArray(m.skills)){
+      m.skills.forEach(s => skills.add(s));
+    }
+  });
+  
+  // Erstelle Filter-Chips für Skills
+  Array.from(skills).sort().slice(0, 10).forEach(skill => {
+    const chip = document.createElement("button");
+    chip.className = "filter-chip";
+    chip.textContent = skill;
+    chip.setAttribute("data-filter", skill);
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      currentFilter = skill;
+      updateNetworkSlider();
+    });
+    filterChips.appendChild(chip);
+  });
+  
+  // Sortierung
+  sortSelect.addEventListener("change", (e) => {
+    currentSort = e.target.value;
+    updateNetworkSlider();
+  });
+  
+  // "Alle" Filter
+  filterChips.querySelector('[data-filter="all"]')?.addEventListener("click", () => {
+    document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+    filterChips.querySelector('[data-filter="all"]').classList.add("active");
+    currentFilter = "all";
+    updateNetworkSlider();
+  });
+}
+
+function filterAndSortMembers(members){
+  let filtered = [...members];
+  
+  // Filter
+  if(currentFilter !== "all"){
+    filtered = filtered.filter(m => 
+      m.skills && m.skills.includes(currentFilter)
+    );
+  }
+  
+  // Sortierung
+  switch(currentSort){
+    case "alphabetical":
+      filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      break;
+    case "activity":
+      filtered.sort((a, b) => {
+        const aActive = (a.bio?.length > 20 ? 1 : 0) + (a.skills?.length || 0) + (a.interests?.length || 0);
+        const bActive = (b.bio?.length > 20 ? 1 : 0) + (b.skills?.length || 0) + (b.interests?.length || 0);
+        return bActive - aActive;
+      });
+      break;
+    case "newest":
+    default:
+      filtered.sort((a, b) => {
+        const aDate = a.updatedAt ? new Date(a.updatedAt) : new Date(0);
+        const bDate = b.updatedAt ? new Date(b.updatedAt) : new Date(0);
+        return bDate - aDate;
+      });
+      break;
+  }
+  
+  return filtered;
+}
+
 function renderNetworkSlider(){
   const slider = $("#peopleSlider");
   const prevBtn = $("#prevBtn");
@@ -89,6 +310,21 @@ function renderNetworkSlider(){
   const notice = $("#networkGuestNotice");
   
   if(!slider) return;
+  
+  // Show skeleton while loading
+  slider.innerHTML = Array(5).fill(0).map(() => `
+    <div class="person-card skeleton-card">
+      <div class="person-image-container">
+        <div class="skeleton skeleton-avatar"></div>
+      </div>
+      <div class="person-card-content">
+        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+        <div class="skeleton skeleton-text" style="width: 40%; margin-top: 8px;"></div>
+        <div class="skeleton skeleton-text" style="width: 80%; margin-top: 12px;"></div>
+        <div class="skeleton skeleton-text" style="width: 70%; margin-top: 8px;"></div>
+      </div>
+    </div>
+  `).join("");
   
   const isLoggedIn = api.isLoggedIn();
   // Verwende listMembersPublic für öffentliche Ansicht, listMembers für eingeloggte
@@ -116,23 +352,47 @@ function renderNetworkSlider(){
     }
   }
   
+  // Speichere alle Mitglieder für Filter
+  allMembers = members;
+  
+  // Setup Filter & Sortierung
+  setupNetworkFilters();
+  
   // Notice ausblenden, da Daten jetzt öffentlich sichtbar sind
   if(notice){
     notice.style.display = "none";
   }
   
+  updateNetworkSlider();
+}
+
+function updateNetworkSlider(){
+  const slider = $("#peopleSlider");
+  const prevBtn = $("#prevBtn");
+  const nextBtn = $("#nextBtn");
+  const pagination = $("#pagination");
+  
+  if(!slider) return;
+  
+  // Filtere und sortiere Mitglieder
+  const members = filterAndSortMembers(allMembers);
+  
   if(members.length === 0){
-    slider.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted)">Noch keine Mitglieder im Netzwerk.</div>`;
-    if(prevBtn) prevBtn.style.display = "none";
-    if(nextBtn) nextBtn.style.display = "none";
+    slider.innerHTML = `<div class="p-xl text-center text-muted">Noch keine Mitglieder im Netzwerk.</div>`;
+    if(prevBtn) prevBtn.classList.add("hidden");
+    if(nextBtn) nextBtn.classList.add("hidden");
     if(pagination) pagination.innerHTML = "";
     return;
   }
   
+  // Buttons wieder anzeigen wenn Mitglieder vorhanden
+  if(prevBtn) prevBtn.classList.remove("hidden");
+  if(nextBtn) nextBtn.classList.remove("hidden");
+  
   slider.innerHTML = members.map(p => {
     const initials = p.name.split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
     const skills = [...(p.skills||[]), ...(p.interests||[])].slice(0,4);
-    const bio = (p.bio||"").slice(0,150) + ((p.bio||"").length > 150 ? "..." : "");
+    const bio = (p.bio||"").slice(0,80) + ((p.bio||"").length > 80 ? "..." : "");
     const linkedin = p.links?.linkedin || "";
     const website = p.links?.website || "";
     const location = p.location || "";
@@ -140,89 +400,137 @@ function renderNetworkSlider(){
     const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
     
     return `
-      <div class="person-card" data-email="${p.email}">
+      <div class="person-card" data-email="${p.email}" role="listitem" tabindex="0" aria-label="Profil von ${p.name}, ${p.headline || 'Mitglied'}">
         <div class="person-image-container">
-          <img src="${avatarUrl}" alt="${p.name}" class="person-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="person-image-placeholder" style="display:none;">${initials}</div>
+          <img src="${avatarUrl}" alt="Profilbild von ${p.name}, ${p.headline || 'Mitglied'}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="person-image-placeholder hidden" aria-hidden="true">${initials}</div>
         </div>
         <div class="person-card-content">
           <div class="person-name">${p.name}</div>
           <div class="person-role">${p.headline || "Mitglied"}</div>
-          ${location ? `<div class="person-location">📍 ${location}</div>` : ""}
-          <div class="person-info">${bio || "Mitglied des Netzwerks"}</div>
-          ${skills.length ? `<div class="chips" style="margin-top:10px;margin-bottom:10px">${skills.map(s=>`<span class="chip">${s}</span>`).join("")}</div>` : ""}
-          <div class="person-links" style="display:flex;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--border);">
-            ${linkedin ? `<a href="${linkedin}" target="_blank" rel="noopener noreferrer" class="person-link" onclick="event.stopPropagation();" style="display:flex;align-items:center;gap:5px;color:var(--blue);text-decoration:none;font-size:0.9rem;">
-              <span>🔗</span> LinkedIn
-            </a>` : ""}
-            ${website ? `<a href="${website}" target="_blank" rel="noopener noreferrer" class="person-link" onclick="event.stopPropagation();" style="display:flex;align-items:center;gap:5px;color:var(--blue);text-decoration:none;font-size:0.9rem;">
-              <span>🌐</span> Website
-            </a>` : ""}
-            ${!linkedin && !website ? `<span style="font-size:0.85rem;color:var(--muted);">Kontakt über Netzwerk</span>` : ""}
-          </div>
+          ${location ? `<div class="person-location">${getIcon('mapPin', 12)} ${location}</div>` : ""}
+          ${skills.length ? `<div class="chips mt-sm">${skills.slice(0,3).map(s=>`<span class="chip">${s}</span>`).join("")}</div>` : ""}
         </div>
       </div>
     `;
   }).join("");
   
-  // Click handler für Person Cards
+  // Click handler und Hover-Card für Person Cards
   slider.querySelectorAll(".person-card").forEach(card => {
+    const email = card.dataset.email;
+    const person = members.find(p => p.email === email);
+    
+    // Hover-Card on hover
+    let hoverTimeout;
+    card.addEventListener("mouseenter", () => {
+      if(!person) return;
+      hoverTimeout = setTimeout(() => {
+        hoverCard.show(person, card);
+      }, 500); // Show after 500ms hover
+    });
+    
+    card.addEventListener("mouseleave", () => {
+      if(hoverTimeout) clearTimeout(hoverTimeout);
+      hoverCard.hide();
+    });
+    
+    // Click handler - öffne Modal für alle (auch Gäste)
     card.addEventListener("click", () => {
-      const email = card.dataset.email;
-      if(isLoggedIn){
-        window.location.href = `app/member.html?email=${encodeURIComponent(email)}`;
-      } else {
-        // Auch ohne Login können Nutzer die Profile sehen, aber für Details müssen sie sich anmelden
-        openAuth();
+      if(person) {
+        memberModal.show(person);
       }
     });
   });
   
-  // Slider Logic
-  let cardsPerView = getCardsPerView();
-  const totalCards = members.length;
-  let totalPages = Math.ceil(totalCards / cardsPerView);
-  let currentPage = 0;
-  
-  function updateSlider(){
-    cardsPerView = getCardsPerView();
-    totalPages = Math.ceil(totalCards / cardsPerView);
-    if(currentPage >= totalPages) currentPage = 0;
-    
-    const translateX = -(currentPage * (100 / cardsPerView));
-    slider.style.transform = `translateX(${translateX}%)`;
-    
-    if(prevBtn) prevBtn.disabled = currentPage === 0;
-    if(nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
-    
-    updatePagination();
+  // Karussell-Logik: Immer 5 sichtbar (responsive), verschiebt sich um 2
+  function getCardsVisible(){
+    if(window.innerWidth <= 480) return 1;
+    if(window.innerWidth <= 768) return 2;
+    if(window.innerWidth <= 1024) return 3;
+    return 5;
   }
   
-  function updatePagination(){
-    if(!pagination) return;
-    pagination.innerHTML = "";
-    for(let i = 0; i < totalPages; i++){
-      const dot = document.createElement("div");
-      dot.className = "pagination-dot";
-      if(i === currentPage) dot.classList.add("active");
-      dot.addEventListener("click", () => {
-        currentPage = i;
-        updateSlider();
-      });
-      pagination.appendChild(dot);
+  const CARDS_SHIFT = 2;
+  let currentIndex = 0;
+  
+  function updateSlider(){
+    if(members.length === 0) return;
+    
+    const cardsVisible = getCardsVisible();
+    
+    // Berechne welche Cards sichtbar sein sollen
+    const visibleCards = [];
+    for(let i = 0; i < cardsVisible; i++){
+      const index = (currentIndex + i) % members.length;
+      visibleCards.push(members[index]);
     }
+    
+    // Render nur die sichtbaren Cards
+    slider.innerHTML = visibleCards.map((p, idx) => {
+      const initials = p.name.split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
+      const skills = [...(p.skills||[]), ...(p.interests||[])].slice(0,3);
+      const location = p.location || "";
+      const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+      
+      return `
+        <div class="person-card" data-email="${p.email}" role="listitem" tabindex="0" aria-label="Profil von ${p.name}, ${p.headline || 'Mitglied'}">
+          <div class="person-image-container">
+            <img src="${avatarUrl}" alt="Profilbild von ${p.name}, ${p.headline || 'Mitglied'}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="person-image-placeholder hidden" aria-hidden="true">${initials}</div>
+          </div>
+          <div class="person-card-content">
+            <div class="person-name">${p.name}</div>
+            <div class="person-role">${p.headline || "Mitglied"}</div>
+            ${location ? `<div class="person-location">${getIcon('mapPin', 12)} ${location}</div>` : ""}
+            ${skills.length ? `<div class="chips mt-sm">${skills.map(s=>`<span class="chip">${s}</span>`).join("")}</div>` : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+    
+    // Click handler für neue Cards
+    slider.querySelectorAll(".person-card").forEach(card => {
+      const email = card.dataset.email;
+      const person = members.find(p => p.email === email);
+      
+      card.addEventListener("click", () => {
+        if(person) {
+          memberModal.show(person);
+        }
+      });
+    });
+    
+    // Buttons immer aktiv (unendliches Karussell)
+    if(prevBtn) {
+      prevBtn.disabled = false;
+      prevBtn.style.opacity = '1';
+    }
+    if(nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.style.opacity = '1';
+    }
+    
+    // Smooth transition
+    slider.style.transition = 'transform 0.5s ease-in-out';
   }
   
   if(prevBtn) prevBtn.addEventListener("click", () => {
-    if(currentPage > 0){
-      currentPage--;
-      updateSlider();
-    }
+    currentIndex = (currentIndex - CARDS_SHIFT + members.length) % members.length;
+    updateSlider();
   });
   
   if(nextBtn) nextBtn.addEventListener("click", () => {
-    if(currentPage < totalPages - 1){
-      currentPage++;
+    currentIndex = (currentIndex + CARDS_SHIFT) % members.length;
+    updateSlider();
+  });
+  
+  // Keyboard navigation
+  slider.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowLeft') {
+      currentIndex = (currentIndex - CARDS_SHIFT + members.length) % members.length;
+      updateSlider();
+    } else if(e.key === 'ArrowRight') {
+      currentIndex = (currentIndex + CARDS_SHIFT) % members.length;
       updateSlider();
     }
   });
@@ -248,7 +556,34 @@ function initTheme(){
 
 function updateThemeIcon(theme){
   const btn = $("#themeToggle");
-  if(btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  if(btn) {
+    let icon = btn.querySelector('.icon-theme');
+    // Falls Icon noch nicht existiert, erstelle es
+    if(!icon) {
+      icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      icon.setAttribute('class', 'icon icon-theme');
+      icon.setAttribute('width', '20');
+      icon.setAttribute('height', '20');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('stroke-width', '1.5');
+      icon.setAttribute('stroke-linecap', 'round');
+      icon.setAttribute('stroke-linejoin', 'round');
+      icon.setAttribute('aria-hidden', 'true');
+      btn.appendChild(icon);
+    }
+    
+    if(theme === 'dark') {
+      // Sun icon (weil wir zu light wechseln wollen)
+      icon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
+    } else {
+      // Moon icon (weil wir zu dark wechseln wollen)
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    }
+    btn.setAttribute("aria-pressed", theme === 'dark' ? "true" : "false");
+    btn.setAttribute("aria-label", theme === 'dark' ? "Zu hellem Theme wechseln" : "Zu dunklem Theme wechseln");
+  }
 }
 
 function toggleTheme(){
@@ -260,13 +595,278 @@ function toggleTheme(){
   updateThemeIcon(newTheme);
 }
 
-document.addEventListener("DOMContentLoaded", ()=>{
+// Mobile Menu Toggle
+function toggleMobileMenu(){
+  const toggle = $("#mobileMenuToggle");
+  const nav = $("#navLinks");
+  if(!toggle || !nav) return;
+  
+  const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+  toggle.setAttribute("aria-expanded", !isExpanded);
+  nav.setAttribute("aria-hidden", isExpanded);
+  
+  // Body scroll lock
+  if(!isExpanded){
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+}
+
+function closeMobileMenu(){
+  const toggle = $("#mobileMenuToggle");
+  const nav = $("#navLinks");
+  if(toggle) toggle.setAttribute("aria-expanded", "false");
+  if(nav) nav.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function renderTestimonials(){
+  const wrap = $("#testimonialsGrid");
+  if(!wrap) return;
+  
+  const testimonials = [
+    {
+      name: "Dr. Sarah Müller",
+      role: "Architektin & BIM-Expertin",
+      company: "Müller Architekten",
+      quote: "…undbauen hat mir geholfen, wertvolle Kontakte in der Branche zu knüpfen. Die Veranstaltungen sind immer inspirierend und der Austausch auf Augenhöhe ist genau das, was ich gesucht habe.",
+      avatar: null
+    },
+    {
+      name: "Thomas Weber",
+      role: "Projektleiter Digitalisierung",
+      company: "BauTech GmbH",
+      quote: "Die Plattform verbindet Theorie und Praxis auf eine Weise, die ich sonst nirgendwo finde. Besonders die Diskussionen im Forum sind sehr bereichernd.",
+      avatar: null
+    },
+    {
+      name: "Lisa Schneider",
+      role: "Nachhaltigkeitsberaterin",
+      company: "GreenBuild Consulting",
+      quote: "Als Quereinsteigerin in die Baubranche habe ich durch …undbauen schnell Anschluss gefunden. Das Netzwerk ist offen, hilfsbereit und fachlich auf hohem Niveau.",
+      avatar: null
+    },
+    {
+      name: "Michael Hoffmann",
+      role: "Geschäftsführer",
+      company: "Hoffmann Ingenieure",
+      quote: "Die Innovationsabende sind ein fester Bestandteil meines Kalenders geworden. Hier treffe ich regelmäßig auf neue Perspektiven und Impulse für meine Arbeit.",
+      avatar: null
+    }
+  ];
+  
+  wrap.innerHTML = testimonials.map(t => `
+    <div class="testimonial-card">
+      <div class="testimonial-quote">
+        <svg class="quote-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.017 21v-7.391c0-5.704 3.731-9.391 9.065-9.391v3.609c-1.76 0-3.219.992-3.219 3.521v2.261h4.435v7.391h-10.281zm-14.017 0v-7.391c0-5.704 3.748-9.391 9.082-9.391v3.609c-1.76 0-3.219.992-3.219 3.521v2.261h4.436v7.391h-10.28z" fill="currentColor" opacity="0.3"/>
+        </svg>
+        <p class="testimonial-text">${t.quote}</p>
+      </div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">
+          ${t.avatar ? `<img src="${t.avatar}" alt="${t.name}" loading="lazy" />` : `<div class="avatar-placeholder">${t.name.split(' ').map(n => n[0]).join('')}</div>`}
+        </div>
+        <div class="testimonial-info">
+          <div class="testimonial-name">${t.name}</div>
+          <div class="testimonial-meta">${t.role}<br>${t.company}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderPartners(){
+  const wrap = $("#partnersGrid");
+  if(!wrap) return;
+  
+  const partners = [
+    { name: "Partner 1", logo: null, url: "#" },
+    { name: "Partner 2", logo: null, url: "#" },
+    { name: "Partner 3", logo: null, url: "#" },
+    { name: "Partner 4", logo: null, url: "#" },
+    { name: "Partner 5", logo: null, url: "#" },
+    { name: "Partner 6", logo: null, url: "#" }
+  ];
+  
+  wrap.innerHTML = partners.map(p => `
+    <div class="partner-logo">
+      ${p.logo ? 
+        `<a href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${p.name} Website">
+          <img src="${p.logo}" alt="${p.name}" loading="lazy" />
+        </a>` :
+        `<div class="partner-placeholder" aria-label="${p.name}">
+          <span>${p.name}</span>
+        </div>`
+      }
+    </div>
+  `).join("");
+}
+
+function renderFAQ(){
+  const wrap = $("#faqContainer");
+  if(!wrap) return;
+  
+  const faqs = [
+    {
+      question: "Wie kann ich Mitglied werden?",
+      answer: "Sie können sich über den 'Mitglied werden'-Button registrieren. Nach der Registrierung erhalten Sie Zugang zum geschützten Memberbereich mit allen Funktionen des Netzwerks."
+    },
+    {
+      question: "Was kostet die Mitgliedschaft?",
+      answer: "Die Mitgliedschaft ist aktuell kostenlos. …undbauen ist ein unabhängiges Netzwerk-Format, das sich über Partner und Unterstützer finanziert."
+    },
+    {
+      question: "Wie funktionieren die Innovationsabende?",
+      answer: "Die monatlichen Innovationsabende finden regelmäßig statt. Mitglieder können Termine einsehen, vormerken und buchen. Die Veranstaltungen kombinieren Impulsvorträge mit moderierten Diskussionen."
+    },
+    {
+      question: "Kann ich auch ohne Mitgliedschaft teilnehmen?",
+      answer: "Die öffentlichen Informationen auf der Website sind für alle zugänglich. Für die Teilnahme an Veranstaltungen, den Zugang zum Forum und die Nutzung aller Netzwerk-Funktionen ist eine Mitgliedschaft erforderlich."
+    },
+    {
+      question: "Wie funktioniert das Forum?",
+      answer: "Das Forum ist der inhaltliche Kern des Netzwerks. Mitglieder können Themen diskutieren, Fragen stellen und Erfahrungen teilen. Das Forum ist moderiert und auf einen konstruktiven, sachlichen Austausch ausgelegt."
+    },
+    {
+      question: "Wer kann Mitglied werden?",
+      answer: "Das Netzwerk richtet sich an Fachleute aus Architektur, Ingenieurwesen, Bauwesen und digitaler Planung. Wir freuen uns über Praktiker:innen, Entscheider:innen, Forschende und Gestalter:innen, die sich aktiv mit der Weiterentwicklung der gebauten Umwelt beschäftigen."
+    },
+    {
+      question: "Wie kann ich Kontakt zu anderen Mitgliedern aufnehmen?",
+      answer: "Im geschützten Memberbereich können Sie Profile anderer Mitglieder einsehen und über das Nachrichtensystem direkt Kontakt aufnehmen. Zusätzlich bietet das Forum Möglichkeiten für den fachlichen Austausch."
+    },
+    {
+      question: "Werden die Veranstaltungen auch online angeboten?",
+      answer: "Die Innovationsabende finden primär als Präsenzveranstaltungen statt. Bei Bedarf können einzelne Formate auch hybrid oder online durchgeführt werden. Details finden Sie in den jeweiligen Veranstaltungsbeschreibungen."
+    }
+  ];
+  
+  wrap.innerHTML = faqs.map((faq, index) => `
+    <div class="faq-item">
+      <button 
+        class="faq-question" 
+        id="faq-question-${index}"
+        aria-expanded="false"
+        aria-controls="faq-answer-${index}"
+        type="button">
+        <span>${faq.question}</span>
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div 
+        class="faq-answer" 
+        id="faq-answer-${index}"
+        role="region"
+        aria-labelledby="faq-question-${index}">
+        <div class="faq-answer-content">
+          <p class="p">${faq.answer}</p>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  
+  // FAQ Accordion Functionality
+  wrap.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      const answer = document.getElementById(button.getAttribute('aria-controls'));
+      const icon = button.querySelector('.faq-icon');
+      
+      // Close all other items
+      wrap.querySelectorAll('.faq-question').forEach(otherBtn => {
+        if(otherBtn !== button) {
+          otherBtn.setAttribute('aria-expanded', 'false');
+          const otherAnswer = document.getElementById(otherBtn.getAttribute('aria-controls'));
+          if(otherAnswer) {
+            otherAnswer.classList.remove('faq-answer-open');
+            otherAnswer.style.maxHeight = null;
+          }
+          const otherIcon = otherBtn.querySelector('.faq-icon');
+          if(otherIcon) otherIcon.textContent = '+';
+        }
+      });
+      
+      // Toggle current item
+      button.setAttribute('aria-expanded', !isExpanded);
+      if(answer) {
+        if(!isExpanded) {
+          answer.classList.add('faq-answer-open');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+          if(icon) icon.textContent = '−';
+        } else {
+          answer.classList.remove('faq-answer-open');
+          answer.style.maxHeight = null;
+          if(icon) icon.textContent = '+';
+        }
+      }
+    });
+    
+    // Keyboard navigation
+    button.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        button.click();
+      }
+    });
+  });
+}
+
+// Code-Splitting: Lade Komponenten dynamisch
+async function loadComponents() {
+  try {
+    // Lazy-load components only when needed
+    if (document.querySelector('#searchTrigger')) {
+      // Search is already imported, but we can lazy-load other features
+    }
+  } catch (error) {
+    console.error('Error loading components:', error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async ()=>{
   initTheme();
+  
+  // Initialize member modal
+  memberModal.init();
+  
+  // Load components dynamically
+  await loadComponents();
   
   renderPublicEvents();
   renderPublicUpdates();
   renderPublicPubs();
+  renderSocialProof();
   renderNetworkSlider();
+  renderTestimonials();
+  renderPartners();
+  renderFAQ();
+  
+  // Global Search
+  if($("#searchTrigger")){
+    $("#searchTrigger").addEventListener("click", () => globalSearch.open());
+  }
+
+  // Mobile Menu
+  if($("#mobileMenuToggle")){
+    $("#mobileMenuToggle").addEventListener("click", toggleMobileMenu);
+  }
+  
+  // Close mobile menu when clicking on a link
+  document.querySelectorAll(".navLinks a").forEach(link => {
+    link.addEventListener("click", () => {
+      if(window.innerWidth <= 768){
+        closeMobileMenu();
+      }
+    });
+  });
+  
+  // Close mobile menu on escape
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape"){
+      closeMobileMenu();
+    }
+  });
 
   if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
   if($("#openAuth")) $("#openAuth").addEventListener("click", openAuth);
@@ -275,27 +875,100 @@ document.addEventListener("DOMContentLoaded", ()=>{
   if($("#authOverlay")) $("#authOverlay").addEventListener("click", (e)=>{ if(e.target.id==="authOverlay") closeAuth(); });
   document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeAuth(); });
 
-  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>setTab(t.dataset.tab)));
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.addEventListener("click", ()=>setTab(t.dataset.tab));
+    // Keyboard-Navigation für Tabs
+    t.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        setTab(t.dataset.tab);
+      }
+    });
+  });
+  
+  // Modal-Trap für Keyboard-Navigation
+  const authModal = $("#authOverlay");
+  if(authModal){
+    const trapFocus = (e) => {
+      if(e.key !== "Tab") return;
+      const focusableElements = authModal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if(focusableElements.length === 0) return;
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      
+      if(e.shiftKey && document.activeElement === firstElement){
+        e.preventDefault();
+        lastElement.focus();
+      } else if(!e.shiftKey && document.activeElement === lastElement){
+        e.preventDefault();
+        firstElement.focus();
+      }
+    };
+    
+    authModal.addEventListener("keydown", trapFocus);
+  }
 
   if($("#doLogin")) $("#doLogin").addEventListener("click", ()=>{
+    const btn = $("#doLogin");
+    const originalText = btn.textContent;
+    btn.classList.add("loading");
+    btn.disabled = true;
+    
     try {
       const res = api.login($("#loginEmail").value, $("#loginPass").value);
       if($("#authErr")) $("#authErr").textContent = res.ok ? "" : res.error;
-      if(res.ok) window.location.href = "app/dashboard.html";
+      if(res.ok) {
+        toast.success("Erfolgreich eingeloggt!");
+        setTimeout(() => window.location.href = "app/dashboard.html", 500);
+      } else {
+        toast.error(res.error || "Login fehlgeschlagen");
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
     } catch(e) {
       console.error("Login error:", e);
-      if($("#authErr")) $("#authErr").textContent = "Fehler beim Login. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
+      const errorMsg = "Fehler beim Login. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
+      if($("#authErr")) $("#authErr").textContent = errorMsg;
+      toast.error(errorMsg);
+      btn.classList.remove("loading");
+      btn.disabled = false;
     }
   });
 
   if($("#doRegister")) $("#doRegister").addEventListener("click", ()=>{
+    const btn = $("#doRegister");
+    btn.classList.add("loading");
+    btn.disabled = true;
+    
     try {
       const res = api.register($("#regName").value, $("#regEmail").value, $("#regPass").value);
       if($("#regErr")) $("#regErr").textContent = res.ok ? "" : res.error;
-      if(res.ok) window.location.href = "app/dashboard.html";
+      if(res.ok) {
+        toast.success("Konto erfolgreich erstellt!");
+        setTimeout(() => window.location.href = "app/dashboard.html", 500);
+      } else {
+        // Spezifische Fehlermeldungen
+        let errorMsg = "Registrierung fehlgeschlagen.";
+        if(res.error){
+          if(res.error.includes("bereits") || res.error.includes("existiert")){
+            errorMsg = "Diese E-Mail-Adresse ist bereits registriert. Bitte loggen Sie sich ein oder nutzen Sie 'Passwort vergessen'.";
+          } else {
+            errorMsg = res.error;
+          }
+        }
+        toast.error(errorMsg);
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
     } catch(e) {
       console.error("Register error:", e);
-      if($("#regErr")) $("#regErr").textContent = "Fehler bei der Registrierung. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
+      const errorMsg = "Fehler bei der Registrierung. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
+      if($("#regErr")) $("#regErr").textContent = errorMsg;
+      toast.error(errorMsg);
+      btn.classList.remove("loading");
+      btn.disabled = false;
     }
   });
 
