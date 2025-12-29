@@ -6,6 +6,7 @@ import { globalSearch } from "./components/search.js";
 import { lazyLoader } from "./components/lazyLoad.js";
 import { getIcon } from "./components/icons.js";
 import { memberModal } from "./components/memberModal.js";
+import { heroAnimation } from "./components/heroAnimation.js";
 
 const $ = (s)=>document.querySelector(s);
 
@@ -20,23 +21,54 @@ if (document.querySelector('.hero-network-visual')) {
   });
 }
 
-function openAuth(){ $("#authOverlay").style.display="flex"; $("#authErr").textContent=""; $("#regErr").textContent=""; }
-function closeAuth(){ $("#authOverlay").style.display="none"; }
+/**
+ * Opens the authentication modal
+ * @returns {void}
+ */
+const openAuth = () => {
+  const overlay = $("#authOverlay");
+  const authErr = $("#authErr");
+  const regErr = $("#regErr");
+  
+  if (overlay) overlay.style.display = "flex";
+  if (authErr) authErr.textContent = "";
+  if (regErr) regErr.textContent = "";
+};
 
-function setTab(t){
-  document.querySelectorAll(".tab").forEach(x=>{
-    const isActive = x.dataset.tab===t;
+/**
+ * Closes the authentication modal
+ * @returns {void}
+ */
+const closeAuth = () => {
+  const overlay = $("#authOverlay");
+  if (overlay) overlay.style.display = "none";
+};
+
+/**
+ * Sets the active tab in the authentication modal
+ * @param {string} t - Tab name ('login', 'register', 'forgot')
+ * @returns {void}
+ */
+const setTab = (t) => {
+  if (!t) return;
+
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach(x => {
+    const isActive = x.dataset.tab === t;
     x.classList.toggle("active", isActive);
-    if(x.hasAttribute("role") && x.getAttribute("role") === "tab"){
+    if (x.hasAttribute("role") && x.getAttribute("role") === "tab") {
       x.setAttribute("aria-selected", isActive ? "true" : "false");
     }
   });
+
   const loginPanel = $("#panel-login");
   const registerPanel = $("#panel-register");
   const forgotPanel = $("#panel-forgot");
-  
-  if(loginPanel){
-    if(t==="login"){
+  const authTitle = $("#authTitle");
+
+  // Update login panel
+  if (loginPanel) {
+    if (t === "login") {
       loginPanel.classList.remove("tab-panel-hidden");
       loginPanel.setAttribute("aria-hidden", "false");
     } else {
@@ -44,8 +76,10 @@ function setTab(t){
       loginPanel.setAttribute("aria-hidden", "true");
     }
   }
-  if(registerPanel){
-    if(t==="register"){
+
+  // Update register panel
+  if (registerPanel) {
+    if (t === "register") {
       registerPanel.classList.remove("tab-panel-hidden");
       registerPanel.setAttribute("aria-hidden", "false");
     } else {
@@ -53,8 +87,10 @@ function setTab(t){
       registerPanel.setAttribute("aria-hidden", "true");
     }
   }
-  if(forgotPanel){
-    if(t==="forgot"){
+
+  // Update forgot panel
+  if (forgotPanel) {
+    if (t === "forgot") {
       forgotPanel.classList.remove("tab-panel-hidden");
       forgotPanel.setAttribute("aria-hidden", "false");
     } else {
@@ -62,77 +98,316 @@ function setTab(t){
       forgotPanel.setAttribute("aria-hidden", "true");
     }
   }
-  if($("#authTitle")) $("#authTitle").textContent = t==="login" ? "Login" : (t==="register" ? "Registrieren" : "Passwort vergessen");
-}
 
-function renderPublicEvents(){
+  // Update title
+  if (authTitle) {
+    const titles = {
+      login: "Login",
+      register: "Registrieren",
+      forgot: "Passwort vergessen"
+    };
+    authTitle.textContent = titles[t] || "Login";
+  }
+};
+
+/**
+ * Sanitizes a string to prevent XSS attacks
+ * @param {string} str - String to sanitize
+ * @returns {string} - Sanitized string
+ */
+const sanitizeHTML = (str) => {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+};
+
+/**
+ * Renders public events in the events section
+ * @returns {void}
+ */
+const renderPublicEvents = () => {
   const wrap = $("#publicEvents");
-  const evs = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3);
-  wrap.innerHTML = evs.map(ev => `
-    <div class="event-card-compact">
-      <div class="event-card-header">
-        <h3 class="event-card-title">${ev.title}</h3>
-        <span class="event-badge">${ev.format}</span>
-      </div>
-      <div class="event-card-meta">
-        <span class="event-meta-item">${getIcon('calendar', 16)} ${ev.date}</span>
-        <span class="event-meta-item">${getIcon('clock', 16)} ${ev.time}</span>
-      </div>
-      <div class="event-card-footer">
-        <button class="btn primary" data-open-auth>Einloggen zum Buchen</button>
-      </div>
-    </div>
-  `).join("");
-  wrap.querySelectorAll("[data-open-auth]").forEach(b=>b.addEventListener("click", openAuth));
-}
+  if (!wrap) {
+    console.warn('Public events container not found');
+    return;
+  }
 
-function renderPublicUpdates(){
+  try {
+    const evs = api.listEvents()
+      .slice()
+      .sort((a, b) => {
+        const dateA = a.date + a.time;
+        const dateB = b.date + b.time;
+        return dateA.localeCompare(dateB);
+      })
+      .slice(0, 4);
+
+    // Bilder für Events je nach Kategorie/Format - verschiedene Bilder für Abwechslung
+    const getEventImage = (ev, index = 0) => {
+      const format = (ev.format || "").toLowerCase();
+      const title = (ev.title || "").toLowerCase();
+      
+      // Innovationsabend Bilder
+      if (format.includes("innovationsabend") || format.includes("innovation")) {
+        const innovationImages = [
+          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop'
+        ];
+        return innovationImages[index % innovationImages.length];
+      } 
+      // Panel Bilder
+      else if (format.includes("panel") || format.includes("diskussion")) {
+        const panelImages = [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop'
+        ];
+        return panelImages[index % panelImages.length];
+      } 
+      // Workshop Bilder
+      else if (format.includes("workshop")) {
+        return 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&h=300&fit=crop';
+      } 
+      // Fallback
+      else {
+        return 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop';
+      }
+    };
+
+    if (evs.length === 0) {
+      wrap.innerHTML = '<div class="p-xl text-center text-muted">Keine Termine verfügbar.</div>';
+      return;
+    }
+
+    wrap.innerHTML = evs.map((ev, index) => {
+      const imageUrl = getEventImage(ev, index);
+      const title = sanitizeHTML(ev.title || '');
+      const format = sanitizeHTML(ev.format || '');
+      const date = sanitizeHTML(ev.date || '');
+      const time = sanitizeHTML(ev.time || '');
+      
+      return `
+      <div class="event-card-compact-small">
+        <div class="event-card-image-small">
+          <img src="${imageUrl}" alt="${title}" loading="lazy" class="event-image" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';" />
+          <span class="event-badge">${format}</span>
+        </div>
+        <div class="event-card-content-small">
+          <h3 class="event-card-title-small">${title}</h3>
+          <div class="event-card-meta-small">
+            <span class="event-meta-item">${getIcon('calendar', 14)} ${date}</span>
+            <span class="event-meta-item">${getIcon('clock', 14)} ${time}</span>
+          </div>
+          <div class="event-card-footer-small">
+            <button class="btn primary small" data-open-auth aria-label="Einloggen zum Buchen">Einloggen</button>
+          </div>
+        </div>
+      </div>
+    `;
+    }).join("");
+
+    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
+      b.addEventListener("click", openAuth);
+    });
+  } catch (error) {
+    console.error("Error rendering public events:", error);
+    wrap.innerHTML = '<div class="p-xl text-center text-muted">Fehler beim Laden der Termine.</div>';
+  }
+};
+
+/**
+ * Renders public updates in timeline format
+ * @returns {void}
+ */
+const renderPublicUpdates = () => {
   const wrap = $("#publicUpdates");
-  const items = api.listUpdatesPublic();
-  wrap.innerHTML = items.map(x => `
-    <div class="update-card">
-      <div class="update-card-header">
-        <h3 class="update-card-title">${x.title}</h3>
-        <span class="update-badge">Member-only</span>
-      </div>
-      <p class="update-card-intro">${x.intro}</p>
-      ${(x.highlights||[]).length > 0 ? `<div class="update-highlights">${(x.highlights||[]).slice(0,4).map(h=>`<span class="chip">${h}</span>`).join("")}</div>` : ''}
-      <div class="update-card-footer">
-        <button class="btn secondary" data-open-auth>Als Mitglied lesen</button>
-      </div>
-    </div>
-  `).join("");
-  wrap.querySelectorAll("[data-open-auth]").forEach(b=>b.addEventListener("click", openAuth));
-}
+  if (!wrap) {
+    console.warn('Public updates container not found');
+    return;
+  }
 
-function renderPublicPubs(){
+  try {
+    let items = api.listUpdatesPublic();
+    
+    // Get last 3 months of updates
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    items = items.filter(x => {
+      const updateDate = new Date(x.createdAt || x.date || Date.now());
+      return updateDate >= threeMonthsAgo;
+    }).slice(0, 6); // Show up to 6 updates
+    
+    // Sort by date (newest first)
+    items.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.date || 0);
+      const dateB = new Date(b.createdAt || b.date || 0);
+      return dateB - dateA;
+    });
+
+    if (items.length === 0) {
+      wrap.innerHTML = '<div class="p-xl text-center text-muted">Keine Updates verfügbar.</div>';
+      return;
+    }
+    
+    wrap.innerHTML = items.map((x) => {
+      const date = new Date(x.createdAt || x.date || Date.now());
+      const monthYear = date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+      const title = sanitizeHTML(x.title || '');
+      const intro = sanitizeHTML(x.intro || '');
+      const highlights = (x.highlights || []).slice(0, 3).map(h => sanitizeHTML(h));
+      
+      return `
+      <div class="timeline-item">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-content">
+          <div class="timeline-date">${monthYear}</div>
+          <h3 class="timeline-title">${title}</h3>
+          <p class="timeline-intro">${intro}</p>
+          ${highlights.length > 0 ? `<div class="timeline-highlights">${highlights.map(h => `<span class="chip">${h}</span>`).join("")}</div>` : ''}
+          <button class="btn secondary small" data-open-auth aria-label="Als Mitglied lesen">Als Mitglied lesen</button>
+        </div>
+      </div>
+    `;
+    }).join("");
+
+    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
+      b.addEventListener("click", openAuth);
+    });
+  } catch (error) {
+    console.error("Error rendering public updates:", error);
+    wrap.innerHTML = '<div class="p-xl text-center text-muted">Fehler beim Laden der Updates.</div>';
+  }
+};
+
+/**
+ * Renders public publications
+ * @returns {void}
+ */
+const renderPublicPubs = () => {
   const wrap = $("#publicPubs");
-  const items = api.listPublicationsPublic();
-  wrap.innerHTML = items.map(x => `
-    <div class="card p-md">
-      <div class="font-bold">${x.title}</div>
-      <p class="p mt-sm">${x.abstract}</p>
-      <div class="chips mt-sm">${(x.tags||[]).slice(0,6).map(t=>`<span class="chip">${t}</span>`).join("")}</div>
-      <div class="mt-md flex gap-sm flex-center">
-        <span class="badge">Member-only</span>
-        <button class="btn" data-open-auth>Einloggen</button>
+  if (!wrap) {
+    console.warn('Public publications container not found');
+    return;
+  }
+
+  try {
+    let items = api.listPublicationsPublic();
+    
+    // Get last 3 months of publications
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    items = items.filter(x => {
+      const pubDate = new Date(x.createdAt || x.date || Date.now());
+      return pubDate >= threeMonthsAgo;
+    }).slice(0, 6); // Show up to 6 publications
+    
+    // Sort by date (newest first)
+    items.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.date || 0);
+      const dateB = new Date(b.createdAt || b.date || 0);
+      return dateB - dateA;
+    });
+    
+    // Bilder für Publikationen (architektur/bau-bezogen)
+    const pubImages = [
+      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=200&h=150&fit=crop',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=200&h=150&fit=crop',
+      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=150&fit=crop',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=150&fit=crop',
+      'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=150&fit=crop',
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=200&h=150&fit=crop'
+    ];
+
+    if (items.length === 0) {
+      wrap.innerHTML = '<div class="p-xl text-center text-muted">Keine Publikationen verfügbar.</div>';
+      return;
+    }
+    
+    wrap.innerHTML = items.map((x, idx) => {
+      const imageUrl = pubImages[idx % pubImages.length];
+      const title = sanitizeHTML(x.title || '');
+      const abstract = sanitizeHTML(x.abstract || '');
+      const abstractShort = abstract.length > 100 ? abstract.substring(0, 100) + '...' : abstract;
+      const tags = (x.tags || []).slice(0, 4).map(t => sanitizeHTML(t));
+      
+      // Bestimme Icon basierend auf Titel oder Tags
+      const titleLower = title.toLowerCase();
+      const hasPDF = titleLower.includes('pdf') || titleLower.includes('download') || x.downloadUrl;
+      const pubIcon = hasPDF ? getIcon('fileText', 24) : getIcon('book', 24);
+      
+      return `
+      <div class="pub-card-compact">
+        <div class="pub-image-compact">
+          <img src="${imageUrl}" alt="${title}" loading="lazy" />
+          <div class="pub-icon-overlay">
+            ${pubIcon}
+          </div>
+        </div>
+        <div class="pub-content-compact">
+          <div class="font-bold" style="font-size:14px;">${title}</div>
+          <p class="p mt-sm" style="font-size:13px;line-height:1.5;">${abstractShort}</p>
+          ${tags.length > 0 ? `<div class="chips mt-sm" style="font-size:11px;">${tags.map(t => `<span class="chip">${t}</span>`).join("")}</div>` : ''}
+          <div class="mt-md flex gap-sm">
+            <span class="badge" style="font-size:11px;">Member-only</span>
+            <button class="btn small" data-open-auth aria-label="Einloggen zum Lesen">Einloggen</button>
+          </div>
+        </div>
       </div>
-    </div>
-  `).join("");
-  wrap.querySelectorAll("[data-open-auth]").forEach(b=>b.addEventListener("click", openAuth));
-}
+    `;
+    }).join("");
 
-/* Network Slider */
-function getCardsPerView(){
-  if(window.innerWidth <= 480) return 1;
-  if(window.innerWidth <= 768) return 2;
-  if(window.innerWidth <= 1024) return 3;
+    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
+      b.addEventListener("click", openAuth);
+    });
+  } catch (error) {
+    console.error("Error rendering public publications:", error);
+    wrap.innerHTML = '<div class="p-xl text-center text-muted">Fehler beim Laden der Publikationen.</div>';
+  }
+};
+
+/**
+ * Debounce utility function
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} - Debounced function
+ */
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+/**
+ * Gets the number of cards per view based on screen width
+ * @returns {number} - Number of cards visible
+ */
+const getCardsPerView = () => {
+  if (window.innerWidth <= 480) return 1;
+  if (window.innerWidth <= 768) return 2;
+  if (window.innerWidth <= 1024) return 3;
   return 5;
-}
+};
 
-function renderSocialProof(){
+/**
+ * Renders social proof statistics
+ * @returns {void}
+ */
+const renderSocialProof = () => {
   const statsContainer = $("#socialProofStats");
-  if(!statsContainer) return;
+  if (!statsContainer) {
+    console.warn('Social proof stats container not found');
+    return;
+  }
   
   try {
     // Versuche verschiedene Methoden, um Mitglieder zu bekommen
@@ -390,14 +665,15 @@ function updateNetworkSlider(){
   if(nextBtn) nextBtn.classList.remove("hidden");
   
   slider.innerHTML = members.map(p => {
-    const initials = p.name.split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
     const skills = [...(p.skills||[]), ...(p.interests||[])].slice(0,4);
     const bio = (p.bio||"").slice(0,80) + ((p.bio||"").length > 80 ? "..." : "");
     const linkedin = p.links?.linkedin || "";
     const website = p.links?.website || "";
     const location = p.location || "";
     // Avatar-Bild generieren mit DiceBear API
+    // Fallback zu Initialen-Avatar wenn Dicebear langsam ist
     const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    const initials = (p.name || p.email).split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
     
     return `
       <div class="person-card" data-email="${p.email}" role="listitem" tabindex="0" aria-label="Profil von ${p.name}, ${p.headline || 'Mitglied'}">
@@ -466,23 +742,27 @@ function updateNetworkSlider(){
     }
     
     // Render nur die sichtbaren Cards
-    slider.innerHTML = visibleCards.map((p, idx) => {
-      const initials = p.name.split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
-      const skills = [...(p.skills||[]), ...(p.interests||[])].slice(0,3);
-      const location = p.location || "";
-      const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    slider.innerHTML = visibleCards.map((p) => {
+      const name = sanitizeHTML(p.name || '');
+      const headline = sanitizeHTML(p.headline || 'Mitglied');
+      const skills = [...(p.skills || []), ...(p.interests || [])].slice(0, 3).map(s => sanitizeHTML(s));
+      const location = sanitizeHTML(p.location || "");
+      const email = sanitizeHTML(p.email || "");
+      // Fallback zu Initialen-Avatar wenn Dicebear langsam ist
+      const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+      const initials = (name || email).split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
       
       return `
-        <div class="person-card" data-email="${p.email}" role="listitem" tabindex="0" aria-label="Profil von ${p.name}, ${p.headline || 'Mitglied'}">
+        <div class="person-card" data-email="${email}" role="listitem" tabindex="0" aria-label="Profil von ${name}, ${headline}">
           <div class="person-image-container">
-            <img src="${avatarUrl}" alt="Profilbild von ${p.name}, ${p.headline || 'Mitglied'}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <img src="${avatarUrl}" alt="Profilbild von ${name}, ${headline}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div class="person-image-placeholder hidden" aria-hidden="true">${initials}</div>
           </div>
           <div class="person-card-content">
-            <div class="person-name">${p.name}</div>
-            <div class="person-role">${p.headline || "Mitglied"}</div>
+            <div class="person-name">${name}</div>
+            <div class="person-role">${headline}</div>
             ${location ? `<div class="person-location">${getIcon('mapPin', 12)} ${location}</div>` : ""}
-            ${skills.length ? `<div class="chips mt-sm">${skills.map(s=>`<span class="chip">${s}</span>`).join("")}</div>` : ""}
+            ${skills.length ? `<div class="chips mt-sm">${skills.map(s => `<span class="chip">${s}</span>`).join("")}</div>` : ""}
           </div>
         </div>
       `;
@@ -535,31 +815,46 @@ function updateNetworkSlider(){
     }
   });
   
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      updateSlider();
-    }, 250);
-  });
+  // Debounced resize handler
+  const handleResize = debounce(() => {
+    updateSlider();
+  }, 250);
+  
+  window.addEventListener("resize", handleResize);
   
   updateSlider();
 }
 
-// Theme Toggle
-function initTheme(){
-  const savedTheme = localStorage.getItem('theme') || 
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
-}
+/**
+ * Initializes theme based on saved preference or system preference
+ * @returns {void}
+ */
+const initTheme = () => {
+  try {
+    const savedTheme = localStorage.getItem('theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+  } catch (error) {
+    console.error('Error initializing theme:', error);
+    // Fallback to light theme
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+};
 
-function updateThemeIcon(theme){
+/**
+ * Updates the theme icon based on current theme
+ * @param {string} theme - Current theme ('light' or 'dark')
+ * @returns {void}
+ */
+const updateThemeIcon = (theme) => {
   const btn = $("#themeToggle");
-  if(btn) {
+  if (!btn) return;
+
+  try {
     let icon = btn.querySelector('.icon-theme');
     // Falls Icon noch nicht existiert, erstelle es
-    if(!icon) {
+    if (!icon) {
       icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       icon.setAttribute('class', 'icon icon-theme');
       icon.setAttribute('width', '20');
@@ -574,7 +869,7 @@ function updateThemeIcon(theme){
       btn.appendChild(icon);
     }
     
-    if(theme === 'dark') {
+    if (theme === 'dark') {
       // Sun icon (weil wir zu light wechseln wollen)
       icon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
     } else {
@@ -583,43 +878,69 @@ function updateThemeIcon(theme){
     }
     btn.setAttribute("aria-pressed", theme === 'dark' ? "true" : "false");
     btn.setAttribute("aria-label", theme === 'dark' ? "Zu hellem Theme wechseln" : "Zu dunklem Theme wechseln");
+  } catch (error) {
+    console.error('Error updating theme icon:', error);
   }
-}
+};
 
-function toggleTheme(){
-  const current = document.documentElement.getAttribute('data-theme') || 
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  const newTheme = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  updateThemeIcon(newTheme);
-}
+/**
+ * Toggles between light and dark theme
+ * @returns {void}
+ */
+const toggleTheme = () => {
+  try {
+    const current = document.documentElement.getAttribute('data-theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const newTheme = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  } catch (error) {
+    console.error('Error toggling theme:', error);
+  }
+};
 
-// Mobile Menu Toggle
-function toggleMobileMenu(){
+/**
+ * Toggles the mobile menu
+ * @returns {void}
+ */
+const toggleMobileMenu = () => {
   const toggle = $("#mobileMenuToggle");
   const nav = $("#navLinks");
-  if(!toggle || !nav) return;
+  if (!toggle || !nav) return;
   
-  const isExpanded = toggle.getAttribute("aria-expanded") === "true";
-  toggle.setAttribute("aria-expanded", !isExpanded);
-  nav.setAttribute("aria-hidden", isExpanded);
+  try {
+    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", !isExpanded ? "true" : "false");
+    nav.setAttribute("aria-hidden", isExpanded ? "true" : "false");
+    
+    // Body scroll lock
+    if (!isExpanded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  } catch (error) {
+    console.error('Error toggling mobile menu:', error);
+  }
+};
+
+/**
+ * Closes the mobile menu
+ * @returns {void}
+ */
+const closeMobileMenu = () => {
+  const toggle = $("#mobileMenuToggle");
+  const nav = $("#navLinks");
   
-  // Body scroll lock
-  if(!isExpanded){
-    document.body.style.overflow = "hidden";
-  } else {
+  try {
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    if (nav) nav.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+  } catch (error) {
+    console.error('Error closing mobile menu:', error);
   }
-}
-
-function closeMobileMenu(){
-  const toggle = $("#mobileMenuToggle");
-  const nav = $("#navLinks");
-  if(toggle) toggle.setAttribute("aria-expanded", "false");
-  if(nav) nav.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
+};
 
 function renderTestimonials(){
   const wrap = $("#testimonialsGrid");
@@ -825,26 +1146,93 @@ async function loadComponents() {
 }
 
 document.addEventListener("DOMContentLoaded", async ()=>{
-  initTheme();
+  try {
+    initTheme();
+  } catch (error) {
+    console.error('Error initializing theme:', error);
+  }
+  
+  // Initialize hero animation
+  try {
+    if (heroAnimation && heroAnimation.init) {
+      heroAnimation.init();
+    }
+  } catch (error) {
+    console.error('Error initializing hero animation:', error);
+  }
   
   // Initialize member modal
-  memberModal.init();
+  try {
+    if (memberModal && memberModal.init) {
+      memberModal.init();
+    }
+  } catch (error) {
+    console.error('Error initializing member modal:', error);
+  }
   
   // Load components dynamically
-  await loadComponents();
+  try {
+    await loadComponents();
+  } catch (error) {
+    console.error('Error loading components:', error);
+  }
   
-  renderPublicEvents();
-  renderPublicUpdates();
-  renderPublicPubs();
-  renderSocialProof();
-  renderNetworkSlider();
-  renderTestimonials();
-  renderPartners();
-  renderFAQ();
+  // Render functions with error handling
+  try {
+    renderPublicEvents();
+  } catch (error) {
+    console.error('Error rendering events:', error);
+  }
+  
+  try {
+    renderPublicUpdates();
+  } catch (error) {
+    console.error('Error rendering updates:', error);
+  }
+  
+  try {
+    renderPublicPubs();
+  } catch (error) {
+    console.error('Error rendering publications:', error);
+  }
+  
+  try {
+    renderSocialProof();
+  } catch (error) {
+    console.error('Error rendering social proof:', error);
+  }
+  
+  try {
+    renderNetworkSlider();
+  } catch (error) {
+    console.error('Error rendering network slider:', error);
+  }
+  
+  try {
+    renderTestimonials();
+  } catch (error) {
+    console.error('Error rendering testimonials:', error);
+  }
+  
+  try {
+    renderPartners();
+  } catch (error) {
+    console.error('Error rendering partners:', error);
+  }
+  
+  try {
+    renderFAQ();
+  } catch (error) {
+    console.error('Error rendering FAQ:', error);
+  }
   
   // Global Search
-  if($("#searchTrigger")){
-    $("#searchTrigger").addEventListener("click", () => globalSearch.open());
+  try {
+    if($("#searchTrigger") && globalSearch && globalSearch.open){
+      $("#searchTrigger").addEventListener("click", () => globalSearch.open());
+    }
+  } catch (error) {
+    console.error('Error setting up global search:', error);
   }
 
   // Mobile Menu
@@ -868,12 +1256,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     }
   });
 
-  if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
-  if($("#openAuth")) $("#openAuth").addEventListener("click", openAuth);
-  if($("#openAuth2")) $("#openAuth2").addEventListener("click", openAuth);
-  if($("#closeAuth")) $("#closeAuth").addEventListener("click", closeAuth);
-  if($("#authOverlay")) $("#authOverlay").addEventListener("click", (e)=>{ if(e.target.id==="authOverlay") closeAuth(); });
-  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeAuth(); });
+  try {
+    if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
+    if($("#openAuth")) $("#openAuth").addEventListener("click", openAuth);
+    if($("#openAuth2")) $("#openAuth2").addEventListener("click", openAuth);
+    if($("#closeAuth")) $("#closeAuth").addEventListener("click", closeAuth);
+    if($("#authOverlay")) $("#authOverlay").addEventListener("click", (e)=>{ if(e.target.id==="authOverlay") closeAuth(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeAuth(); });
+  } catch (error) {
+    console.error('Error setting up auth handlers:', error);
+  }
 
   document.querySelectorAll(".tab").forEach(t=>{
     t.addEventListener("click", ()=>setTab(t.dataset.tab));

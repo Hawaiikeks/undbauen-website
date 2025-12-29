@@ -4,7 +4,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/base.css"/><link rel="stylesheet" href="../assets/css/app.css"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<link rel="stylesheet" href="../assets/css/base.css?v=2.0.0"/><link rel="stylesheet" href="../assets/css/app.css?v=2.0.0"/>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 </head><body data-page="compose">
 <header class="appHeader"><div class="container appHeaderInner">
 <a class="brand" href="dashboard.html">…undbauen</a>
@@ -30,7 +32,7 @@
     <label class="label" style="margin-top:10px">Betreff</label>
     <input class="input" id="subj" placeholder="Optional"/>
     <label class="label" style="margin-top:10px">Nachricht</label>
-    <textarea class="textarea" id="body"></textarea>
+    <textarea class="textarea" id="body" data-rich-text></textarea>
     <div class="err" id="sendErr"></div>
     <div style="margin-top:12px">
       <button class="btn primary" id="sendBtn">Senden</button>
@@ -39,7 +41,8 @@
   </div>
 </main>
 
-<script type="module" src="../assets/js/app.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+<script type="module" src="../assets/js/app.js?v=2.0.0"></script>
 </body></html>
 
 

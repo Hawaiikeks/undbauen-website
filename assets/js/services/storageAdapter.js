@@ -261,6 +261,74 @@ function seedEventsIfEmpty(){
       createdBy:"seed",
       status:"scheduled",
       eventThreadId:null
+    },
+    {
+      id:"evt_2026_03_15",
+      title:"Innovationsabend: Nachhaltiges Bauen & Circular Economy",
+      date:"2026-03-15",
+      time:"18:00",
+      durationMinutes:90,
+      location:"Digital (Teams)",
+      format:"Innovationsabend",
+      visibility:"public",
+      descriptionPublic:"Austausch zu nachhaltigen Baukonzepten und zirkulären Wirtschaftsmodellen im Bauwesen.",
+      descriptionMember:"Member-Details: Agenda, Speaker-Links, Vorabfragen, Materialien.",
+      capacity:50,
+      tags:["Nachhaltigkeit","Circular Economy","Green Building"],
+      createdBy:"seed",
+      status:"scheduled",
+      eventThreadId:null
+    },
+    {
+      id:"evt_2026_04_20",
+      title:"Panel: Digitalisierung in der Bauausführung",
+      date:"2026-04-20",
+      time:"18:00",
+      durationMinutes:90,
+      location:"Digital (Teams)",
+      format:"Panel",
+      visibility:"public",
+      descriptionPublic:"Diskussion über digitale Tools und Prozesse auf der Baustelle.",
+      descriptionMember:"Member-Details: Leitfragen, Miro-Link, Diskussionsstruktur.",
+      capacity:60,
+      tags:["Digitalisierung","Bauausführung","Construction Tech"],
+      createdBy:"seed",
+      status:"scheduled",
+      eventThreadId:null
+    },
+    {
+      id:"evt_2026_05_18",
+      title:"Innovationsabend: KI-gestützte Planungsprozesse",
+      date:"2026-05-18",
+      time:"18:00",
+      durationMinutes:90,
+      location:"Digital (Teams)",
+      format:"Innovationsabend",
+      visibility:"public",
+      descriptionPublic:"Erkundung von KI-Anwendungen in der Architektur- und Bauplanung.",
+      descriptionMember:"Member-Details: Agenda, Speaker-Links, Vorabfragen, Materialien.",
+      capacity:45,
+      tags:["KI","Künstliche Intelligenz","Planung","Innovation"],
+      createdBy:"seed",
+      status:"scheduled",
+      eventThreadId:null
+    },
+    {
+      id:"evt_2026_06_22",
+      title:"Panel: Nachhaltigkeit & Klimaneutrales Bauen",
+      date:"2026-06-22",
+      time:"18:00",
+      durationMinutes:90,
+      location:"Digital (Teams)",
+      format:"Panel",
+      visibility:"public",
+      descriptionPublic:"Diskussion über Strategien für klimaneutrales Bauen und nachhaltige Materialien.",
+      descriptionMember:"Member-Details: Leitfragen, Miro-Link, Diskussionsstruktur.",
+      capacity:55,
+      tags:["Nachhaltigkeit","Klimaneutral","Green Building","Panel"],
+      createdBy:"seed",
+      status:"scheduled",
+      eventThreadId:null
     }
   ];
   setJSON(K.events, seeded);
@@ -269,20 +337,191 @@ function seedEventsIfEmpty(){
 function seedForumIfEmpty(){
   const threads = getJSON(K.forumThreads, []);
   if(threads.length) return;
-  setJSON(K.forumThreads, []);
+  
+  // Seed example threads for each category
+  const seeded = [
+    {
+      id: uid("thr"),
+      categoryId: "cat_general",
+      title: "Willkommen im Forum!",
+      body: "Dies ist der erste Thread im Forum. Stelle Fragen, teile Ideen und tausche dich mit der Community aus!",
+      createdBy: "admin@undbauen.local",
+      createdAt: nowISO(),
+      lastActivityAt: nowISO(),
+      replyCount: 0,
+      views: 0,
+      pinned: true,
+      locked: false,
+      archived: false,
+      tags: ["Willkommen", "Community"]
+    },
+    {
+      id: uid("thr"),
+      categoryId: "cat_projects",
+      title: "BIM-Workflow Optimierung: Best Practices",
+      body: "Teilt eure Erfahrungen mit BIM-Workflows. Welche Tools und Prozesse funktionieren am besten?",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      lastActivityAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      replyCount: 3,
+      views: 45,
+      pinned: false,
+      locked: false,
+      archived: false,
+      tags: ["BIM", "Workflow", "Best Practices"]
+    },
+    {
+      id: uid("thr"),
+      categoryId: "cat_questions",
+      title: "Wie implementiere ich IDS in meinem Projekt?",
+      body: "Ich möchte IDS (Information Delivery Specification) in meinem aktuellen Projekt verwenden. Hat jemand Erfahrung damit?",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      lastActivityAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      replyCount: 2,
+      views: 28,
+      pinned: false,
+      locked: false,
+      archived: false,
+      tags: ["IDS", "Frage", "Implementierung"]
+    },
+    {
+      id: uid("thr"),
+      categoryId: "cat_events",
+      title: "Rückblick: Innovationsabend AEC Design Workflow",
+      body: "Diskussion zum letzten Innovationsabend. Was waren eure Highlights? Welche Learnings nehmt ihr mit?",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      lastActivityAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      replyCount: 5,
+      views: 67,
+      pinned: false,
+      locked: false,
+      archived: false,
+      tags: ["Event", "Rückblick", "Innovationsabend"]
+    }
+  ];
+  
+  setJSON(K.forumThreads, seeded);
 }
 
 function seedCMSIfEmpty(){
   const u = getJSON(K.cmsUpdates, []);
   if(!u.length){
+    const now = new Date();
+    const threeMonthsAgo = new Date(now);
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    
     setJSON(K.cmsUpdates, [
-      { id:uid("upd"), month:"2026-01", title:"Monatsupdate Januar 2026", intro:"Was im Netzwerk passiert ist – Teaser.", highlights:["Rückblick Januar","Nächste Themen","Call for topics"], memberBody:"Member-Text: ausführlicher Rückblick, Links, Ressourcen.", status:"published", visibility:"member", createdAt:nowISO(), updatedAt:nowISO() }
+      { 
+        id:uid("upd"), 
+        month:"2026-01", 
+        title:"Monatsupdate Januar 2026", 
+        intro:"Was im Netzwerk passiert ist – Teaser.", 
+        highlights:["Rückblick Januar","Nächste Themen","Call for topics"], 
+        memberBody:"Member-Text: ausführlicher Rückblick, Links, Ressourcen.", 
+        status:"published", 
+        visibility:"member", 
+        date: nowISO(),
+        createdAt:nowISO(), 
+        updatedAt:nowISO() 
+      },
+      { 
+        id:uid("upd"), 
+        month:"2025-12", 
+        title:"Monatsupdate Dezember 2025", 
+        intro:"Rückblick auf das Jahr 2025 und Ausblick auf 2026.", 
+        highlights:["Jahresrückblick","Neue Mitglieder","2026 Preview"], 
+        memberBody:"Member-Text: ausführlicher Jahresrückblick.", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString(),
+        createdAt:new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString(), 
+        updatedAt:new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString() 
+      },
+      { 
+        id:uid("upd"), 
+        month:"2025-11", 
+        title:"Monatsupdate November 2025", 
+        intro:"Innovationsabende und Netzwerk-Aktivitäten im November.", 
+        highlights:["Innovationsabend","Workshop","Netzwerk"], 
+        memberBody:"Member-Text: Details zu den Veranstaltungen.", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString(),
+        createdAt:new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString(), 
+        updatedAt:new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString() 
+      }
     ]);
   }
   const p = getJSON(K.cmsPubs, []);
   if(!p.length){
     setJSON(K.cmsPubs, [
-      { id:uid("pub"), title:"AEC Automation Patterns", abstract:"Kurzabstract (public).", tags:["Automation","AEC"], memberBody:"Member-Body: Volltext / Ressourcen.", downloadUrl:"", status:"published", visibility:"member", createdAt:nowISO(), updatedAt:nowISO() }
+      { 
+        id:uid("pub"), 
+        title:"AEC Automation Patterns", 
+        abstract:"Kurzabstract (public). Best Practices für die Automatisierung von AEC-Workflows.", 
+        tags:["Automation","AEC","BIM"], 
+        memberBody:"Member-Body: Volltext / Ressourcen.", 
+        downloadUrl:"", 
+        status:"published", 
+        visibility:"member", 
+        date: nowISO(),
+        createdAt:nowISO(), 
+        updatedAt:nowISO() 
+      },
+      { 
+        id:uid("pub"), 
+        title:"Nachhaltigkeit im Bauwesen", 
+        abstract:"Strategien für nachhaltiges Bauen und Kreislaufwirtschaft in der Architektur.", 
+        tags:["Nachhaltigkeit","Kreislaufwirtschaft","Architektur"], 
+        memberBody:"Member-Body: Volltext.", 
+        downloadUrl:"", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt:new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), 
+        updatedAt:new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() 
+      },
+      { 
+        id:uid("pub"), 
+        title:"Digitale Transformation im Bauwesen", 
+        abstract:"Wie neue Technologien die Bauindustrie verändern.", 
+        tags:["Digitalisierung","BIM","IoT"], 
+        memberBody:"Member-Body: Volltext.", 
+        downloadUrl:"", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt:new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), 
+        updatedAt:new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString() 
+      },
+      { 
+        id:uid("pub"), 
+        title:"IDS Practice: Information Delivery Specification im Bauwesen", 
+        abstract:"Praktische Anwendung von IDS für standardisierte Datenaustauschprozesse in BIM-Workflows.", 
+        tags:["IDS","BIM","Standards","Interoperabilität"], 
+        memberBody:"Member-Body: Volltext mit Best Practices, Code-Beispielen und Implementierungsleitfaden.", 
+        downloadUrl:"", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt:new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), 
+        updatedAt:new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() 
+      },
+      { 
+        id:uid("pub"), 
+        title:"Dynamo Optimization: Performance-Tuning für komplexe Workflows", 
+        abstract:"Strategien zur Optimierung von Dynamo-Skripten für effiziente Automatisierung in Revit und anderen AEC-Tools.", 
+        tags:["Dynamo","Optimization","Revit","Automation","Performance"], 
+        memberBody:"Member-Body: Volltext mit Optimierungstechniken, Code-Beispielen und Performance-Benchmarks.", 
+        downloadUrl:"", 
+        status:"published", 
+        visibility:"member", 
+        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt:new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), 
+        updatedAt:new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() 
+      }
     ]);
   }
 }
@@ -371,6 +610,12 @@ function getProfileByEmailPublic(email){
 }
 
 function updateMyProfile(payload){
+  // Ensure avatarType and avatarId are preserved
+  const current = getProfileByEmail(me()?.email);
+  if (current && !payload.avatarType) {
+    payload.avatarType = current.avatarType || 'initials';
+    payload.avatarId = current.avatarId || '';
+  }
   const u = me();
   if(!u) return { ok:false, error:"Not logged in" };
   const key = K.profilesPrefix + u.email.toLowerCase();
@@ -516,6 +761,35 @@ function bookEvent(eventId){
   return { ok:true };
 }
 
+function cancelBooking(eventId){
+  const u = me();
+  if(!u) return { ok:false, error:"Not logged in" };
+
+  const ev = getEvent(eventId);
+  if(!ev) return { ok:false, error:"Event nicht gefunden." };
+
+  const current = getParticipants(eventId);
+  const filtered = current.filter(p => p.userId !== u.id);
+  
+  if(filtered.length === current.length){
+    return { ok:false, error:"Du bist nicht für diesen Termin gebucht." };
+  }
+
+  setParticipants(eventId, filtered);
+
+  // remove from quick access list
+  const ids = getBookedIds(u.email);
+  const filteredIds = ids.filter(id => id !== eventId);
+  setBookedIds(u.email, filteredIds);
+
+  // system + notification + activity
+  addSystemMessage(u.email, { type:"booking_cancelled", title:"Buchung storniert", body:`Buchung storniert: ${ev.title} (${ev.date} ${ev.time})` });
+  addNotification(u.email, { type:"booking_cancelled", title:"Termin storniert", message: ev.title });
+  addActivity(u.id, { type:"event_cancelled", referenceType:"event", referenceId:eventId });
+
+  return { ok:true };
+}
+
 function saveEvent(eventId){
   const u = me(); if(!u) return { ok:false, error:"Not logged in" };
   const ids = getSavedIds(u.email);
@@ -584,12 +858,32 @@ function exportICSForBooked(){
 
 /* ========== FORUM ========== */
 function listForumCategories(){
-  return [
-    { id:"cat_general", title:"Allgemeine Diskussion", desc:"Ideen, Fragen, Austausch" },
-    { id:"cat_projects", title:"Projekte & Praxis", desc:"Use Cases, Erfahrungen, Workflows" },
-    { id:"cat_questions", title:"Fragen an die Community", desc:"Konkrete Fragen, schnelle Hilfe" },
-    { id:"cat_events", title:"Events & Rückblicke", desc:"Diskussion zu Terminen, Learnings, Materialien" }
+  const categories = [
+    { id:"cat_general", title:"Allgemeine Diskussion", desc:"Ideen, Fragen, Austausch", icon:"💬" },
+    { id:"cat_projects", title:"Projekte & Praxis", desc:"Use Cases, Erfahrungen, Workflows", icon:"🏗️" },
+    { id:"cat_questions", title:"Fragen an die Community", desc:"Konkrete Fragen, schnelle Hilfe", icon:"❓" },
+    { id:"cat_events", title:"Events & Rückblicke", desc:"Diskussion zu Terminen, Learnings, Materialien", icon:"📅" }
   ];
+  
+  // Erweitere Kategorien mit Statistiken
+  const threads = getForumThreads();
+  return categories.map(cat => {
+    const catThreads = threads.filter(t => t.categoryId === cat.id && !t.deleted && !t.archived);
+    const topicCount = catThreads.length;
+    const lastThread = catThreads
+      .sort((a, b) => (b.lastActivityAt || "").localeCompare(a.lastActivityAt || ""))[0];
+    
+    return {
+      ...cat,
+      topicCount,
+      lastThread: lastThread ? {
+        id: lastThread.id,
+        title: lastThread.title,
+        lastActivityAt: lastThread.lastActivityAt,
+        author: lastThread.createdBy
+      } : null
+    };
+  });
 }
 function getForumThreads(){ ensureSeeds(); return getJSON(K.forumThreads, []).filter(t => !t.deleted); }
 function saveForumThreads(arr){ setJSON(K.forumThreads, arr); }
@@ -625,10 +919,12 @@ function ensureEventThread(eventId){
     createdAt: nowISO(),
     lastActivityAt: nowISO(),
     replyCount:0,
+    views:0,
     pinned:false,
     locked:false,
     archived:false,
-    deleted:false
+    deleted:false,
+    tags:[], likes:[], watchedBy:[]
   });
   saveForumThreads(threads);
 
@@ -657,8 +953,9 @@ function createForumThread(categoryId, title, body){
   const t = {
     id:threadId, categoryId, type:"general", eventId:null,
     title:title.trim(), createdBy:u.email, createdAt:nowISO(),
-    lastActivityAt:nowISO(), replyCount:0,
-    pinned:false, locked:false, archived:false, deleted:false
+    lastActivityAt:nowISO(), replyCount:0, views:0,
+    pinned:false, locked:false, archived:false, deleted:false,
+    tags:[], likes:[], watchedBy:[]
   };
   threads.push(t);
   saveForumThreads(threads);
@@ -713,6 +1010,49 @@ function adminDeleteThread(threadId){
   return { ok:true };
 }
 
+// Forum Interactions
+function likeThread(threadId){
+  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const threads = getForumThreads();
+  const thread = threads.find(t => t.id === threadId);
+  if(!thread) return { ok:false, error:"Thread nicht gefunden" };
+  
+  if(!thread.likes) thread.likes = [];
+  const userEmail = u.email.toLowerCase();
+  const index = thread.likes.indexOf(userEmail);
+  
+  if(index > -1){
+    thread.likes.splice(index, 1);
+  } else {
+    thread.likes.push(userEmail);
+  }
+  
+  const updatedThreads = threads.map(t => t.id === threadId ? thread : t);
+  saveForumThreads(updatedThreads);
+  return { ok:true, liked: index === -1, likes: thread.likes.length };
+}
+
+function watchThread(threadId){
+  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const threads = getForumThreads();
+  const thread = threads.find(t => t.id === threadId);
+  if(!thread) return { ok:false, error:"Thread nicht gefunden" };
+  
+  if(!thread.watchedBy) thread.watchedBy = [];
+  const userEmail = u.email.toLowerCase();
+  const index = thread.watchedBy.indexOf(userEmail);
+  
+  if(index > -1){
+    thread.watchedBy.splice(index, 1);
+  } else {
+    thread.watchedBy.push(userEmail);
+  }
+  
+  const updatedThreads = threads.map(t => t.id === threadId ? thread : t);
+  saveForumThreads(updatedThreads);
+  return { ok:true, watching: index === -1 };
+}
+
 /* ========== MESSAGES ========== */
 function getThreads(email){ return getJSON(K.msgThreadsPrefix + email.toLowerCase(), []); }
 function setThreads(email, arr){ setJSON(K.msgThreadsPrefix + email.toLowerCase(), arr); }
@@ -736,7 +1076,7 @@ function ensureDMThread(emailA, emailB, subject=""){
   return threadId;
 }
 
-function sendMessage({to, subject="", body=""}){
+function sendMessage({to, subject="", body="", attachments=[]}){
   const u = me(); if(!u) return { ok:false, error:"Not logged in" };
   if(!to) return { ok:false, error:"Empfänger fehlt" };
 
@@ -889,12 +1229,14 @@ function adminDeleteEvent(eventId){
 
 /* CMS */
 function listUpdatesPublic(){
+  ensureSeeds(); // Ensure seed data exists
   const arr = getJSON(K.cmsUpdates, []);
-  return arr.filter(x=>x.status==="published").slice(0,3);
+  return arr.filter(x=>x.status==="published");
 }
 function listPublicationsPublic(){
+  ensureSeeds(); // Ensure seed data exists
   const arr = getJSON(K.cmsPubs, []);
-  return arr.filter(x=>x.status==="published").slice(0,6);
+  return arr.filter(x=>x.status==="published");
 }
 function listUpdatesMember(){
   if(!isLoggedIn()) return [];
@@ -940,13 +1282,14 @@ export const storageAdapter = {
   getProfileByEmail, getProfileByEmailPublic, updateMyProfile, listMembers, listMembersPublic,
 
   // events
-  listEvents, getEvent, bookEvent, saveEvent, bookingsCount,
+  listEvents, getEvent, bookEvent, cancelBooking, saveEvent, bookingsCount,
   getParticipants, ensureEventThread,
   exportICSForEvent, exportICSForBooked,
 
   // forum
-  listForumCategories, getForumThreads, getForumThread, getForumPosts,
+  listForumCategories, getForumThreads, saveForumThreads, getForumThread, getForumPosts,
   createForumThread, replyForumThread,
+  likeThread, watchThread,
   adminPinThread, adminLockThread, adminDeleteThread,
 
   // messages

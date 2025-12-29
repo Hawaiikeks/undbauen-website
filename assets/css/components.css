@@ -627,6 +627,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .filter-label{
@@ -634,12 +635,14 @@
   font-weight: 500;
   color: var(--text-secondary);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filter-chips{
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .filter-chip{

@@ -1,6 +1,8 @@
 // Service Worker für Offline-Cache und Performance
-const CACHE_NAME = 'undbauen-v1';
-const RUNTIME_CACHE = 'undbauen-runtime-v1';
+// Cache-Version für Development: Timestamp-basiert für automatisches Cache-Busting
+const CACHE_VERSION = 'v4'; // Updated version - force cache refresh
+const CACHE_NAME = `undbauen-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `undbauen-runtime-${CACHE_VERSION}`;
 
 // Assets die gecacht werden sollen
 const STATIC_ASSETS = [
@@ -54,62 +56,116 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network first, fallback to cache
+// Network First Strategy - für HTML/Documents
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(RUNTIME_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    throw error;
+  }
+}
+
+// Cache First Strategy - für statische Assets
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+  
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    // Return offline fallback if available
+    if (request.destination === 'document') {
+      const offlinePage = await caches.match('/index.html');
+      if (offlinePage) return offlinePage;
+    }
+    throw error;
+  }
+}
+
+// Stale-While-Revalidate Strategy - für CSS/JS mit Cache-Busting
+async function staleWhileRevalidate(request) {
+  const cachedResponse = await caches.match(request);
+  
+  const fetchPromise = fetch(request).then((networkResponse) => {
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(RUNTIME_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  }).catch(() => {
+    // Network failed, return cached if available
+    return cachedResponse;
+  });
+  
+  // Return cached immediately, update in background
+  return cachedResponse || fetchPromise;
+}
+
+// Fetch Event - Intelligente Cache-Strategie basierend auf Request-Typ
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
+  // Skip cross-origin requests (allow external APIs like dicebear)
+  const url = new URL(event.request.url);
+  if (!url.href.startsWith(self.location.origin) && !url.hostname.includes('dicebear.com') && !url.hostname.includes('fonts.googleapis.com') && !url.hostname.includes('fonts.gstatic.com')) {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+  const url = new URL(event.request.url);
+  const request = event.request;
 
-        // Otherwise fetch from network
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+  // Network First für HTML/Documents (immer frische Version)
+  if (request.destination === 'document' || url.pathname.endsWith('.html')) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
 
-            // Clone the response
-            const responseToCache = response.clone();
+  // Stale-While-Revalidate für CSS/JS (mit Cache-Busting Query-Params)
+  if (request.destination === 'style' || 
+      request.destination === 'script' ||
+      url.pathname.match(/\.(css|js)$/)) {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
 
-            // Cache the response
-            caches.open(RUNTIME_CACHE)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+  // Network First für externe Bilder (Dicebear Avatare, etc.)
+  if (url.hostname.includes('dicebear.com') || url.hostname.includes('api.dicebear.com')) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+  
+  // Cache First für statische Assets (Bilder, Fonts, etc.)
+  if (request.destination === 'image' ||
+      request.destination === 'font' ||
+      url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|woff|woff2|ttf|eot)$/)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
 
-            return response;
-          })
-          .catch(() => {
-            // If network fails and we have a cached version, return it
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // Otherwise return offline page or error
-            return new Response('Offline', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
-          });
-      })
-  );
+  // Default: Network First
+  event.respondWith(networkFirst(request));
 });
+
+
 
 
 

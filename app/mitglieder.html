@@ -4,7 +4,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/base.css"/><link rel="stylesheet" href="../assets/css/app.css"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<link rel="stylesheet" href="../assets/css/base.css?v=2.0.0"/><link rel="stylesheet" href="../assets/css/app.css?v=2.0.0"/>
 </head><body data-page="members">
 <header class="appHeader"><div class="container appHeaderInner">
 <a class="brand" href="dashboard.html">…undbauen</a>
@@ -26,10 +27,28 @@
   <div class="h2">Mitglieder</div>
   <p class="p">Suche nach Name/Headline/Skills/Interessen. Sichtbarkeit respektiert Privacy.</p>
   <input class="input" id="memSearch" placeholder="Suche…" style="margin-top:12px"/>
+  
+  <div class="network-filters" style="margin-top:16px">
+    <div class="filter-group">
+      <label class="filter-label">Filter:</label>
+      <div class="filter-chips" id="memberFilterChips">
+        <button class="filter-chip active" data-filter="all">Alle</button>
+      </div>
+    </div>
+    <div class="sort-group">
+      <label class="filter-label" for="memberSortSelect">Sortieren:</label>
+      <select class="select" id="memberSortSelect" aria-label="Sortierung">
+        <option value="newest">Neueste zuerst</option>
+        <option value="alphabetical">Alphabetisch</option>
+        <option value="activity">Aktivität</option>
+      </select>
+    </div>
+  </div>
+  
   <div class="grid grid-3" id="memGrid" style="margin-top:14px"></div>
 </main>
 
-<script type="module" src="../assets/js/app.js"></script>
+<script type="module" src="../assets/js/app.js?v=2.0.0"></script>
 </body></html>
 
 

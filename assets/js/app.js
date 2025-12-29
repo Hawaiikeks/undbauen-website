@@ -1,8 +1,24 @@
 import { api } from "./services/apiClient.js";
 import { breadcrumbs } from "./components/breadcrumbs.js";
+import { richTextEditor } from "./components/richTextEditor.js";
+import { chartRenderer } from "./components/chartRenderer.js";
+import { avatarGenerator } from "./components/avatarGenerator.js";
 
 const $ = (s)=>document.querySelector(s);
 const qs = new URLSearchParams(location.search);
+
+// Debounce utility for performance
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 function guard(){
   if(!api.isLoggedIn()){
@@ -75,13 +91,32 @@ function renderDashboard(){
   $("#cardNext").innerHTML = `
     <div class="kpiTitle">Nächster Termin</div>
     ${nextBooked ? `
-      <div class="kpiBody"><b>${nextBooked.title}</b><br/>${fmtDate(nextBooked)} · ${nextBooked.location}</div>
-      <div style="margin-top:10px"><a class="btn primary" href="termine.html">Zu Terminen</a></div>
+      <div class="kpiBody" style="cursor: pointer;" data-open-event="${nextBooked.id}"><b>${nextBooked.title}</b><br/>${fmtDate(nextBooked)} · ${nextBooked.location}</div>
+      <div style="margin-top:10px">
+        <button class="btn primary" data-open-event="${nextBooked.id}">Details anzeigen</button>
+      </div>
     ` : `
       <div class="kpiBody">Noch keine Buchung. Buche deinen nächsten Innovationsabend.</div>
       <div style="margin-top:10px"><a class="btn primary" href="termine.html">Termine ansehen</a></div>
     `}
   `;
+  
+  // Make booked event clickable
+  if(nextBooked){
+    $("#cardNext").querySelectorAll("[data-open-event]").forEach(btn => {
+      btn.addEventListener("click", () => openBookedEventModal(nextBooked.id));
+    });
+  }
+  
+  // Booked event modal wiring (if on dashboard page)
+  if($("#bookedEventClose")) {
+    $("#bookedEventClose").addEventListener("click", ()=>$("#bookedEventOverlay").style.display="none");
+  }
+  if($("#bookedEventOverlay")) {
+    $("#bookedEventOverlay").addEventListener("click",(e)=>{ 
+      if(e.target.id==="bookedEventOverlay") $("#bookedEventOverlay").style.display="none"; 
+    });
+  }
 
   // saved preview (MVP: derive from favorites or saved toggle - we used saved toggle in api.saveEvent)
   $("#cardSaved").innerHTML = `
@@ -129,6 +164,14 @@ function renderDashboard(){
       <span class="badge">${new Date(a.createdAt).toLocaleString()}</span>
     </div>`).join("") : `<div class="p">Noch keine Aktivitäten.</div>`}
   `;
+  
+  // Activity chart
+  if (window.Chart && $("#activityChart")) {
+    const allActivities = api.listActivity();
+    setTimeout(() => {
+      chartRenderer.renderActivityChart("activityChart", allActivities);
+    }, 100);
+  }
 }
 
 /* ========== EVENTS ========== */
@@ -169,7 +212,7 @@ function renderEvents(){
   wrap.querySelectorAll("[data-book]").forEach(b=>b.addEventListener("click", ()=>{
     const id = b.dataset.book;
     const res = api.bookEvent(id);
-    if(!res.ok) alert(res.error);
+    if(!res.ok) toast.error(res.error);
     renderEvents();
   }));
   wrap.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click", ()=>{
@@ -215,15 +258,249 @@ function openEventModal(eventId){
   $("#evOverlay").style.display="flex";
 }
 
+function openBookedEventModal(eventId){
+  const ev = api.getEvent(eventId);
+  if(!ev) return;
+  const u = api.me();
+  const isBooked = api.getParticipants(eventId).some(p=>p.email.toLowerCase()===u.email.toLowerCase());
+  if(!isBooked) return;
+  
+  const threadId = api.ensureEventThread(eventId);
+  const parts = api.getParticipants(eventId);
+  const count = parts.length;
+  
+  // Extract Teams link from location or use teamsLink field if available
+  const teamsLink = ev.teamsLink || (ev.location && ev.location.includes("Teams") ? extractTeamsLink(ev.location) : null);
+  
+  // Format time with duration
+  const endTime = ev.durationMinutes ? calculateEndTime(ev.time, ev.durationMinutes) : null;
+  
+  $("#bookedEventTitle").textContent = ev.title;
+  $("#bookedEventBody").innerHTML = `
+    <div class="metaLine">
+      <span class="badge blue">${ev.format}</span>
+    </div>
+    <div class="hr"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:600; margin-bottom:8px">📅 Datum & Uhrzeit</div>
+      <div class="p">${fmtDate(ev)}</div>
+      <div class="p">${ev.time}${endTime ? ` - ${endTime}` : ''}${ev.durationMinutes ? ` (${ev.durationMinutes} Min.)` : ''}</div>
+    </div>
+    <div class="hr"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:600; margin-bottom:8px">📍 Ort</div>
+      <div class="p">${ev.location || "Nicht angegeben"}</div>
+    </div>
+    ${teamsLink ? `
+    <div class="hr"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:600; margin-bottom:8px">🔗 Teams-Link</div>
+      <div style="margin-bottom:8px">
+        <a href="${teamsLink}" target="_blank" rel="noopener noreferrer" class="btn primary">Zu Teams beitreten</a>
+      </div>
+      <div class="small">${teamsLink}</div>
+    </div>
+    ` : ''}
+    ${ev.descriptionMember ? `
+    <div class="hr"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:600; margin-bottom:8px">Beschreibung</div>
+      <div class="p">${ev.descriptionMember}</div>
+    </div>
+    ` : ''}
+    <div class="hr"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:600; margin-bottom:8px">Teilnehmer</div>
+      <div class="p">${count}/${ev.capacity || "∞"}</div>
+    </div>
+    <div class="hr"></div>
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+      <button class="btn primary" data-ics-export="${eventId}">ICS Export</button>
+      <a class="btn" href="forum-thread.html?thread=${encodeURIComponent(threadId)}">Zum Event-Thread</a>
+      <button class="btn danger" data-cancel-booking="${eventId}">Buchung stornieren</button>
+    </div>
+  `;
+  
+  // Wire up buttons
+  const overlay = $("#bookedEventOverlay");
+  overlay.querySelector(`[data-ics-export="${eventId}"]`)?.addEventListener("click", () => {
+    api.exportICSForEvent(eventId);
+  });
+  
+  overlay.querySelector(`[data-cancel-booking="${eventId}"]`)?.addEventListener("click", () => {
+    if(confirm(`Möchtest du die Buchung für "${ev.title}" wirklich stornieren?`)){
+      const res = api.cancelBooking(eventId);
+      if(res.ok){
+        alert("Buchung erfolgreich storniert.");
+        overlay.style.display = "none";
+        renderDashboard();
+      } else {
+        alert(res.error || "Fehler beim Stornieren.");
+      }
+    }
+  });
+  
+  overlay.style.display = "flex";
+}
+
+function extractTeamsLink(location){
+  // Try to extract Teams link from location string
+  // This is a simple implementation - can be enhanced
+  const match = location.match(/(https?:\/\/[^\s]+)/);
+  return match ? match[1] : null;
+}
+
+function calculateEndTime(startTime, durationMinutes){
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const start = new Date();
+  start.setHours(hours, minutes, 0, 0);
+  const end = new Date(start.getTime() + durationMinutes * 60000);
+  return `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`;
+}
+
 /* ========== FORUM ========== */
 function renderForum(){
-  const cats = api.listForumCategories();
-  $("#catGrid").innerHTML = cats.map(c=>`
-    <a class="card" href="forum-kategorie.html?cat=${encodeURIComponent(c.id)}" style="padding:16px">
-      <div style="font-weight:900">${c.title}</div>
-      <p class="p" style="margin-top:6px">${c.desc}</p>
+  // Show loading state
+  const catGrid = $("#catGrid");
+  if (!catGrid) return;
+  
+  catGrid.innerHTML = '<div class="p-xl text-center text-muted">Lade Forum...</div>';
+  
+  setTimeout(() => {
+    const cats = api.listForumCategories();
+    $("#catGrid").innerHTML = cats.map(c=>{
+    const lastThreadInfo = c.lastThread ? `
+      <div class="small" style="margin-top:8px; color:var(--text-secondary)">
+        <div>Letzter Thread: <strong>${c.lastThread.title.length > 40 ? c.lastThread.title.substring(0, 40) + '...' : c.lastThread.title}</strong></div>
+        <div style="margin-top:4px">${new Date(c.lastThread.lastActivityAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+      </div>
+    ` : '<div class="small" style="margin-top:8px; color:var(--text-muted)">Noch keine Threads</div>';
+    
+    return `
+    <a class="card forum-category-card" href="forum-kategorie.html?cat=${encodeURIComponent(c.id)}" style="padding:20px; text-decoration:none; display:block">
+      <div style="display:flex; align-items:start; gap:12px">
+        <div style="font-size:32px; line-height:1">${c.icon || '💬'}</div>
+        <div style="flex:1">
+          <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px">
+            <div style="font-weight:900; font-size:18px">${c.title}</div>
+            <div class="badge" style="background:var(--primary); color:white">${c.topicCount} ${c.topicCount === 1 ? 'Thread' : 'Threads'}</div>
+          </div>
+          <p class="p" style="margin-top:4px; color:var(--text-secondary); font-size:14px">${c.desc}</p>
+          ${lastThreadInfo}
+        </div>
+      </div>
     </a>
-  `).join("");
+  `;
+  }).join("");
+  }, 300);
+}
+
+// Forum Search Function
+function performForumSearch(query) {
+  const searchLower = query.toLowerCase();
+  const threads = api.getForumThreads();
+  const results = [];
+  
+  // Search in threads
+  threads.forEach(thread => {
+    const titleMatch = thread.title.toLowerCase().includes(searchLower);
+    const categoryMatch = thread.categoryId?.toLowerCase().includes(searchLower);
+    
+    if (titleMatch || categoryMatch) {
+      results.push({
+        type: 'thread',
+        id: thread.id,
+        title: thread.title,
+        category: thread.categoryId,
+        match: titleMatch ? 'title' : 'category',
+        thread: thread
+      });
+    }
+    
+    // Search in posts
+    const posts = api.getForumPosts(thread.id);
+    posts.forEach(post => {
+      if (post.body && post.body.toLowerCase().includes(searchLower)) {
+        const bodyText = post.body.replace(/<[^>]*>/g, '').substring(0, 150);
+        results.push({
+          type: 'post',
+          id: post.id,
+          threadId: thread.id,
+          threadTitle: thread.title,
+          body: bodyText,
+          author: post.authorEmail,
+          match: 'body',
+          post: post
+        });
+      }
+    });
+  });
+  
+  // Display results
+  if (results.length > 0) {
+    $("#catGrid").style.display = "none";
+    $("#forumSearchResults").style.display = "block";
+    
+    // Highlight search term
+    const highlight = (text) => {
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<mark style="background:var(--primary); color:white; padding:2px 4px; border-radius:3px">$1</mark>');
+    };
+    
+    $("#forumSearchResultsList").innerHTML = `
+      <div class="small" style="color:var(--text-secondary); margin-bottom:12px">${results.length} Ergebnis${results.length === 1 ? '' : 'se'} gefunden</div>
+      ${results.map(r => {
+        if (r.type === 'thread') {
+          return `
+            <div class="card" style="padding:16px; margin-bottom:12px">
+              <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px">
+                <div>
+                  <div style="font-weight:600; font-size:16px; margin-bottom:4px">
+                    <a href="forum-thread.html?thread=${encodeURIComponent(r.id)}" style="text-decoration:none; color:var(--primary)">
+                      ${highlight(r.title)}
+                    </a>
+                  </div>
+                  <div class="small" style="color:var(--text-secondary)">
+                    Kategorie: ${r.category} · ${r.thread.replyCount || 0} Antworten
+                  </div>
+                </div>
+                <span class="badge">Thread</span>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="card" style="padding:16px; margin-bottom:12px">
+              <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px">
+                <div style="flex:1">
+                  <div class="small" style="color:var(--text-secondary); margin-bottom:4px">
+                    Post in: <a href="forum-thread.html?thread=${encodeURIComponent(r.threadId)}" style="color:var(--primary)">${r.threadTitle}</a>
+                  </div>
+                  <div style="font-size:14px; line-height:1.6; color:var(--text-primary)">
+                    ${highlight(r.body)}...
+                  </div>
+                  <div class="small" style="color:var(--text-secondary); margin-top:8px">
+                    Von: ${r.author.split('@')[0]}
+                  </div>
+                </div>
+                <span class="badge">Post</span>
+              </div>
+            </div>
+          `;
+        }
+      }).join('')}
+    `;
+  } else {
+    $("#catGrid").style.display = "none";
+    $("#forumSearchResults").style.display = "block";
+    $("#forumSearchResultsList").innerHTML = `
+      <div style="text-align:center; padding:48px 24px; color:var(--text-secondary)">
+        <div style="font-size:64px; margin-bottom:16px; opacity:0.5">🔍</div>
+        <div style="font-size:18px; font-weight:600; margin-bottom:8px; color:var(--text-primary)">Keine Ergebnisse gefunden</div>
+        <div style="font-size:14px">Versuche andere Suchbegriffe.</div>
+      </div>
+    `;
+  }
 }
 
 function renderForumCategory(){
@@ -232,26 +509,97 @@ function renderForumCategory(){
   $("#catTitle").textContent = cat?.title || "Kategorie";
   $("#catDesc").textContent = cat?.desc || "";
 
-  const threads = api.getForumThreads()
-    .filter(t=>t.categoryId===catId && !t.archived)
-    .sort((a,b)=>{
-      if(!!b.pinned !== !!a.pinned) return (b.pinned?1:0)-(a.pinned?1:0);
-      return (b.lastActivityAt||"").localeCompare(a.lastActivityAt||"") * -1;
+  let threads = api.getForumThreads()
+    .filter(t=>t.categoryId===catId && !t.archived);
+  
+  // Thread-Views initialisieren falls nicht vorhanden
+  threads.forEach(t => {
+    if (!t.views) t.views = 0;
+  });
+  
+  // Sortierung
+  const sortBy = new URLSearchParams(location.search).get('sort') || 'latest';
+  let sortedThreads = [...threads];
+  if (sortBy === 'popular') {
+    sortedThreads.sort((a, b) => {
+      const scoreA = (a.replyCount || 0) + (a.views || 0) + (a.likes?.length || 0);
+      const scoreB = (b.replyCount || 0) + (b.views || 0) + (b.likes?.length || 0);
+      return scoreB - scoreA;
     });
-
-  $("#threadList").innerHTML = threads.length ? threads.map(t=>`
-    <div class="listItem">
-      <div>
-        <div style="font-weight:900">${t.title} ${t.type==="event"?`<span class="badge blue">Event</span>`:""}</div>
-        <div class="small">Replies: ${t.replyCount||0} · Last: ${new Date(t.lastActivityAt).toLocaleString()}</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        ${t.pinned?`<span class="badge">pinned</span>`:""}
-        ${t.locked?`<span class="badge warn">locked</span>`:""}
-        <a class="btn" href="forum-thread.html?thread=${encodeURIComponent(t.id)}">Öffnen</a>
-      </div>
+  } else if (sortBy === 'replies') {
+    sortedThreads.sort((a, b) => (b.replyCount || 0) - (a.replyCount || 0));
+  } else {
+    // latest (default) - pinned first
+    sortedThreads.sort((a, b) => {
+      if (!!b.pinned !== !!a.pinned) return (b.pinned?1:0)-(a.pinned?1:0);
+      return (b.lastActivityAt||"").localeCompare(a.lastActivityAt||"");
+    });
+  }
+  
+  const author = (email) => {
+    const profile = api.getProfileByEmail(email);
+    return profile?.name || email.split("@")[0];
+  };
+  
+  $("#threadList").innerHTML = sortedThreads.length ? `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 6px">
+      <div class="small" style="color:var(--text-secondary)">${sortedThreads.length} ${sortedThreads.length === 1 ? 'Thread' : 'Threads'}</div>
+      <select class="select" id="threadSort" style="width:auto; font-size:13px">
+        <option value="latest" ${sortBy === 'latest' ? 'selected' : ''}>Neueste zuerst</option>
+        <option value="popular" ${sortBy === 'popular' ? 'selected' : ''}>Beliebteste</option>
+        <option value="replies" ${sortBy === 'replies' ? 'selected' : ''}>Meiste Antworten</option>
+      </select>
     </div>
-  `).join("") : `<div class="p" style="padding:14px">Keine Threads.</div>`;
+    ${sortedThreads.map(t=>{
+      const lastPostDate = new Date(t.lastActivityAt).toLocaleDateString('de-DE', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      return `
+      <div class="listItem forum-thread-item" style="padding:16px; ${t.pinned ? 'border-left:3px solid var(--primary);' : ''}">
+        <div style="flex:1">
+          <div style="display:flex; align-items:start; gap:8px; margin-bottom:8px">
+            <div style="font-weight:900; font-size:16px; flex:1">
+              ${t.pinned ? '<span style="color:var(--primary); margin-right:6px">📌</span>' : ''}
+              <a href="forum-thread.html?thread=${encodeURIComponent(t.id)}" style="text-decoration:none; color:var(--text-primary)">${t.title}</a>
+              ${t.type==="event"?`<span class="badge blue" style="margin-left:8px">Event</span>`:""}
+            </div>
+          </div>
+          <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:13px; color:var(--text-secondary)">
+            <span>👤 ${author(t.createdBy)}</span>
+            <span>💬 ${t.replyCount || 0} Antworten</span>
+            <span>👁️ ${t.views || 0} Aufrufe</span>
+            <span>🕒 ${lastPostDate}</span>
+          </div>
+          ${t.tags && t.tags.length > 0 ? `
+            <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap">
+              ${t.tags.map(tag => `<span class="badge" style="font-size:11px; padding:2px 8px">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center; margin-left:12px">
+          ${t.locked?`<span class="badge warn" title="Geschlossen">🔒</span>`:""}
+          <a class="btn small" href="forum-thread.html?thread=${encodeURIComponent(t.id)}">Öffnen</a>
+        </div>
+      </div>
+    `;
+    }).join("")}
+  ` : emptyState.noThreads("Keine Threads in dieser Kategorie.");
+  
+  // Empty state button handler
+  $("#emptyStateNewThread")?.addEventListener("click", () => {
+    $("#newThreadBtn")?.click();
+  });
+  
+  // Sortierung Event Listener
+  $("#threadSort")?.addEventListener("change", (e) => {
+    const newUrl = new URL(location.href);
+    newUrl.searchParams.set('sort', e.target.value);
+    location.href = newUrl.toString();
+  });
 
   // new thread modal
   const open = ()=>$("#thrOverlay").style.display="flex";
@@ -260,42 +608,226 @@ function renderForumCategory(){
   $("#thrClose").addEventListener("click", close);
   $("#thrOverlay").addEventListener("click",(e)=>{ if(e.target.id==="thrOverlay") close(); });
 
-  $("#thrCreate").addEventListener("click", ()=>{
+  $("#thrCreate").addEventListener("click", async ()=>{
     $("#thrErr").textContent = "";
     const title = $("#thrTitle").value.trim();
-    const body = $("#thrBody").value.trim();
-    if(!title || !body){ $("#thrErr").textContent="Titel und Text erforderlich."; return; }
-    const res = api.createForumThread(catId, title, body);
-    if(!res.ok){ $("#thrErr").textContent = res.error; return; }
-    window.location.href = `forum-thread.html?thread=${encodeURIComponent(res.threadId)}`;
+    
+    // Disable button to prevent double submission
+    const btn = $("#thrCreate");
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Wird erstellt...";
+    
+    try {
+      // Get content from Rich Text Editor if available, otherwise from textarea
+      let body = "";
+      const editorId = "thrBody";
+      
+      // Check if Quill editor exists for this textarea
+      if (richTextEditor.editors.has(editorId)) {
+        try {
+          // Get HTML content from Quill editor
+          body = richTextEditor.getContent(editorId).trim();
+          // Also check plain text to ensure there's actual content
+          const textOnly = richTextEditor.getText(editorId);
+          if (!textOnly || textOnly.trim().length === 0) {
+            body = "";
+          }
+        } catch (e) {
+          console.warn("Error getting content from editor:", e);
+          // Fallback to textarea
+          body = $("#thrBody").value.trim();
+        }
+      } else if ($("#thrBody")) {
+        // Fallback to textarea value if editor not initialized
+        body = $("#thrBody").value.trim();
+      }
+      
+      if(!title || !body){ 
+        $("#thrErr").textContent="Titel und Text erforderlich."; 
+        btn.disabled = false;
+        btn.textContent = originalText;
+        return; 
+      }
+      
+      const res = api.createForumThread(catId, title, body);
+      if(!res.ok){ 
+        $("#thrErr").textContent = res.error; 
+        btn.disabled = false;
+        btn.textContent = originalText;
+        return; 
+      }
+      
+      // Success - redirect
+      window.location.href = `forum-thread.html?thread=${encodeURIComponent(res.threadId)}`;
+    } catch (error) {
+      console.error("Error creating thread:", error);
+      $("#thrErr").textContent = "Fehler beim Erstellen des Threads. Bitte versuchen Sie es erneut.";
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
   });
+  
+  // Initialize Rich Text Editor for new thread after modal opens
+  $("#newThreadBtn")?.addEventListener("click", () => {
+    // Clear previous content
+    if ($("#thrTitle")) $("#thrTitle").value = "";
+    if ($("#thrBody")) $("#thrBody").value = "";
+    if ($("#thrErr")) $("#thrErr").textContent = "";
+    
+    // Try to initialize editor, but don't block if it fails
+    setTimeout(() => {
+      try {
+        if (window.Quill && $("#thrBody") && !richTextEditor.editors.has("thrBody")) {
+          richTextEditor.createEditor($("#thrBody"));
+        } else if (!window.Quill) {
+          // Try to load Quill, but don't wait for it
+          richTextEditor.init();
+          setTimeout(() => {
+            try {
+              if ($("#thrBody") && !richTextEditor.editors.has("thrBody") && window.Quill) {
+                richTextEditor.createEditor($("#thrBody"));
+              }
+            } catch (e) {
+              console.warn("Could not initialize Rich Text Editor, using plain textarea:", e);
+            }
+          }, 1000);
+        }
+      } catch (e) {
+        console.warn("Rich Text Editor initialization failed, using plain textarea:", e);
+        // Editor will fall back to plain textarea
+      }
+    }, 200);
+  });
+}
+
+// Process post content: handle spoilers, code blocks, mentions
+function processPostContent(content) {
+  if (!content) return '';
+  
+  // Process spoilers - convert data-spoiler to clickable spoilers
+  content = content.replace(/<span[^>]*data-spoiler="true"[^>]*class="spoiler-text"[^>]*>(.*?)<\/span>/gi, (match, text) => {
+    const id = `spoiler-${Math.random().toString(36).substr(2, 9)}`;
+    return `<span class="spoiler-text" id="${id}" onclick="this.classList.toggle('revealed')">${text}</span>`;
+  });
+  
+  // Process mentions - ensure they're clickable
+  content = content.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+  
+  return content;
 }
 
 function renderForumThread(){
   const threadId = qs.get("thread");
-  const t = api.getForumThread(threadId);
+  let t = api.getForumThread(threadId);
   if(!t){ $("#threadTitle").textContent="Nicht gefunden"; $("#postsWrap").innerHTML="<div class='p'>Thread existiert nicht.</div>"; return; }
+  
+  // Views erhöhen (nur einmal pro Session)
+  const viewKey = `thread_viewed_${threadId}`;
+  if (!sessionStorage.getItem(viewKey)) {
+    const threads = api.getForumThreads();
+    const updatedThreads = threads.map(thread => 
+      thread.id === threadId ? { ...thread, views: (thread.views || 0) + 1 } : thread
+    );
+    api.saveForumThreads(updatedThreads);
+    sessionStorage.setItem(viewKey, 'true');
+    t = updatedThreads.find(thread => thread.id === threadId);
+  }
 
   $("#threadTitle").textContent = t.title;
+  const u = api.me();
+  const isLiked = u && t.likes && t.likes.includes(u.email.toLowerCase());
+  const isWatching = u && t.watchedBy && t.watchedBy.includes(u.email.toLowerCase());
+  
   $("#threadMeta").innerHTML = `
-    <span class="badge">${t.categoryId}</span>
-    ${t.type==="event"?`<span class="badge blue">Event</span>`:""}
-    ${t.pinned?`<span class="badge">pinned</span>`:""}
-    ${t.locked?`<span class="badge warn">locked</span>`:""}
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+      <span class="badge">${t.categoryId}</span>
+      ${t.type==="event"?`<span class="badge blue">Event</span>`:""}
+      ${t.pinned?`<span class="badge">📌 Pinned</span>`:""}
+      ${t.locked?`<span class="badge warn">🔒 Locked</span>`:""}
+      <span class="badge" style="background:var(--bg)">👁️ ${t.views || 0} Aufrufe</span>
+      ${u ? `
+        <button class="btn small ${isLiked ? 'primary' : ''}" id="likeThreadBtn" title="Thread liken">
+          👍 ${t.likes?.length || 0}
+        </button>
+        <button class="btn small ${isWatching ? 'primary' : ''}" id="watchThreadBtn" title="Thread beobachten">
+          ${isWatching ? '👁️ Beobachten' : '👁️‍🗨️ Beobachten'}
+        </button>
+      ` : ''}
+    </div>
   `;
+  
+  // Like/Watch Buttons
+  if(u){
+    $("#likeThreadBtn")?.addEventListener("click", () => {
+      const res = api.likeThread(threadId);
+      if(res.ok){
+        location.reload();
+      }
+    });
+    
+    $("#watchThreadBtn")?.addEventListener("click", () => {
+      const res = api.watchThread(threadId);
+      if(res.ok){
+        location.reload();
+      }
+    });
+  }
 
   const posts = api.getForumPosts(threadId);
-  $("#postsWrap").innerHTML = posts.map(p=>`
-    <div class="msgBlock">
-      <div class="msgMeta">
-        <span><b>${p.authorEmail}</b> · ${p.type}</span>
-        <span>${new Date(p.createdAt).toLocaleString()}</span>
+  $("#postsWrap").innerHTML = posts.map(p=>{
+    const author = api.getProfileByEmail(p.authorEmail) || { name: p.authorEmail.split("@")[0], email: p.authorEmail };
+    const authorName = author.name || p.authorEmail.split("@")[0];
+    const initials = (authorName || p.authorEmail).split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
+    const postDate = new Date(p.createdAt).toLocaleDateString('de-DE', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    const isOriginalPoster = p.type === 'op' || p.type === 'original';
+    const authorProfile = api.getProfileByEmail(p.authorEmail);
+    const isAdminUser = authorProfile && api.isAdmin() && p.authorEmail === (api.me()?.email || '');
+    const userBadges = [];
+    if(isOriginalPoster) userBadges.push('<span class="badge" style="background:var(--primary); color:white; font-size:11px; margin-left:6px">OP</span>');
+    if(isAdminUser) userBadges.push('<span class="badge" style="background:var(--accent); color:white; font-size:11px; margin-left:6px">Admin</span>');
+    
+    return `
+    <div class="forum-post-card" id="post-${p.id}">
+      <div class="forum-post-header">
+        <div class="forum-post-author">
+          <div class="forum-post-avatar">${initials}</div>
+          <div class="forum-post-meta">
+            <div style="display:flex; align-items:center; gap:4px">
+              <div class="forum-post-author-name">${authorName}</div>
+              ${userBadges.join('')}
+            </div>
+            <div class="forum-post-date">${postDate} · ${p.type === 'op' || p.type === 'original' ? 'Original' : 'Antwort'}</div>
+          </div>
+        </div>
       </div>
-      <div class="p">${(p.deleted? "Beitrag wurde entfernt." : (p.body||"")).replace(/\n/g,"<br/>")}</div>
+      <div class="forum-post-content">${p.deleted ? "<p><em>Beitrag wurde entfernt.</em></p>" : processPostContent(p.body || "")}</div>
+      ${!p.deleted && u ? `
+        <div class="forum-post-actions">
+          <button class="forum-reply-button" data-quote-post="${p.id}" title="Zitieren">
+            💬 Zitieren
+          </button>
+          <button class="forum-reply-button" onclick="navigator.clipboard.writeText(window.location.href + '#post-' + '${p.id}')" title="Link kopieren">
+            🔗 Link
+          </button>
+          ${p.authorEmail === u.email ? `
+            <button class="forum-reply-button" style="color:var(--danger)" title="Eigenen Post löschen">
+              🗑️ Löschen
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
     </div>
-  `).join("");
+  `;
+  }).join("");
 
-  const u = api.me();
   if(api.isAdmin()){
     $("#adminThreadTools").style.display="flex";
     $("#pinBtn").textContent = t.pinned ? "Unpin" : "Pin";
@@ -308,12 +840,38 @@ function renderForumThread(){
 
   $("#replyBtn").addEventListener("click", ()=>{
     $("#replyErr").textContent="";
-    const body = $("#replyBody").value.trim();
+    // Get content from Rich Text Editor if available
+    let body = "";
+    if (window.Quill && $("#replyBody").value) {
+      body = $("#replyBody").value.trim();
+      const textOnly = richTextEditor.getText("replyBody");
+      if (!textOnly || textOnly.trim().length === 0) {
+        body = "";
+      }
+    } else {
+      body = $("#replyBody").value.trim();
+    }
     if(!body){ $("#replyErr").textContent="Text fehlt."; return; }
     const res = api.replyForumThread(threadId, body);
     if(!res.ok){ $("#replyErr").textContent = res.error; return; }
     location.reload();
   });
+  
+  // Initialize Rich Text Editor for reply - ensure it works
+  setTimeout(() => {
+    if (window.Quill) {
+      if ($("#replyBody") && !richTextEditor.editors.has("replyBody")) {
+        richTextEditor.createEditor($("#replyBody"));
+      }
+    } else {
+      richTextEditor.init();
+      setTimeout(() => {
+        if ($("#replyBody") && !richTextEditor.editors.has("replyBody")) {
+          richTextEditor.createEditor($("#replyBody"));
+        }
+      }, 1000);
+    }
+  }, 100);
 
   if(t.locked){
     $("#replyBody").disabled = true;
@@ -327,23 +885,97 @@ function renderMessages(){
   const u = api.me();
   let tab = "inbox";
   let activeThread = qs.get("thread") || null;
+  
+  // Filter State (aus LocalStorage laden)
+  let currentFilter = localStorage.getItem('msgFilter') || 'all';
+  
+  // Filter Toggle
+  $("#msgFilterToggle")?.addEventListener("click", () => {
+    const filters = $("#msgFilters");
+    if(filters){
+      filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+    }
+  });
+  
+  // Filter Chips Event Listeners
+  $("#msgFilterChips")?.querySelectorAll(".filter-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      // Update active state
+      $("#msgFilterChips").querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      currentFilter = chip.dataset.filter;
+      localStorage.setItem('msgFilter', currentFilter);
+      renderThreadList();
+    });
+  });
+  
+  // Set initial active filter
+  setTimeout(() => {
+    $("#msgFilterChips")?.querySelectorAll(".filter-chip").forEach(chip => {
+      if(chip.dataset.filter === currentFilter){
+        chip.classList.add("active");
+      }
+    });
+  }, 100);
 
-  const renderThreadList = ()=>{
+  const renderThreadList = (showLoading = false)=>{
+    if(showLoading && tab === "inbox"){
+      $("#threadList").innerHTML = skeleton.messageList(5);
+      setTimeout(() => {
+        renderThreadList(false);
+      }, 300);
+      return;
+    }
+    
     const q = ($("#msgSearch").value||"").toLowerCase().trim();
-    const threads = api.getThreads(u.email)
-      .filter(t => !q || (t.otherEmail+t.subject+t.lastSnippet).toLowerCase().includes(q))
+    let threads = api.getThreads(u.email);
+    
+    // Apply filter
+    if(tab === "inbox" && currentFilter !== 'all'){
+      if(currentFilter === 'unread'){
+        threads = threads.filter(t => t.unreadCount > 0);
+      } else if(currentFilter === 'relevant'){
+        // Relevant = threads with unread or recent activity
+        threads = threads.filter(t => t.unreadCount > 0 || 
+          (t.lastMessageAt && new Date(t.lastMessageAt) > new Date(Date.now() - 7*24*60*60*1000)));
+      } else if(currentFilter === 'contacts'){
+        // Contacts = threads with known users (simplified: all for now)
+        threads = threads;
+      } else if(currentFilter === 'favorites'){
+        // Favorites = threads marked as favorite (would need favorite field)
+        threads = threads.filter(t => t.favorite === true);
+      }
+    }
+    
+    // Apply search
+    threads = threads.filter(t => !q || (t.otherEmail+t.subject+t.lastSnippet).toLowerCase().includes(q))
       .sort((a,b)=> (b.lastMessageAt||"").localeCompare(a.lastMessageAt||""));
 
     $("#threadList").innerHTML = (tab==="inbox")
-      ? threads.map(t=>`
-        <div class="threadItem ${t.id===activeThread?"active":""}" data-thread="${t.id}">
+      ? threads.map(t=>{
+        const isUnread = t.unreadCount > 0;
+        const profile = api.getProfileByEmail(t.otherEmail);
+        const otherName = profile?.name || t.otherEmail.split("@")[0];
+        const lastDate = t.lastMessageAt ? new Date(t.lastMessageAt).toLocaleDateString('de-DE', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : '';
+        return `
+        <div class="threadItem ${t.id===activeThread?"active":""} ${isUnread ? "thread-unread" : ""}" data-thread="${t.id}">
           <div class="threadTop">
-            <div class="threadName">${t.otherEmail}</div>
-            <div class="badge ${t.unreadCount? "blue":""}">${t.unreadCount? `${t.unreadCount} neu`:""}</div>
+            <div class="threadName" style="${isUnread ? 'font-weight:600; color:var(--text-primary)' : ''}">${otherName}</div>
+            ${isUnread ? `<div class="badge blue" style="background:var(--primary); color:white">${t.unreadCount} neu</div>` : ''}
           </div>
-          <div class="threadSnippet"><b>${t.subject||"—"}</b><br/>${t.lastSnippet||""}</div>
+          <div class="threadSnippet" style="${isUnread ? 'font-weight:500' : ''}">
+            <b>${t.subject||"—"}</b><br/>
+            <span style="color:var(--text-secondary); font-size:13px">${t.lastSnippet||""}</span>
+            ${lastDate ? `<span style="color:var(--text-muted); font-size:12px; margin-left:8px">${lastDate}</span>` : ''}
+          </div>
         </div>
-      `).join("")
+      `;
+      }).join("")
       : api.listSystemMessages().map(m=>`
         <div class="threadItem" data-system="${m.id}">
           <div class="threadTop">
@@ -382,29 +1014,130 @@ function renderMessages(){
       <div id="msgList"></div>
       <div class="hr"></div>
       <label class="label">Antwort</label>
-      <textarea class="textarea" id="replyMsg"></textarea>
+      <textarea class="textarea" id="replyMsg" data-rich-text></textarea>
+      <div id="attachmentList"></div>
       <div class="err" id="msgErr"></div>
-      <div style="margin-top:10px">
+      <div style="margin-top:10px; display:flex; align-items:center; gap:8px">
         <button class="btn primary" id="sendReply">Senden</button>
+        <div id="typingIndicator" style="display:none; font-size:13px; color:var(--text-secondary); font-style:italic">
+          ${api.getProfileByEmail(api.getThreads(u.email).find(t=>t.id===threadId)?.otherEmail)?.name || 'Jemand'} schreibt...
+        </div>
       </div>
     `;
     right.querySelector("#msgList").innerHTML = msgs.map(m=>`
-      <div class="msgBlock">
+      <div class="msgBlock ${m.from===u.email?"msgBlock-own":""}">
         <div class="msgMeta">
           <span><b>${m.from===u.email?"Du":m.from}</b> → ${m.to===u.email?"Du":m.to}</span>
           <span>${new Date(m.createdAt).toLocaleString()}</span>
         </div>
-        <div class="p">${(m.body||"").replace(/\n/g,"<br/>")}</div>
+        <div class="p message-content">${m.body || ""}</div>
       </div>
     `).join("");
 
+    // Typing indicator
+    let typingTimeout;
+    right.querySelector("#replyMsg")?.addEventListener("input", () => {
+      // Simulate typing indicator (in real app, would send to server)
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        // Stop typing indicator
+      }, 1000);
+    });
+    
+    // File attachment
+    const attachmentInput = document.createElement('input');
+    attachmentInput.type = 'file';
+    attachmentInput.multiple = true;
+    attachmentInput.style.display = 'none';
+    document.body.appendChild(attachmentInput);
+    
+    let selectedAttachments = [];
+    attachmentInput.addEventListener('change', (e) => {
+      Array.from(e.target.files).forEach(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`Datei ${file.name} ist zu groß. Maximal 10MB erlaubt.`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          selectedAttachments.push({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            url: event.target.result
+          });
+          updateAttachmentList();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    function updateAttachmentList() {
+      const list = right.querySelector("#attachmentList");
+      if (list) {
+        if (selectedAttachments.length > 0) {
+          list.innerHTML = `
+            <div style="margin-top:8px; padding:8px; background:var(--bg); border-radius:6px">
+              <div style="font-size:13px; font-weight:600; margin-bottom:8px">Anhänge:</div>
+              ${selectedAttachments.map((att, idx) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px; margin-bottom:4px; background:var(--surface); border-radius:4px">
+                  <span style="font-size:12px">📎 ${att.name}</span>
+                  <button class="btn small" onclick="selectedAttachments.splice(${idx}, 1); updateAttachmentList();">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          list.innerHTML = '';
+        }
+      }
+    }
+    
     right.querySelector("#sendReply").addEventListener("click", ()=>{
-      const body = right.querySelector("#replyMsg").value.trim();
-      if(!body){ right.querySelector("#msgErr").textContent="Text fehlt."; return; }
+      let body = "";
+      if (window.Quill && $("#replyMsg").value) {
+        body = $("#replyMsg").value.trim();
+        const textOnly = richTextEditor.getText("replyMsg");
+        if (!textOnly || textOnly.trim().length === 0) {
+          body = "";
+        }
+      } else {
+        body = right.querySelector("#replyMsg").value.trim();
+      }
+      if(!body && selectedAttachments.length === 0){ 
+        right.querySelector("#msgErr").textContent="Text oder Anhang erforderlich."; 
+        return; 
+      }
       const other = api.getThreads(u.email).find(t=>t.id===threadId)?.otherEmail;
-      api.sendMessage({ to: other, subject: "Re: " + (api.getThreads(u.email).find(t=>t.id===threadId)?.subject||""), body });
+      api.sendMessage({ 
+        to: other, 
+        subject: "Re: " + (api.getThreads(u.email).find(t=>t.id===threadId)?.subject||""), 
+        body,
+        attachments: selectedAttachments
+      });
+      selectedAttachments = [];
       location.href = `nachrichten.html?thread=${encodeURIComponent(threadId)}`;
     });
+    
+    // Add attachment button
+    const attachBtn = document.createElement('button');
+    attachBtn.className = 'btn small';
+    attachBtn.textContent = '📎 Anhang';
+    attachBtn.style.marginLeft = '8px';
+    attachBtn.addEventListener('click', () => attachmentInput.click());
+    right.querySelector("#sendReply").parentNode.insertBefore(attachBtn, right.querySelector("#sendReply"));
+    
+    // Attachment list container
+    const attachmentList = document.createElement('div');
+    attachmentList.id = 'attachmentList';
+    right.querySelector("#sendReply").parentNode.insertBefore(attachmentList, right.querySelector("#sendReply"));
+    
+    // Initialize Rich Text Editor for reply
+    setTimeout(() => {
+      if (window.Quill && $("#replyMsg") && !richTextEditor.editors.has("replyMsg")) {
+        richTextEditor.createEditor($("#replyMsg"));
+      }
+    }, 100);
   };
 
   const openSystem = (id)=>{
@@ -448,20 +1181,97 @@ function renderCompose(){
     $("#sendErr").textContent="";
     const to = $("#toSelect").value;
     const subject = $("#subj").value.trim();
-    const body = $("#body").value.trim();
+    let body = "";
+    if (window.Quill && $("#body").value) {
+      body = $("#body").value.trim();
+      const textOnly = richTextEditor.getText("body");
+      if (!textOnly || textOnly.trim().length === 0) {
+        body = "";
+      }
+    } else {
+      body = $("#body").value.trim();
+    }
     if(!to){ $("#sendErr").textContent="Empfänger fehlt."; return; }
     if(!body){ $("#sendErr").textContent="Nachricht fehlt."; return; }
     const res = api.sendMessage({ to, subject, body });
     if(!res.ok){ $("#sendErr").textContent=res.error; return; }
     window.location.href = `nachrichten.html?thread=${encodeURIComponent(res.threadId)}`;
   });
+  
+  // Initialize Rich Text Editor for compose
+  setTimeout(() => {
+    if (window.Quill && $("#body") && !richTextEditor.editors.has("body")) {
+      richTextEditor.createEditor($("#body"));
+    }
+  }, 100);
 }
 
 /* ========== MEMBERS DIRECTORY ========== */
 function renderMembers(){
+  let activeFilter = "all";
+  let sortBy = "newest";
+  
+  // Collect all unique skills/interests for filter chips
+  const allMembers = api.listMembers("");
+  const allTags = new Set();
+  allMembers.forEach(m => {
+    (m.skills || []).forEach(s => allTags.add(s));
+    (m.interests || []).forEach(i => allTags.add(i));
+  });
+  const sortedTags = Array.from(allTags).sort();
+  
+  // Render filter chips
+  const filterChips = $("#memberFilterChips");
+  if (filterChips) {
+    filterChips.innerHTML = `
+      <button class="filter-chip active" data-filter="all">Alle</button>
+      ${sortedTags.slice(0, 20).map(tag => `
+        <button class="filter-chip" data-filter="${tag}">${tag}</button>
+      `).join('')}
+    `;
+    
+    filterChips.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        render();
+      });
+    });
+  }
+  
+  // Sort select
+  const sortSelect = $("#memberSortSelect");
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      sortBy = e.target.value;
+      render();
+    });
+  }
+  
   const render = ()=>{
     const q = ($("#memSearch").value||"").trim();
-    const members = api.listMembers(q);
+    let members = api.listMembers(q);
+    
+    // Apply filter
+    if (activeFilter !== "all") {
+      members = members.filter(p => 
+        (p.skills || []).includes(activeFilter) || 
+        (p.interests || []).includes(activeFilter)
+      );
+    }
+    
+    // Apply sort
+    if (sortBy === "alphabetical") {
+      members.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    } else if (sortBy === "activity") {
+      // Sort by activity (would need activity data)
+      members.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    } else {
+      // newest first (default)
+      members.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    }
+    
     $("#memGrid").innerHTML = members.map(p=>`
       <div class="card" style="padding:16px">
         <div style="display:flex;justify-content:space-between;gap:10px">
@@ -621,8 +1431,37 @@ function renderMyProfile(){
   $("#pWeb").value = p.links?.website||"";
   $("#pVis").checked = !!p.privacy?.visibleInDirectory;
   $("#pDM").checked = !!p.privacy?.allowDM;
+  
+  // Avatar selector
+  const avatarSelector = $("#avatarSelector");
+  if (avatarSelector) {
+    avatarSelector.innerHTML = `
+      <div class="avatar-option ${!p.avatarType || p.avatarType === 'initials' ? 'selected' : ''}" data-avatar-type="initials" data-avatar-id="">
+        <div style="width:64px;height:64px;margin:0 auto;">${avatarGenerator.generateInitialsAvatar(u.name || u.email, 64)}</div>
+        <div style="text-align:center;margin-top:8px;font-size:12px;">Initialen</div>
+      </div>
+      ${avatarGenerator.iconAvatars.map(icon => `
+        <div class="avatar-option ${p.avatarType === 'icon' && p.avatarId === icon.id ? 'selected' : ''}" 
+             data-avatar-type="icon" data-avatar-id="${icon.id}">
+          <div style="width:64px;height:64px;margin:0 auto;">${avatarGenerator.generateIconAvatar(icon.id, 64)}</div>
+          <div style="text-align:center;margin-top:8px;font-size:12px;">${icon.name}</div>
+        </div>
+      `).join('')}
+    `;
+    
+    avatarSelector.querySelectorAll('.avatar-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        avatarSelector.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+      });
+    });
+  }
 
   $("#saveProfile").addEventListener("click", ()=>{
+    const selectedAvatar = avatarSelector?.querySelector('.avatar-option.selected');
+    const avatarType = selectedAvatar?.dataset.avatarType || 'initials';
+    const avatarId = selectedAvatar?.dataset.avatarId || '';
+    
     $("#pErr").textContent=""; $("#pOk").textContent="";
     const res = api.updateMyProfile({
       headline: $("#pHeadline").value.trim(),
@@ -634,6 +1473,8 @@ function renderMyProfile(){
       lookingFor: $("#pSeek").value.trim(),
       links: { linkedin: $("#pLi").value.trim(), website: $("#pWeb").value.trim() },
       privacy: { visibleInDirectory: $("#pVis").checked, allowDM: $("#pDM").checked },
+      avatarType,
+      avatarId,
       completed: true
     });
     if(!res.ok){ $("#pErr").textContent=res.error; return; }
@@ -695,7 +1536,18 @@ function renderAdmin(){
       $("#adminLeft").querySelectorAll("[data-status]").forEach(b=>{
         b.addEventListener("click", ()=>{
           const id = b.dataset.status;
-          if(confirm("User blocken?")) api.adminSetUserStatus(id, "blocked"), location.reload();
+          confirmModal.show(
+            "User blocken?",
+            "User blocken",
+            "Blocken",
+            "Abbrechen"
+          ).then(confirmed => {
+            if(confirmed){
+              api.adminSetUserStatus(id, "blocked");
+              toast.success("User blockiert.");
+              location.reload();
+            }
+          });
         });
       });
     }
@@ -742,7 +1594,18 @@ function renderAdmin(){
       });
       $("#adminLeft").querySelectorAll("[data-del]").forEach(b=>{
         b.addEventListener("click", ()=>{
-          if(confirm("Event löschen (soft)?")) api.adminDeleteEvent(b.dataset.del), location.reload();
+          confirmModal.show(
+            "Event löschen (soft)?",
+            "Event löschen",
+            "Löschen",
+            "Abbrechen"
+          ).then(confirmed => {
+            if(confirmed){
+              api.adminDeleteEvent(b.dataset.del);
+              toast.success("Event gelöscht.");
+              location.reload();
+            }
+          });
         });
       });
     }
@@ -771,8 +1634,34 @@ function renderAdmin(){
         <div style="margin-top:12px"><button class="btn primary" id="addPub">+ Publikation</button></div>
       `;
 
-      $("#adminLeft").querySelectorAll("[data-delupd]").forEach(b=>b.addEventListener("click", ()=>{ if(confirm("Delete update?")) api.adminDeleteUpdate(b.dataset.delupd), location.reload(); }));
-      $("#adminRight").querySelectorAll("[data-delpub]").forEach(b=>b.addEventListener("click", ()=>{ if(confirm("Delete pub?")) api.adminDeletePublication(b.dataset.delpub), location.reload(); }));
+      $("#adminLeft").querySelectorAll("[data-delupd]").forEach(b=>b.addEventListener("click", ()=>{
+        confirmModal.show(
+          "Update löschen?",
+          "Update löschen",
+          "Löschen",
+          "Abbrechen"
+        ).then(confirmed => {
+          if(confirmed){
+            api.adminDeleteUpdate(b.dataset.delupd);
+            toast.success("Update gelöscht.");
+            location.reload();
+          }
+        });
+      }));
+      $("#adminRight").querySelectorAll("[data-delpub]").forEach(b=>b.addEventListener("click", ()=>{
+        confirmModal.show(
+          "Publikation löschen?",
+          "Publikation löschen",
+          "Löschen",
+          "Abbrechen"
+        ).then(confirmed => {
+          if(confirmed){
+            api.adminDeletePublication(b.dataset.delpub);
+            toast.success("Publikation gelöscht.");
+            location.reload();
+          }
+        });
+      }));
 
       $("#addUpd").addEventListener("click", ()=>{
         const month = prompt("Monat (YYYY-MM):","2026-02"); if(!month) return;
@@ -841,6 +1730,20 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   
   // Initialize breadcrumbs
   breadcrumbs.init();
+  
+  // Initialize Rich Text Editor
+  if (window.Quill) {
+    richTextEditor.init();
+  } else {
+    // Wait for Quill to load
+    const checkQuill = setInterval(() => {
+      if (window.Quill) {
+        clearInterval(checkQuill);
+        richTextEditor.init();
+      }
+    }, 100);
+    setTimeout(() => clearInterval(checkQuill), 5000); // Timeout after 5 seconds
+  }
   
   // Lazy-load onboarding for new users
   const onboardingCompleted = localStorage.getItem('onboardingCompleted');
