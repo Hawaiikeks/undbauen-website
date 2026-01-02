@@ -194,3 +194,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Die Sektion "Der monatliche Innovationsabend" von der Startseite (`index.html`) entfernt.
 - Die separate Detailseite `innovationsabend.html` bleibt erhalten und ist weiterhin über die "Details"-Buttons im Mixed Feed erreichbar.
 
+**Prompt 26:**
+> Hebe Details hervor in Blau nicht Buchen
+
+**Aktion:**
+- Im Mixed Feed die Rollen der Buttons getauscht: "Details" ist nun der primäre Button (Blau), "Buchen" ist der sekundäre Button (Outline).
+- Reihenfolge angepasst: "Details" steht nun an erster Stelle.
+

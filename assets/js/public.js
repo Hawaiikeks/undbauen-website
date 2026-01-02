@@ -35,8 +35,8 @@ function renderMixedFeed(){
         </div>
         <div class="hr"></div>
         <div style="display:flex; gap:10px; margin-top:10px">
-          <button class="btn primary" data-open-auth>Buchen</button>
-          <a href="innovationsabend.html" class="btn secondary">Details</a>
+          <a href="innovationsabend.html" class="btn primary">Details</a>
+          <button class="btn secondary" data-open-auth>Buchen</button>
         </div>
       </div>
     `
