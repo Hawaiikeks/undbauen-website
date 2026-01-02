@@ -25,11 +25,14 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - `.gitignore` erstellt.
 - `README.md` und `ANLEITUNG.md` aktualisiert.
 
-**Prompt 3:**
-> ich erstelle einen branch wo ich meinen Progress in dem Repsitory speichere. inkl prompts.
+**Prompt 4:**
+> @ls_readme.md
 
 **Aktion:**
-- Branch `feature/node-js-conversion` erstellt.
-- `PROMPTS.md` (dieses Dokument) erstellt.
-- Alle Änderungen committet.
+- Header aktualisiert (Logo, Menü-Struktur "... & und", "&bau varianten" Login).
+- Theme-Toggle in den Footer verschoben.
+- Automatische System-Theme-Erkennung implementiert.
+- Three.js Hero-Szene erstellt (`hero-scene.html`) und per Iframe eingebunden.
+- 3D-Schriftzug "undBau" und Personen-Icons in Three.js implementiert.
+- Design-Richtlinien aus `ls_readme.md` beachtet.
 

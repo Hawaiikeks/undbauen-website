@@ -240,20 +240,40 @@ function renderNetworkSlider(){
 
 // Theme Toggle
 function initTheme(){
-  const savedTheme = localStorage.getItem('theme') || 
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
+  // Check localStorage first
+  let theme = localStorage.getItem('theme');
+  
+  // If no theme in localStorage, use system preference
+  if (!theme) {
+    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+  
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      const newTheme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      updateThemeIcon(newTheme);
+    }
+  });
 }
 
 function updateThemeIcon(theme){
   const btn = $("#themeToggle");
   if(btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  
+  // Inform hero scene iframe
+  const heroIframe = $(".hero-iframe");
+  if (heroIframe && heroIframe.contentWindow) {
+    heroIframe.contentWindow.postMessage({ type: 'theme-change', theme: theme }, '*');
+  }
 }
 
 function toggleTheme(){
-  const current = document.documentElement.getAttribute('data-theme') || 
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const current = document.documentElement.getAttribute('data-theme');
   const newTheme = current === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
