@@ -36,3 +36,13 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - 3D-Schriftzug "undBau" und Personen-Icons in Three.js implementiert.
 - Design-Richtlinien aus `ls_readme.md` beachtet.
 
+**Prompt 5:**
+> füge mouse controls hinzuu
+
+**Aktion:**
+- `OrbitControls` zur Three.js Hero-Szene hinzugefügt.
+- Zoom und Panning deaktiviert (passend für eine Hero-Sektion).
+- Damping (Trägheit) für weichere Bewegungen aktiviert.
+- Vertikale Rotation eingeschränkt, um den Fokus auf dem Schriftzug zu halten.
+- Auto-Rotation als dezente Hintergrundbewegung beibehalten.
+

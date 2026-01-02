@@ -23,8 +23,9 @@
         import * as THREE from 'three';
         import { FontLoader } from 'three/addons/loaders/FontLoader.js';
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        let scene, camera, renderer, textMesh, personIcons = [];
+        let scene, camera, renderer, textMesh, controls, personIcons = [];
         const clock = new THREE.Clock();
 
         init();
@@ -39,6 +40,18 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
+
+            // Orbit Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = false; // Zoom deaktivieren für Hero-Sektion
+            controls.enablePan = false;  // Panning deaktivieren
+            controls.autoRotate = true;  // Automatische Rotation
+            controls.autoRotateSpeed = 0.5;
+            // Vertikale Rotation einschränken
+            controls.minPolarAngle = Math.PI / 2.5; 
+            controls.maxPolarAngle = Math.PI / 1.8;
 
             // Lights
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -137,6 +150,8 @@
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
+
+            if (controls) controls.update();
 
             personIcons.forEach((icon, i) => {
                 icon.position.y = Math.sin(time + i) * 0.2;
