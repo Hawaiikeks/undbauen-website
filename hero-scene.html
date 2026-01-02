@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>undBau 3D Hero</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: transparent; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.156.1/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+        let scene, camera, renderer, clock;
+        let dots = [], undMesh, bauenMesh;
+        let currentTheme = 'light';
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 12;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0x2563EB, 2, 50);
+            pointLight.position.set(5, 5, 10);
+            scene.add(pointLight);
+
+            // Create Dots
+            const dotGeo = new THREE.SphereGeometry(0.2, 32, 32);
+            for (let i = 0; i < 3; i++) {
+                const dotMat = new THREE.MeshPhongMaterial({ 
+                    color: 0x2563EB,
+                    emissive: 0x2563EB,
+                    emissiveIntensity: 0.5
+                });
+                const dot = new THREE.Mesh(dotGeo, dotMat);
+                dot.position.x = -4.5 + (i * 0.8);
+                scene.add(dot);
+                dots.push(dot);
+            }
+
+            // Load Font and Create Text
+            const loader = new FontLoader();
+            loader.load('https://unpkg.com/three@0.156.1/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+                const textOptions = {
+                    font: font,
+                    size: 1.2,
+                    height: 0.3,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 0.05,
+                    bevelSize: 0.03,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                };
+
+                const textMat = new THREE.MeshPhongMaterial({ color: 0x0F172A });
+
+                // "und"
+                const undGeo = new TextGeometry('und', textOptions);
+                undMesh = new THREE.Mesh(undGeo, textMat);
+                undMesh.position.x = -1.5;
+                undMesh.position.y = -0.5;
+                scene.add(undMesh);
+
+                // "bauen"
+                const bauenGeo = new TextGeometry('bauen', textOptions);
+                bauenMesh = new THREE.Mesh(bauenGeo, textMat);
+                bauenMesh.position.x = 2;
+                bauenMesh.position.y = -0.5;
+                scene.add(bauenMesh);
+                
+                updateTheme(currentTheme);
+            });
+
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Sync theme from parent
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'theme-change') {
+                    updateTheme(event.data.theme);
+                }
+            });
+
+            // Initial theme check
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('theme')) updateTheme(params.get('theme'));
+        }
+
+        function updateTheme(theme) {
+            currentTheme = theme;
+            const isDark = theme === 'dark';
+            const primaryColor = isDark ? 0x3B82F6 : 0x2563EB;
+            const textColor = isDark ? 0xE5E7EB : 0x0F172A;
+
+            dots.forEach(dot => {
+                dot.material.color.setHex(primaryColor);
+                dot.material.emissive.setHex(primaryColor);
+            });
+
+            if (undMesh) undMesh.material.color.setHex(textColor);
+            if (bauenMesh) bauenMesh.material.color.setHex(textColor);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            // Dots Animation
+            dots.forEach((dot, i) => {
+                dot.position.y = Math.sin(time * 2 + i * 0.5) * 0.3;
+                dot.material.emissiveIntensity = 0.5 + Math.sin(time * 3 + i) * 0.5;
+            });
+
+            // Text Animation
+            if (undMesh) {
+                undMesh.position.y = -0.5 + Math.sin(time * 1.5) * 0.2;
+                undMesh.rotation.z = Math.sin(time * 0.5) * 0.05;
+            }
+            if (bauenMesh) {
+                bauenMesh.position.y = -0.5 + Math.cos(time * 1.5) * 0.2;
+                bauenMesh.rotation.z = Math.cos(time * 0.5) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
+

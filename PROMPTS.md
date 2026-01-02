@@ -87,3 +87,17 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Das Ampersand (`&`) vom "Bauen"-Button im Header entfernt.
 
+**Prompt 12:**
+> stelle die aktuelle text Animation ... und bauen als 3d mit three js dar
+
+**Aktion:**
+- Three.js 3D-Animation in `hero-scene.html` erstellt.
+- Iframe in `index.html` wiederhergestellt und auf `hero-scene.html` gesetzt.
+
+**Prompt 13:**
+> entferne den netzwerk part mit den steckbriefen
+
+**Aktion:**
+- Die Sektion "Das Netzwerk" (Slider mit Profilen) aus der `index.html` entfernt.
+- Den Link "Netzwerk" aus der Navigationsleiste entfernt.
+
