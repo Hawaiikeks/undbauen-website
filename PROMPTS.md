@@ -201,3 +201,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Im Mixed Feed die Rollen der Buttons getauscht: "Details" ist nun der primäre Button (Blau), "Buchen" ist der sekundäre Button (Outline).
 - Reihenfolge angepasst: "Details" steht nun an erster Stelle.
 
+**Prompt 27:**
+> im Header Innovationsabend anstelle von aktive Formate
+
+**Aktion:**
+- Den Navigationslink im Hauptmenü und im Dropdown von "Aktive Formate" in "Innovationsabend" geändert.
+
