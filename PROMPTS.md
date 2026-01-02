@@ -273,3 +273,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Die Farbe des 3D-Textes ("und", "bauen") auf die Primärfarbe (Blau) gesetzt.
 - `emissive` Eigenschaften und eine pulsierende Animation für die Leuchtintensität des Textes hinzugefügt, passend zu den drei Punkten.
 
+**Prompt 37:**
+> Lade die Version update ls hoch
+
+**Aktion:**
+- Alle aktuellen Änderungen (Member Socials, "Über uns"-Sektion, 3D-Leuchteffekte) gestaged.
+- Commit mit der Nachricht "update ls" erstellt.
+- Änderungen in den Remote-Branch `feature/node-js-conversion` gepusht.
+
