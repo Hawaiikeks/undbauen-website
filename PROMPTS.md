@@ -74,3 +74,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Logo auf das reine Dreieck (SVG) reduziert.
 - Größe des Logos im Header leicht erhöht (32px), um ohne Text präsent zu sein.
 
+**Prompt 10:**
+> nur & und im header und vor &Bauen schieben
+
+**Aktion:**
+- Den Menüpunkt "... & und" in "& und" umbenannt.
+- Den Menüpunkt "& und" in der Navigation nach hinten verschoben, sodass er nun direkt vor dem "&Bauen"-Button steht.
+
