@@ -34,8 +34,9 @@ function renderMixedFeed(){
           <span>⏰ ${ev.time}</span>
         </div>
         <div class="hr"></div>
-        <div style="margin-top:10px">
+        <div style="display:flex; gap:10px; margin-top:10px">
           <button class="btn primary" data-open-auth>Buchen</button>
+          <a href="innovationsabend.html" class="btn secondary">Details</a>
         </div>
       </div>
     `

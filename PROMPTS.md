@@ -177,3 +177,13 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Die Sektion "Termine & Updates" in "Aktive Formate" umbenannt.
 - Alle Navigationslinks (Hauptmenü und Dropdown) entsprechend angepasst.
 
+**Prompt 24:**
+> erstelle eine Karte für den Innovationsabend in einer eigenen Datei.
+> verlinkung von diesem Inhalt zu diesem: Der monatliche Innovationsabend ... Und zu dieser Übersicht
+
+**Aktion:**
+- Neue Datei `innovationsabend.html` als Detailseite erstellt.
+- In `assets/js/public.js` einen "Details"-Button zu den Event-Karten hinzugefügt, der auf die neue Seite verlinkt.
+- In `index.html` einen Button "Alle Details zum Innovationsabend" in der entsprechenden Sektion ergänzt.
+- In `innovationsabend.html` eine Navigation zurück zur Hauptseite ("Zurück zur Übersicht") implementiert.
+
