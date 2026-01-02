@@ -81,3 +81,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Den Menüpunkt "... & und" in "& und" umbenannt.
 - Den Menüpunkt "& und" in der Navigation nach hinten verschoben, sodass er nun direkt vor dem "&Bauen"-Button steht.
 
+**Prompt 11:**
+> Bauen ohne & im header
+
+**Aktion:**
+- Das Ampersand (`&`) vom "Bauen"-Button im Header entfernt.
+
