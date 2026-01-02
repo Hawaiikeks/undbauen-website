@@ -101,3 +101,12 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Die Sektion "Das Netzwerk" (Slider mit Profilen) aus der `index.html` entfernt.
 - Den Link "Netzwerk" aus der Navigationsleiste entfernt.
 
+**Prompt 14:**
+> verschiebe Thmen & Inhalte in Publikationen (öffentliche Inhalte)
+
+**Aktion:**
+- Die Sektion "Themen & Inhalte" entfernt.
+- Die Inhalte (Digitale Transformation, Nachhaltigkeit etc.) in die Sektion "Publikationen" integriert.
+- Die Sektion "Publikationen" in "Themen & Publikationen" umbenannt.
+- Navigationslink im Dropdown entsprechend angepasst.
+
