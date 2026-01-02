@@ -207,3 +207,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Den Navigationslink im Hauptmenü und im Dropdown von "Aktive Formate" in "Innovationsabend" geändert.
 
+**Prompt 28:**
+> füge diesen Text mit ein: Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Querdenkern der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen. [für ein nachhaltiges Arbeiten im Baugewerbe] …undbauen ist mehr als ein Netzwerk. Es ist eine Haltung.
+
+**Aktion:**
+- Das Mission-Statement in der `index.html` aktualisiert und den Satz "für ein nachhaltiges Arbeiten im Baugewerbe" als hervorgehobenen Absatz hinzugefügt.
+
