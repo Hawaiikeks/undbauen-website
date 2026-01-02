@@ -187,3 +187,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - In `index.html` einen Button "Alle Details zum Innovationsabend" in der entsprechenden Sektion ergänzt.
 - In `innovationsabend.html` eine Navigation zurück zur Hauptseite ("Zurück zur Übersicht") implementiert.
 
+**Prompt 25:**
+> entferne diesen Abschnitt behalte aber das extra fenster bei
+
+**Aktion:**
+- Die Sektion "Der monatliche Innovationsabend" von der Startseite (`index.html`) entfernt.
+- Die separate Detailseite `innovationsabend.html` bleibt erhalten und ist weiterhin über die "Details"-Buttons im Mixed Feed erreichbar.
+
