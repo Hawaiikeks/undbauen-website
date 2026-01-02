@@ -238,3 +238,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Den Untertitel der Themen-Sektion in der `index.html` aktualisiert und den Hinweis zur persönlichen Verifikation hinzugefügt.
 
+**Prompt 33:**
+> Kontakt Linktre zu den Socials (Verifiziert+Eigene Socials)
+
+**Aktion:**
+- Die Kontakt-Sektion in einen "Linktree"-Stil umgewandelt.
+- Links für verifizierte Kanäle (LinkedIn, Instagram) und eigene Socials hinzugefügt.
+- Design mit Badges und breiten Buttons für mobile-freundliche Navigation optimiert.
+
