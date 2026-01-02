@@ -52,3 +52,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - `hero-scene.html` geleert. Die Three.js-Logik wurde entfernt, das Iframe-Grundgerüst bleibt jedoch erhalten.
 
+**Prompt 7:**
+> lade das iframe http://localhost:5173/
+
+**Aktion:**
+- Die `src` des Iframes in `index.html` auf `http://localhost:5173/` geändert.
+
