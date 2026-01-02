@@ -455,6 +455,7 @@ p, .p{
   height: 100%;
   z-index: 1;
   border: none;
+  pointer-events: auto; /* Interaktion mit der 3D-Szene erlauben */
 }
 
 
@@ -519,7 +520,7 @@ p, .p{
   height: 100%;
   background: linear-gradient(to bottom, rgba(247, 249, 252, 0.1), rgba(247, 249, 252, 0.3));
   z-index: 1;
-  pointer-events: none;
+  pointer-events: none; /* Mouse events an Hintergrund durchlassen */
 }
 
 [data-theme="dark"] .hero-overlay{
@@ -539,7 +540,7 @@ p, .p{
   align-items: center;
   text-align: center;
   color: var(--text-primary);
-  pointer-events: none;
+  pointer-events: none; /* Mouse events an Hintergrund durchlassen */
 }
 
 .hero-content h1{

@@ -110,3 +110,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Die Sektion "Publikationen" in "Themen & Publikationen" umbenannt.
 - Navigationslink im Dropdown entsprechend angepasst.
 
+**Prompt 15:**
+> vorderung soll mouse events durchlassen
+
+**Aktion:**
+- `pointer-events: none` explizit für `.hero-content` und `.hero-overlay` sichergestellt.
+- `pointer-events: auto` für `.hero-iframe` hinzugefügt, um Interaktion mit der Three.js-Szene zu ermöglichen.
+
