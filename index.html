@@ -47,15 +47,61 @@
   <main>
     <!-- Hero Section -->
     <section id="home" class="hero">
-      <!-- Three.js Scene via Iframe -->
-      <iframe src="http://localhost:5173/" class="hero-iframe" frameborder="0" scrolling="no"></iframe>
-      
+      <!-- Network Visual Background -->
+      <div class="hero-network-visual">
+        <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+              <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <!-- Nodes -->
+          <circle cx="200" cy="150" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="400" cy="120" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="600" cy="180" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="800" cy="140" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="1000" cy="160" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="150" cy="350" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="350" cy="380" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="550" cy="350" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="750" cy="370" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="950" cy="360" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="250" cy="550" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="450" cy="580" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="650" cy="550" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="850" cy="570" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="1050" cy="560" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="300" cy="700" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="500" cy="720" r="3" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="700" cy="690" r="2.5" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="900" cy="710" r="3" fill="rgba(255,255,255,0.4)"/>
+          <!-- Connections -->
+          <line x1="200" y1="150" x2="400" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="400" y1="120" x2="600" y2="180" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="600" y1="180" x2="800" y2="140" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="800" y1="140" x2="1000" y2="160" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="150" y1="350" x2="350" y2="380" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="350" y1="380" x2="550" y2="350" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="550" y1="350" x2="750" y2="370" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="750" y1="370" x2="950" y2="360" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="250" y1="550" x2="450" y2="580" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="450" y1="580" x2="650" y2="550" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="650" y1="550" x2="850" y2="570" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="850" y1="570" x2="1050" y2="560" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <line x1="200" y1="150" x2="150" y2="350" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="600" y1="180" x2="550" y2="350" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="1000" y1="160" x2="950" y2="360" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="350" y1="380" x2="450" y2="580" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="750" y1="370" x2="850" y2="570" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="500" y1="720" x2="450" y2="580" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <line x1="900" y1="710" x2="850" y2="570" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+        </svg>
+      </div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <h1>
-          <!-- The 3D text will be in the Three.js scene, 
-               but we keep the structure for SEO or fallback if needed -->
-          <div class="headline-wrapper" style="visibility: hidden;">
+          <div class="headline-wrapper">
             <span class="dots-container">
               <span class="dot dot-1"></span>
               <span class="dot dot-2"></span>

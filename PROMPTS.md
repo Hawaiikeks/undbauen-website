@@ -58,3 +58,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Die `src` des Iframes in `index.html` auf `http://localhost:5173/` geändert.
 
+**Prompt 8:**
+> entferne die iframe änderung wieder
+
+**Aktion:**
+- Iframe aus `index.html` entfernt.
+- Ursprüngliches SVG-Netzwerk-Visual im Hero-Bereich wiederhergestellt.
+- CSS für die Hero-Sektion zurückgesetzt (Iframe-Styles entfernt, SVG-Styles wiederhergestellt).
+
