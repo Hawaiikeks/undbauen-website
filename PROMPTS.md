@@ -150,3 +150,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Navigation und Dropdown-Links entsprechend auf `#updates` (neu: "Termine & Updates") aktualisiert.
 - Struktur innerhalb der Sektion mit klaren Zwischenüberschriften verbessert.
 
+**Prompt 20:**
+> das es eine mischung der beiden Felder ist
+
+**Aktion:**
+- Die getrennten Grids für Termine und Updates in einen gemeinsamen "Mixed Feed" überführt.
+- JavaScript angepasst, um Termine und Updates abwechselnd in einem gemeinsamen Container (`#publicMixedFeed`) darzustellen.
+- Jeder Karte ein Badge ("Termin" oder "Update") hinzugefügt, um die Herkunft im Mix deutlich zu machen.
+

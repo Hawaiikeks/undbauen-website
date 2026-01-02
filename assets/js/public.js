@@ -13,46 +13,63 @@ function setTab(t){
   $("#authTitle").textContent = t==="login" ? "Login" : (t==="register" ? "Registrieren" : "Passwort vergessen");
 }
 
-function renderPublicEvents(){
-  const wrap = $("#publicEvents");
-  const evs = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3);
-  wrap.innerHTML = evs.map(ev => `
-    <div class="card" style="padding:16px">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <div style="font-weight:900">${ev.title}</div>
-        <span class="badge blue">${ev.format}</span>
-      </div>
-      <div class="metaLine" style="margin-top:8px">
-        <span>📅 ${ev.date}</span>
-        <span>⏰ ${ev.time}</span>
-      </div>
-      <div class="hr"></div>
-      <p class="p">Preview: keine Details / keine Aktionen.</p>
-      <div style="margin-top:10px">
-        <button class="btn primary" data-open-auth>Einloggen zum Buchen</button>
-      </div>
-    </div>
-  `).join("");
-  wrap.querySelectorAll("[data-open-auth]").forEach(b=>b.addEventListener("click", openAuth));
-}
+function renderMixedFeed(){
+  const wrap = $("#publicMixedFeed");
+  if(!wrap) return;
 
-function renderPublicUpdates(){
-  const wrap = $("#publicUpdates");
-  const items = api.listUpdatesPublic();
-  wrap.innerHTML = items.map(x => `
-    <div class="card" style="padding:16px">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <div style="font-weight:900">${x.title}</div>
-        <span class="badge">Member-only</span>
+  const evs = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3).map(ev => ({
+    type: 'event',
+    title: ev.title,
+    date: ev.date,
+    time: ev.time,
+    format: ev.format,
+    html: `
+      <div class="card" style="padding:16px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div style="font-weight:900">${ev.title}</div>
+          <span class="badge blue">Termin</span>
+        </div>
+        <div class="metaLine" style="margin-top:8px">
+          <span>📅 ${ev.date}</span>
+          <span>⏰ ${ev.time}</span>
+        </div>
+        <div class="hr"></div>
+        <p class="p">Innovationsabend: Einloggen zum Buchen.</p>
+        <div style="margin-top:10px">
+          <button class="btn primary" data-open-auth>Buchen</button>
+        </div>
       </div>
-      <p class="p" style="margin-top:8px">${x.intro}</p>
-      <div class="hr"></div>
-      <div class="chips">${(x.highlights||[]).slice(0,4).map(h=>`<span class="chip">${h}</span>`).join("")}</div>
-      <div style="margin-top:12px">
-        <button class="btn" data-open-auth>Als Mitglied lesen</button>
+    `
+  }));
+
+  const updates = api.listUpdatesPublic().map(x => ({
+    type: 'update',
+    date: x.createdAt || "", // For sorting if needed
+    html: `
+      <div class="card" style="padding:16px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div style="font-weight:900">${x.title}</div>
+          <span class="badge">Update</span>
+        </div>
+        <p class="p" style="margin-top:8px">${x.intro}</p>
+        <div class="hr"></div>
+        <div class="chips">${(x.highlights||[]).slice(0,3).map(h=>`<span class="chip">${h}</span>`).join("")}</div>
+        <div style="margin-top:12px">
+          <button class="btn" data-open-auth>Lesen</button>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `
+  }));
+
+  // Mix them: alternating or combined
+  const mixed = [];
+  const max = Math.max(evs.length, updates.length);
+  for(let i=0; i<max; i++){
+    if(evs[i]) mixed.push(evs[i].html);
+    if(updates[i]) mixed.push(updates[i].html);
+  }
+
+  wrap.innerHTML = mixed.join("");
   wrap.querySelectorAll("[data-open-auth]").forEach(b=>b.addEventListener("click", openAuth));
 }
 
@@ -283,10 +300,8 @@ function toggleTheme(){
 document.addEventListener("DOMContentLoaded", ()=>{
   initTheme();
   
-  renderPublicEvents();
-  renderPublicUpdates();
+  renderMixedFeed();
   renderPublicPubs();
-  renderNetworkSlider();
 
   if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
   if($("#openAuth")) $("#openAuth").addEventListener("click", openAuth);
