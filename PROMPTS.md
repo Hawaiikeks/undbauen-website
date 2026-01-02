@@ -66,3 +66,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Ursprüngliches SVG-Netzwerk-Visual im Hero-Bereich wiederhergestellt.
 - CSS für die Hero-Sektion zurückgesetzt (Iframe-Styles entfernt, SVG-Styles wiederhergestellt).
 
+**Prompt 9:**
+> Header kein Text nur dreieck als logo.
+
+**Aktion:**
+- Text "…undbauen" aus dem Header und Footer entfernt.
+- Logo auf das reine Dreieck (SVG) reduziert.
+- Größe des Logos im Header leicht erhöht (32px), um ohne Text präsent zu sein.
+
