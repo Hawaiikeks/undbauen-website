@@ -170,3 +170,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Das Icon bei "Zukunft gestalten" von 🔮 (Kristallkugel) auf 🧱 (Ziegel) geändert.
 
+**Prompt 23:**
+> Termine und Updates in aktive Formate umbenennen
+
+**Aktion:**
+- Die Sektion "Termine & Updates" in "Aktive Formate" umbenannt.
+- Alle Navigationslinks (Hauptmenü und Dropdown) entsprechend angepasst.
+
