@@ -8,19 +8,14 @@ Professionelle Netzwerk-/Community-Plattform im AEC-Umfeld.
 
 Die Website benötigt einen lokalen Server, da ES6-Module verwendet werden.
 
-**Windows (PowerShell):**
-```powershell
-python -m http.server 8000
-```
-
-**Windows (CMD):**
-```cmd
-python -m http.server 8000
-```
-
-**Alternative (Node.js):**
+**Node.js (empfohlen):**
 ```bash
-npx http-server -p 8000
+npm start
+```
+
+**Alternative (Python):**
+```bash
+python -m http.server 8000
 ```
 
 Dann öffne: `http://localhost:8000`

@@ -7,6 +7,11 @@ Der Server sollte bereits laufen. Öffne einfach im Browser:
 ## Option 2: Server neu starten
 Falls die Seite nicht lädt, starte den Server neu:
 
+### Mit Node.js:
+```bash
+npm start
+```
+
 ### Windows (PowerShell):
 ```powershell
 python -m http.server 8000
