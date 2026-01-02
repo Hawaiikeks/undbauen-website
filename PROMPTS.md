@@ -226,3 +226,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Eine neue CSS-Klasse `.highlighted-card` in `assets/css/public.css` definiert (primärer Rahmen, dezenter Hintergrund-Tint).
 - Die Event-Karten (Termine) im JavaScript so angepasst, dass sie diese Klasse automatisch erhalten.
 
+**Prompt 31:**
+> Panel: Offene Standards & Interoperabilität keine hervorhebung
+
+**Aktion:**
+- Die Logik im JavaScript verfeinert: Nur Termine vom Format "Innovationsabend" erhalten die Hervorhebung. Andere Formate wie das Panel bleiben im Standard-Design.
+

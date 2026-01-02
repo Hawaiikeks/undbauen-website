@@ -24,7 +24,7 @@ function renderMixedFeed(){
     time: ev.time,
     format: ev.format,
     html: `
-      <div class="card highlighted-card" style="padding:16px">
+      <div class="card ${ev.format === 'Innovationsabend' ? 'highlighted-card' : ''}" style="padding:16px">
         <div style="display:flex;justify-content:space-between;gap:10px">
           <div style="font-weight:900">${ev.title}</div>
           <span class="badge blue">Termin</span>
