@@ -206,6 +206,27 @@
 .metaLine{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:#ffffff; font-size:.92rem; }
 [data-theme="light"] .metaLine{ color:#000000; }
 
+.about-card {
+  padding: 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  height: 100%;
+}
+
+.about-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.about-card p {
+  color: var(--text-secondary);
+}
+
+.about-card strong {
+  color: var(--text-primary);
+}
+
 .legalGrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
 @media(max-width:900px){ .legalGrid{ grid-template-columns:1fr; } }
 .legalGrid .card{ 

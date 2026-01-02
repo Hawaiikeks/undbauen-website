@@ -95,7 +95,11 @@
                     bevelSegments: 5
                 };
 
-                const textMat = new THREE.MeshPhongMaterial({ color: 0x0F172A });
+                const textMat = new THREE.MeshPhongMaterial({ 
+                    color: 0x2563EB,
+                    emissive: 0x2563EB,
+                    emissiveIntensity: 0.5
+                });
 
                 // "und"
                 const undGeo = new TextGeometry('und', textOptions);
@@ -132,15 +136,20 @@
             currentTheme = theme;
             const isDark = theme === 'dark';
             const primaryColor = isDark ? 0x3B82F6 : 0x2563EB;
-            const textColor = isDark ? 0xE5E7EB : 0x0F172A;
 
             dots.forEach(dot => {
                 dot.material.color.setHex(primaryColor);
                 dot.material.emissive.setHex(primaryColor);
             });
 
-            if (undMesh) undMesh.material.color.setHex(textColor);
-            if (bauenMesh) bauenMesh.material.color.setHex(textColor);
+            if (undMesh) {
+                undMesh.material.color.setHex(primaryColor);
+                undMesh.material.emissive.setHex(primaryColor);
+            }
+            if (bauenMesh) {
+                bauenMesh.material.color.setHex(primaryColor);
+                bauenMesh.material.emissive.setHex(primaryColor);
+            }
         }
 
         function onWindowResize() {
@@ -165,10 +174,12 @@
             if (undMesh) {
                 undMesh.position.y = -0.5 + Math.sin(time * 1.5) * 0.2;
                 undMesh.rotation.z = Math.sin(time * 0.5) * 0.05;
+                undMesh.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.3;
             }
             if (bauenMesh) {
                 bauenMesh.position.y = -0.5 + Math.cos(time * 1.5) * 0.2;
                 bauenMesh.rotation.z = Math.cos(time * 0.5) * 0.05;
+                bauenMesh.material.emissiveIntensity = 0.3 + Math.cos(time * 2) * 0.3;
             }
 
             renderer.render(scene, camera);

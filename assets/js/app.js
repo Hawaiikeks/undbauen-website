@@ -534,6 +534,39 @@ function renderMember(){
         <p class="p" style="margin-top:8px">${(p.lookingFor||"—").replace(/\n/g,"<br/>")}</p>
       </div>
     </div>
+    
+    ${p.links && (p.links.linkedin || p.links.website || p.links.instagram || p.links.twitter) ? `
+    <div class="hr"></div>
+    <div style="max-width: 400px; margin: 1rem 0;">
+      <div style="font-weight:900; margin-bottom: 12px;">Work Socials</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        ${p.links.linkedin ? `
+          <a href="${p.links.linkedin.startsWith('http') ? p.links.linkedin : 'https://' + p.links.linkedin}" target="_blank" class="btn secondary" style="width: 100%; display: flex; justify-content: space-between;">
+            <span>LinkedIn</span>
+            <span>↗︎</span>
+          </a>
+        ` : ""}
+        ${p.links.website ? `
+          <a href="${p.links.website.startsWith('http') ? p.links.website : 'https://' + p.links.website}" target="_blank" class="btn secondary" style="width: 100%; display: flex; justify-content: space-between;">
+            <span>Website</span>
+            <span>↗︎</span>
+          </a>
+        ` : ""}
+        ${p.links.instagram ? `
+          <a href="${p.links.instagram.startsWith('http') ? p.links.instagram : 'https://instagram.com/' + p.links.instagram}" target="_blank" class="btn secondary" style="width: 100%; display: flex; justify-content: space-between;">
+            <span>Instagram</span>
+            <span>↗︎</span>
+          </a>
+        ` : ""}
+        ${p.links.twitter ? `
+          <a href="${p.links.twitter.startsWith('http') ? p.links.twitter : 'https://twitter.com/' + p.links.twitter}" target="_blank" class="btn secondary" style="width: 100%; display: flex; justify-content: space-between;">
+            <span>X / Twitter</span>
+            <span>↗︎</span>
+          </a>
+        ` : ""}
+      </div>
+    </div>
+    ` : ""}
   `;
   $("#favBtn").addEventListener("click", ()=>{ api.toggleFavorite("user", p.userId); $("#favBtn").textContent="⭐ Favorit ✓"; });
 }
@@ -560,6 +593,8 @@ function renderMyProfile(){
   $("#pSeek").value = p.lookingFor||"";
   $("#pLi").value = p.links?.linkedin||"";
   $("#pWeb").value = p.links?.website||"";
+  $("#pInsta").value = p.links?.instagram||"";
+  $("#pX").value = p.links?.twitter||"";
   $("#pVis").checked = !!p.privacy?.visibleInDirectory;
   $("#pDM").checked = !!p.privacy?.allowDM;
 
@@ -573,7 +608,12 @@ function renderMyProfile(){
       interests: parseTags($("#pInterests").value),
       offer: $("#pOffer").value.trim(),
       lookingFor: $("#pSeek").value.trim(),
-      links: { linkedin: $("#pLi").value.trim(), website: $("#pWeb").value.trim() },
+      links: { 
+        linkedin: $("#pLi").value.trim(), 
+        website: $("#pWeb").value.trim(),
+        instagram: $("#pInsta").value.trim(),
+        twitter: $("#pX").value.trim()
+      },
       privacy: { visibleInDirectory: $("#pVis").checked, allowDM: $("#pDM").checked },
       completed: true
     });

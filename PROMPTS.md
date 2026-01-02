@@ -246,3 +246,30 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Links für verifizierte Kanäle (LinkedIn, Instagram) und eigene Socials hinzugefügt.
 - Design mit Badges und breiten Buttons für mobile-freundliche Navigation optimiert.
 
+**Prompt 34:**
+> Member work socials
+
+**Aktion:**
+- Die Profil-Ansicht für Mitglieder (`renderMember`) um eine "Work Socials" Sektion erweitert.
+- Diese Sektion nutzt den Linktree-Stil mit Buttons für LinkedIn, Website, Instagram und X/Twitter.
+- Die Profileinstellungen (`profil.html` und `renderMyProfile`) um Eingabefelder für Instagram und X/Twitter ergänzt.
+- Das Speicher-Modell (`storageAdapter.js`) aktualisiert, um die neuen Social-Felder zu unterstützen.
+
+**Prompt 35:**
+> Über uns
+> Hier erklären wir uns. Wer wir sind und wie wir Arbeiten.
+
+**Aktion:**
+- Die "Über uns"-Sektion in `index.html` detailliert ausgearbeitet.
+- Ein Zwei-Spalten-Layout ("Wer wir sind" und "Wie wir arbeiten") implementiert.
+- Inhalte zu fachübergreifendem Dialog, Kuration und Vertrauensraum hinzugefügt.
+- Styling für `.about-card` in `public.css` ergänzt und Navigation im Header/Dropdown aktualisiert.
+
+**Prompt 36:**
+> Die Buchstaben sollen in der selben Farbe leuchten wie die drei Punkte
+
+**Aktion:**
+- Die Three.js-Szene in `hero-scene.html` aktualisiert.
+- Die Farbe des 3D-Textes ("und", "bauen") auf die Primärfarbe (Blau) gesetzt.
+- `emissive` Eigenschaften und eine pulsierende Animation für die Leuchtintensität des Textes hinzugefügt, passend zu den drei Punkten.
+

@@ -188,7 +188,9 @@ function seedExampleMembers(){
         lookingFor: member.lookingFor,
         links: {
           linkedin: member.linkedin,
-          website: member.website
+          website: member.website,
+          instagram: member.instagram || "",
+          twitter: member.twitter || ""
         },
         privacy: {
           visibleInDirectory: true,
@@ -217,7 +219,7 @@ function seedProfileIfMissing(user){
     interests: [],
     offer: "",
     lookingFor: "",
-    links: { linkedin:"", website:"" },
+    links: { linkedin:"", website:"", instagram:"", twitter:"" },
     privacy: { visibleInDirectory:true, allowDM:true },
     completed: false,
     updatedAt: nowISO()
