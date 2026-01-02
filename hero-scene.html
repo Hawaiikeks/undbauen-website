@@ -23,8 +23,9 @@
         import * as THREE from 'three';
         import { FontLoader } from 'three/addons/loaders/FontLoader.js';
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        let scene, camera, renderer, clock;
+        let scene, camera, renderer, clock, controls;
         let dots = [], undMesh, bauenMesh;
         let currentTheme = 'light';
 
@@ -40,6 +41,15 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
+
+            // Orbit Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            controls.minPolarAngle = Math.PI / 2.5;
+            controls.maxPolarAngle = Math.PI / 1.8;
 
             clock = new THREE.Clock();
 
@@ -137,6 +147,8 @@
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
+
+            if (controls) controls.update();
 
             // Dots Animation
             dots.forEach((dot, i) => {

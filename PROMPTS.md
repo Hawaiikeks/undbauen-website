@@ -117,3 +117,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - `pointer-events: none` explizit für `.hero-content` und `.hero-overlay` sichergestellt.
 - `pointer-events: auto` für `.hero-iframe` hinzugefügt, um Interaktion mit der Three.js-Szene zu ermöglichen.
 
+**Prompt 16:**
+> ich kann im viewer nicht drehen
+
+**Aktion:**
+- `OrbitControls` in `hero-scene.html` wiederhergestellt, die beim Revert der 3D-Animation verloren gegangen waren.
+- Damping aktiviert und Zoom/Pan deaktiviert für eine optimale Hero-User-Experience.
+
