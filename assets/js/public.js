@@ -34,7 +34,6 @@ function renderMixedFeed(){
           <span>⏰ ${ev.time}</span>
         </div>
         <div class="hr"></div>
-        <p class="p">Innovationsabend: Einloggen zum Buchen.</p>
         <div style="margin-top:10px">
           <button class="btn primary" data-open-auth>Buchen</button>
         </div>

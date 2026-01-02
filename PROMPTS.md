@@ -158,3 +158,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - JavaScript angepasst, um Termine und Updates abwechselnd in einem gemeinsamen Container (`#publicMixedFeed`) darzustellen.
 - Jeder Karte ein Badge ("Termin" oder "Update") hinzugefügt, um die Herkunft im Mix deutlich zu machen.
 
+**Prompt 21:**
+> Einlogen zum Buchen raus wo kahm das her?
+
+**Aktion:**
+- Den statischen Text "Innovationsabend: Einloggen zum Buchen." aus den Event-Karten im Mixed Feed entfernt.
+
