@@ -107,7 +107,7 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Die Sektion "Themen & Inhalte" entfernt.
 - Die Inhalte (Digitale Transformation, Nachhaltigkeit etc.) in die Sektion "Publikationen" integriert.
-- Die Sektion "Publikationen" in "Themen & Publikationen" umbenannt.
+- Die Sektion "Publikationen" in "Themen " umbenannt.
 - Navigationslink im Dropdown entsprechend angepasst.
 
 **Prompt 15:**
@@ -140,7 +140,7 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Hero-Untertitel in "PlanenBauenBetreiben" geändert.
 - Mission-Text aktualisiert.
-- Sektion "Themen & Publikationen" bereinigt: Manuelle Themen-Kacheln entfernt, sodass nur noch die dynamischen Publikations-Kacheln (`publicPubs`) angezeigt werden. Überschrift "Aktuelle Publikationen" entfernt.
+- Sektion "" bereinigt: Manuelle Themen-Kacheln entfernt, sodass nur noch die dynamischen Publikations-Kacheln (`publicPubs`) angezeigt werden. Überschrift "Aktuelle Publikationen" entfernt.
 
 **Prompt 19:**
 > lege die felder Kommende Termine und Moantsupdes zusammen
@@ -231,4 +231,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 
 **Aktion:**
 - Die Logik im JavaScript verfeinert: Nur Termine vom Format "Innovationsabend" erhalten die Hervorhebung. Andere Formate wie das Panel bleiben im Standard-Design.
+
+**Prompt 32:**
+> das Abändern: Wir setzen uns mit den Fragen auseinander, die unsere Branche bewegen. Zugang zum Teil nur durch persönliche Verifikation
+
+**Aktion:**
+- Den Untertitel der Themen-Sektion in der `index.html` aktualisiert und den Hinweis zur persönlichen Verifikation hinzugefügt.
 
