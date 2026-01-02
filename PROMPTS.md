@@ -213,3 +213,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Das Mission-Statement in der `index.html` aktualisiert und den Satz "für ein nachhaltiges Arbeiten im Baugewerbe" als hervorgehobenen Absatz hinzugefügt.
 
+**Prompt 29:**
+> entferne PlanenBauenBetreiben
+
+**Aktion:**
+- Den Untertitel "PlanenBauenBetreiben" aus der Hero-Sektion in der `index.html` entfernt.
+
