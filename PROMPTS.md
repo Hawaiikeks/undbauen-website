@@ -46,3 +46,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Vertikale Rotation eingeschränkt, um den Fokus auf dem Schriftzug zu halten.
 - Auto-Rotation als dezente Hintergrundbewegung beibehalten.
 
+**Prompt 6:**
+> mach daraus ein leeres iframe
+
+**Aktion:**
+- `hero-scene.html` geleert. Die Three.js-Logik wurde entfernt, das Iframe-Grundgerüst bleibt jedoch erhalten.
+
