@@ -164,3 +164,9 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Den statischen Text "Innovationsabend: Einloggen zum Buchen." aus den Event-Karten im Mixed Feed entfernt.
 
+**Prompt 22:**
+> Ziegel bei Zukunft gestalten.
+
+**Aktion:**
+- Das Icon bei "Zukunft gestalten" von 🔮 (Kristallkugel) auf 🧱 (Ziegel) geändert.
+
