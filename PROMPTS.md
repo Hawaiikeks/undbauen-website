@@ -131,3 +131,14 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Ein zusätzliches `PointLight` in der Three.js-Szene oben rechts positioniert (`10, 10, 5`).
 - Die Lichtfarbe auf Weiß gesetzt, um einen stärkeren Kontrast und Highlights auf den 3D-Objekten zu erzeugen.
 
+**Prompt 18:**
+> Wording zu Hoch PlanenBauenBetreiben
+> Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Querdenkern der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.
+> …undbauen ist mehr als ein Netzwerk. Es ist eine Haltung.
+> übernimm die Aktuelle Publikationen kachel für Themen & Puplikaitionen entferne dann den bereich. Aktuelle Publikationen
+
+**Aktion:**
+- Hero-Untertitel in "PlanenBauenBetreiben" geändert.
+- Mission-Text aktualisiert.
+- Sektion "Themen & Publikationen" bereinigt: Manuelle Themen-Kacheln entfernt, sodass nur noch die dynamischen Publikations-Kacheln (`publicPubs`) angezeigt werden. Überschrift "Aktuelle Publikationen" entfernt.
+
