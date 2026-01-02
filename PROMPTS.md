@@ -219,3 +219,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 **Aktion:**
 - Den Untertitel "PlanenBauenBetreiben" aus der Hero-Sektion in der `index.html` entfernt.
 
+**Prompt 30:**
+> Hebe die Kachel InnovationsAbend hervor
+
+**Aktion:**
+- Eine neue CSS-Klasse `.highlighted-card` in `assets/css/public.css` definiert (primärer Rahmen, dezenter Hintergrund-Tint).
+- Die Event-Karten (Termine) im JavaScript so angepasst, dass sie diese Klasse automatisch erhalten.
+

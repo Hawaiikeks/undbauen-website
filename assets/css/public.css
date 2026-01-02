@@ -191,6 +191,18 @@
 
 .publicCards .card{ padding:2rem; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); }
 [data-theme="light"] .publicCards .card{ background:var(--white); border:1px solid rgba(0,0,0,0.12); }
+
+/* Highlighted Card */
+.highlighted-card {
+  border: 2px solid var(--primary) !important;
+  background: rgba(37, 99, 235, 0.05) !important;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="dark"] .highlighted-card {
+  background: rgba(59, 130, 246, 0.08) !important;
+}
+
 .metaLine{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:#ffffff; font-size:.92rem; }
 [data-theme="light"] .metaLine{ color:#000000; }
 
