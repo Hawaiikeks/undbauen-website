@@ -124,3 +124,10 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - `OrbitControls` in `hero-scene.html` wiederhergestellt, die beim Revert der 3D-Animation verloren gegangen waren.
 - Damping aktiviert und Zoom/Pan deaktiviert für eine optimale Hero-User-Experience.
 
+**Prompt 17:**
+> füge beleuchtung oben rechts hinzu
+
+**Aktion:**
+- Ein zusätzliches `PointLight` in der Three.js-Szene oben rechts positioniert (`10, 10, 5`).
+- Die Lichtfarbe auf Weiß gesetzt, um einen stärkeren Kontrast und Highlights auf den 3D-Objekten zu erzeugen.
+

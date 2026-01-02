@@ -61,6 +61,11 @@
             pointLight.position.set(5, 5, 10);
             scene.add(pointLight);
 
+            // Zusätzliche Beleuchtung oben rechts
+            const topRightLight = new THREE.PointLight(0xffffff, 1.5, 50);
+            topRightLight.position.set(10, 10, 5);
+            scene.add(topRightLight);
+
             // Create Dots
             const dotGeo = new THREE.SphereGeometry(0.2, 32, 32);
             for (let i = 0; i < 3; i++) {
