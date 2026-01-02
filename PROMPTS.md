@@ -142,3 +142,11 @@ In diesem Dokument wird der Fortschritt der Entwicklung und die verwendeten Prom
 - Mission-Text aktualisiert.
 - Sektion "Themen & Publikationen" bereinigt: Manuelle Themen-Kacheln entfernt, sodass nur noch die dynamischen Publikations-Kacheln (`publicPubs`) angezeigt werden. Überschrift "Aktuelle Publikationen" entfernt.
 
+**Prompt 19:**
+> lege die felder Kommende Termine und Moantsupdes zusammen
+
+**Aktion:**
+- Die Sektionen "Kommende Termine" und "Monatsupdates" zu einer neuen Sektion "Termine & Updates" zusammengefasst.
+- Navigation und Dropdown-Links entsprechend auf `#updates` (neu: "Termine & Updates") aktualisiert.
+- Struktur innerhalb der Sektion mit klaren Zwischenüberschriften verbessert.
+
