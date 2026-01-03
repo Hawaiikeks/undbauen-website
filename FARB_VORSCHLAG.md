@@ -51,3 +51,12 @@ Die aktuelle Farbpalette ist zu dunkel/hell und wirkt nicht innovativ genug.
 ## Implementierung
 Die Farben können in `assets/css/base.css` in den CSS-Variablen angepasst werden.
 
+
+
+
+
+
+
+
+
+

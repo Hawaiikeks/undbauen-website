@@ -1,3 +1,32 @@
+/* Tag Dropdown Buttons - Better visibility in light mode */
+.tag-dropdown .btn.small {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.tag-dropdown .btn.small:hover {
+  background: var(--bg) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="light"] .tag-dropdown .btn.small {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.25) !important;
+  color: #1a1a1a !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .tag-dropdown .btn.small:hover {
+  background: #ffffff !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
 /* App Navigation */
 .appHeader{
   position: sticky;
@@ -11,14 +40,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 16px 32px;
   min-height: 60px;
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+}
+
+/* App-Bereich: Header ohne Container-Begrenzung */
+#mainLayout .appHeaderInner {
+  padding: 16px 32px;
+  max-width: none;
 }
 .appNav{ 
-  display: flex; 
-  gap: 24px; 
-  align-items: center; 
-  flex-wrap: wrap; 
+  display: none; /* Hidden - using sidebar instead */
+}
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: var(--bg);
+}
+
+.mobile-menu-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
 }
 
 .appNav a{ 
@@ -70,8 +132,18 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 .pageWrap{ 
-  padding: 32px 0 80px;
-  padding-top: 100px; /* Platz für fixed Navigation */
+  padding: 24px 32px 80px;
+  padding-top: 24px;
+  width: 100%;
+  max-width: none;
+}
+
+/* App-Bereich: Keine Zentrierung */
+#mainLayout .pageWrap {
+  padding: 24px 32px 80px;
+  padding-top: 24px;
+  width: 100%;
+  max-width: none;
 }
 
 @media (max-width: 768px){
@@ -81,11 +153,131 @@
 }
 
 .kpiGrid{ display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:16px; }
-@media(max-width:1100px){ .kpiGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media(max-width:700px){ .kpiGrid{ grid-template-columns: 1fr; } }
-.kpiCard{ padding:16px; }
+@media(max-width:1100px){ 
+  .kpiGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpiCard[style*="grid-column: span 2"]{
+    grid-column: span 2 !important;
+  }
+}
+@media(max-width:700px){ 
+  .kpiGrid{ grid-template-columns: 1fr; }
+  .kpiCard[style*="grid-column: span 2"]{
+    grid-column: span 1 !important;
+  }
+}
+
+/* Event Swipe Buttons */
+.event-swipe-btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.event-swipe-btn:hover{
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.event-swipe-left{
+  left: 0;
+}
+
+.event-swipe-right{
+  right: 0;
+}
+
+.event-swipe-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.event-swipe-dot.active{
+  background: var(--primary);
+  width: 12px;
+  height: 12px;
+}
+
+.event-swipe-dot:hover{
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+/* Notification/Activity Swipe Buttons */
+.notification-swipe-btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.notification-swipe-btn:hover{
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.notification-swipe-left{
+  left: 0;
+}
+
+.notification-swipe-right{
+  right: 0;
+}
+
+.notification-swipe-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notification-swipe-dot.active{
+  background: var(--primary);
+  width: 12px;
+  height: 12px;
+}
+
+.notification-swipe-dot:hover{
+  background: var(--primary);
+  transform: scale(1.2);
+}
+.kpiCard{ padding:16px; min-height: 280px; display: flex; flex-direction: column; }
 .kpiTitle{ font-weight:900; margin:0 0 8px; }
-.kpiBody{ color:var(--muted); line-height:1.55; }
+.kpiBody{ color:var(--muted); line-height:1.55; flex: 1; }
 
 .listItem{
   padding: 16px;
@@ -98,7 +290,13 @@
 
 .listItem:hover{ 
   background: var(--bg); 
-  border-radius: var(--radius); 
+  border-radius: var(--radius);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.forum-thread-item:hover{
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
 .messagesLayout{ display:grid; grid-template-columns: 360px 1fr; gap:16px; }
@@ -108,6 +306,15 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+}
+#rightPane{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 200px);
 }
 
 .threadItem{ 
@@ -172,7 +379,7 @@
 .modal{
   background: var(--surface);
   border-radius: var(--radius);
-  max-width: 600px;
+  max-width: 800px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
@@ -470,6 +677,11 @@
   font-size: 13px;
 }
 
+.attachment-item button{
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
 /* Typing Indicator */
 .typing-indicator{
   display: flex;
@@ -582,6 +794,49 @@
   border-top: 1px solid var(--border);
 }
 
+.forum-reply-button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forum-reply-button:hover {
+  background: var(--surface);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+[data-theme="light"] .forum-reply-button {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  color: #1a1a1a !important;
+}
+
+[data-theme="light"] .forum-reply-button:hover {
+  background: #ffffff !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.15) !important;
+}
+
+[data-theme="light"] .forum-reply-button[style*="color:var(--danger)"] {
+  color: var(--danger) !important;
+}
+
+[data-theme="light"] .forum-reply-button[style*="color:var(--danger)"]:hover {
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
+}
+
 /* Forum Category Cards */
 .forum-category-card{
   transition: all 0.3s ease;
@@ -625,6 +880,18 @@
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+}
+
+[data-theme="light"] .filter-chip {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #1a1a1a !important;
+}
+
+[data-theme="light"] .filter-chip:hover {
+  background: #ffffff !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
 }
 
 .quill-editor-container{
@@ -745,6 +1012,112 @@
   display: flex; 
   flex-wrap: wrap; 
   gap: 10px; 
+}
+
+/* Timeline Styles */
+.timeline-item:hover{
+  background: rgba(37, 99, 235, 0.05) !important;
+  transform: translateX(4px);
+}
+
+.highlight-content{
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.highlight-content p{
+  margin-bottom: 12px;
+}
+
+.highlight-content img{
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.highlight-content strong{
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.highlight-content em{
+  font-style: italic;
+}
+
+.highlight-content h1, .highlight-content h2, .highlight-content h3{
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.highlight-content ul, .highlight-content ol{
+  margin: 12px 0;
+
+/* Ticket Status Badges - Better readability in light mode */
+/* Note: Inline styles from JavaScript take precedence, but these provide fallback */
+[data-theme="light"] .ticket-status-badge,
+:root:not([data-theme="dark"]) .ticket-status-badge {
+  font-weight: 600 !important;
+}
+
+/* Ensure text is always readable in light mode */
+[data-theme="light"] .ticket-status-badge[style*="color"],
+:root:not([data-theme="dark"]) .ticket-status-badge[style*="color"] {
+  /* Inline color from JS should already be set, but ensure it's visible */
+  opacity: 1 !important;
+}
+  padding-left: 24px;
+}
+
+.highlight-content li{
+  margin-bottom: 8px;
+}
+
+/* Admin Update Wizard Styles */
+.step-link{
+  padding:12px;
+  border-radius:6px;
+  text-decoration:none;
+  color:var(--text-primary);
+  transition:all 0.2s;
+  border:2px solid transparent;
+}
+
+.step-link:hover{
+  background:var(--bg);
+}
+
+.step-link.active{
+  background:var(--primary);
+  color:white;
+  border-color:var(--primary);
+}
+
+.step-link.completed{
+  opacity:0.7;
+}
+
+.step-link.completed::before{
+  content:"✓ ";
+  color:var(--success);
+  font-weight:700;
+}
+
+[data-device].active{
+  background:var(--primary);
+  color:white;
+}
+
+/* Timeline Styles */
+.timeline-year:hover,
+.timeline-month:hover{
+  transform: translateX(4px);
+}
+
+.timeline-year,
+.timeline-month{
+  transition: all 0.2s ease;
 }
 
 .adminTabs .tab{ 

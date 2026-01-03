@@ -1,4 +1,6 @@
 // Confirm Modal Component
+import { trapFocus } from './focusTrap.js';
+
 class ConfirmModal {
   constructor() {
     this.overlay = null;
@@ -101,10 +103,23 @@ class ConfirmModal {
   hide() {
     if (this.overlay) {
       this.overlay.style.display = 'none';
+      // Cleanup focus trap
+      if (this.cleanupFocusTrap) {
+        this.cleanupFocusTrap();
+        this.cleanupFocusTrap = null;
+      }
     }
   }
 }
 
 // Export singleton instance
 export const confirmModal = new ConfirmModal();
+
+
+
+
+
+
+
+
 

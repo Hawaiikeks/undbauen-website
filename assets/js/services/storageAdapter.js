@@ -37,8 +37,12 @@ function setJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 function seedUsersIfEmpty(){
   const users = getJSON(K.users, []);
   if(users.length) return;
-  // Admin Seed (du kannst die Mail später ändern)
+  // Admin Seed
   users.push({ id:uid("u"), name:"Admin", email:"admin@undbauen.local", password:"adminadmin", role:"admin", status:"active" });
+  // Moderator Seed
+  users.push({ id:uid("u"), name:"Moderator", email:"moderator@undbauen.local", password:"moderator123", role:"moderator", status:"active" });
+  // Editor Seed
+  users.push({ id:uid("u"), name:"Editor", email:"editor@undbauen.local", password:"editor123", role:"editor", status:"active" });
   setJSON(K.users, users);
 }
 
@@ -239,7 +243,7 @@ function seedEventsIfEmpty(){
       visibility:"public",
       descriptionPublic:"Kurzinfo ohne Details. Einloggen, um zu buchen und Details zu sehen.",
       descriptionMember:"Member-Details: Agenda, Speaker-Links, Vorabfragen, Materialien.",
-      capacity:40,
+      capacity:20,
       tags:["AEC","Automation","BIM"],
       createdBy:"seed",
       status:"scheduled",
@@ -252,11 +256,11 @@ function seedEventsIfEmpty(){
       time:"18:00",
       durationMinutes:90,
       location:"Digital (Teams)",
-      format:"Panel",
+      format:"Workshop",
       visibility:"public",
       descriptionPublic:"Diskussion & Austausch – öffentlich nur Vorschau.",
       descriptionMember:"Member-Details: Leitfragen, Miro-Link, Diskussionsstruktur.",
-      capacity:60,
+      capacity:10,
       tags:["IFC","Standards","OpenBIM"],
       createdBy:"seed",
       status:"scheduled",
@@ -273,7 +277,7 @@ function seedEventsIfEmpty(){
       visibility:"public",
       descriptionPublic:"Austausch zu nachhaltigen Baukonzepten und zirkulären Wirtschaftsmodellen im Bauwesen.",
       descriptionMember:"Member-Details: Agenda, Speaker-Links, Vorabfragen, Materialien.",
-      capacity:50,
+      capacity:20,
       tags:["Nachhaltigkeit","Circular Economy","Green Building"],
       createdBy:"seed",
       status:"scheduled",
@@ -286,11 +290,11 @@ function seedEventsIfEmpty(){
       time:"18:00",
       durationMinutes:90,
       location:"Digital (Teams)",
-      format:"Panel",
+      format:"Workshop",
       visibility:"public",
       descriptionPublic:"Diskussion über digitale Tools und Prozesse auf der Baustelle.",
       descriptionMember:"Member-Details: Leitfragen, Miro-Link, Diskussionsstruktur.",
-      capacity:60,
+      capacity:10,
       tags:["Digitalisierung","Bauausführung","Construction Tech"],
       createdBy:"seed",
       status:"scheduled",
@@ -307,7 +311,7 @@ function seedEventsIfEmpty(){
       visibility:"public",
       descriptionPublic:"Erkundung von KI-Anwendungen in der Architektur- und Bauplanung.",
       descriptionMember:"Member-Details: Agenda, Speaker-Links, Vorabfragen, Materialien.",
-      capacity:45,
+      capacity:20,
       tags:["KI","Künstliche Intelligenz","Planung","Innovation"],
       createdBy:"seed",
       status:"scheduled",
@@ -320,7 +324,7 @@ function seedEventsIfEmpty(){
       time:"18:00",
       durationMinutes:90,
       location:"Digital (Teams)",
-      format:"Panel",
+      format:"Workshop",
       visibility:"public",
       descriptionPublic:"Diskussion über Strategien für klimaneutrales Bauen und nachhaltige Materialien.",
       descriptionMember:"Member-Details: Leitfragen, Miro-Link, Diskussionsstruktur.",
@@ -554,6 +558,19 @@ function me(){
 function isLoggedIn(){ return !!me(); }
 function isAdmin(){ const u = me(); return !!u && u.role === "admin"; }
 
+function hasRole(role){
+  const u = me();
+  if(!u) return false;
+  return u.role === role;
+}
+
+function hasAnyRole(roles){
+  const u = me();
+  if(!u) return false;
+  if(!Array.isArray(roles)) return false;
+  return roles.includes(u.role);
+}
+
 function login(email, password){
   ensureSeeds();
   const users = getUsers();
@@ -570,7 +587,10 @@ function login(email, password){
 function register(name, email, password){
   ensureSeeds();
   if(!name || name.trim().length < 2) return { ok:false, error:"Bitte Namen angeben." };
+  // Email-Validierung: muss @ enthalten und mit .de, .com, etc. enden
   if(!email || !email.includes("@")) return { ok:false, error:"Bitte gültige E-Mail angeben." };
+  const emailParts = email.split("@");
+  if(emailParts.length !== 2 || !emailParts[1].includes(".")) return { ok:false, error:"Bitte gültige E-Mail angeben." };
   if(!password || password.length < 8) return { ok:false, error:"Passwort min. 8 Zeichen." };
 
   const users = getUsers();
@@ -1010,6 +1030,28 @@ function adminDeleteThread(threadId){
   return { ok:true };
 }
 
+function deleteForumPost(threadId, postId){
+  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const posts = getForumPosts(threadId);
+  const post = posts.find(p => p.id === postId);
+  if(!post) return { ok:false, error:"Post nicht gefunden" };
+  
+  // Check if user is author or admin
+  if(post.authorEmail.toLowerCase() !== u.email.toLowerCase() && !isAdmin()){
+    return { ok:false, error:"Nicht berechtigt" };
+  }
+  
+  // Mark post as deleted
+  const updatedPosts = posts.map(p => p.id === postId ? ({...p, deleted:true, deletedAt:nowISO(), deletedBy:u.email}) : p);
+  saveForumPosts(threadId, updatedPosts);
+  
+  // Check if this was the last post (excluding deleted posts)
+  const remainingPosts = updatedPosts.filter(p => !p.deleted);
+  const isLastPost = remainingPosts.length === 0;
+  
+  return { ok:true, isLastPost };
+}
+
 // Forum Interactions
 function likeThread(threadId){
   const u = me(); if(!u) return { ok:false, error:"Not logged in" };
@@ -1081,7 +1123,7 @@ function sendMessage({to, subject="", body="", attachments=[]}){
   if(!to) return { ok:false, error:"Empfänger fehlt" };
 
   const threadId = ensureDMThread(u.email, to, subject);
-  const msg = { id:uid("msg"), threadId, from:u.email, to, subject, body, createdAt: nowISO(), readBy:[u.email] };
+  const msg = { id:uid("msg"), threadId, from:u.email, to, subject, body, attachments: attachments || [], createdAt: nowISO(), readBy:[u.email] };
   const msgs = getMessages(threadId);
   msgs.push(msg);
   setMessages(threadId, msgs);
@@ -1206,6 +1248,23 @@ function adminSetUserStatus(userId, status){
   return { ok:true };
 }
 
+function adminDeleteUser(userId){
+  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  const allUsers = getUsers();
+  const user = allUsers.find(u => u.id === userId);
+  if (user && user.email) {
+    // Delete profile
+    localStorage.removeItem(K.profilesPrefix + user.email.toLowerCase());
+    // Delete system messages
+    localStorage.removeItem(K.systemPrefix + user.email.toLowerCase());
+    // Delete threads
+    localStorage.removeItem(K.msgThreadsPrefix + user.email.toLowerCase());
+  }
+  const users = allUsers.filter(u => u.id !== userId);
+  saveUsers(users);
+  return { ok:true };
+}
+
 function adminCreateEvent(payload){
   if(!isAdmin()) return { ok:false, error:"Not admin" };
   const events = listEvents();
@@ -1247,16 +1306,33 @@ function listPublicationsMember(){
   return getJSON(K.cmsPubs, []).filter(x=>x.status==="published");
 }
 function adminCreateUpdate(payload){
-  if(!isAdmin()) return { ok:false };
+  if(!isAdmin()) return { ok:false, error:"Keine Berechtigung." };
+  // Prüfe ob für diesen Monat bereits ein Update existiert
   const arr = getJSON(K.cmsUpdates, []);
+  const existing = arr.find(u => u.month === payload.month && u.status === "published");
+  if(existing) {
+    return { ok:false, error:`Für ${payload.month} existiert bereits ein Monatsupdate. Pro Monat ist nur ein Update möglich.` };
+  }
   arr.unshift({ id:uid("upd"), status:"published", visibility:"member", createdAt:nowISO(), updatedAt:nowISO(), ...payload });
   setJSON(K.cmsUpdates, arr);
   return { ok:true };
 }
 function adminDeleteUpdate(id){
-  if(!isAdmin()) return { ok:false };
+  if(!isAdmin()) return { ok:false, error:"Keine Berechtigung" };
+  
+  // Lösche aus dem Standard-Speicher
   const arr = getJSON(K.cmsUpdates, []).filter(x=>x.id!==id);
   setJSON(K.cmsUpdates, arr);
+  
+  // Lösche auch aus direktem localStorage (falls vorhanden)
+  try {
+    const directUpdates = JSON.parse(localStorage.getItem("cms:updates") || "[]");
+    const filteredDirect = directUpdates.filter(x => x.id !== id);
+    localStorage.setItem("cms:updates", JSON.stringify(filteredDirect));
+  } catch(e) {
+    console.warn("Fehler beim Löschen aus direktem localStorage:", e);
+  }
+  
   return { ok:true };
 }
 function adminCreatePublication(payload){
@@ -1276,7 +1352,7 @@ function adminDeletePublication(id){
 /* exported adapter */
 export const storageAdapter = {
   // auth
-  login, register, logout, me, isLoggedIn, isAdmin,
+  login, register, logout, me, isLoggedIn, isAdmin, hasRole, hasAnyRole,
 
   // profiles
   getProfileByEmail, getProfileByEmailPublic, updateMyProfile, listMembers, listMembersPublic,
@@ -1288,7 +1364,7 @@ export const storageAdapter = {
 
   // forum
   listForumCategories, getForumThreads, saveForumThreads, getForumThread, getForumPosts,
-  createForumThread, replyForumThread,
+  createForumThread, replyForumThread, deleteForumPost,
   likeThread, watchThread,
   adminPinThread, adminLockThread, adminDeleteThread,
 
@@ -1302,7 +1378,7 @@ export const storageAdapter = {
   getFavorites, toggleFavorite, listActivity, recommendContacts,
 
   // admin
-  adminListUsers, adminSetUserRole, adminSetUserStatus,
+  adminListUsers, adminSetUserRole, adminSetUserStatus, adminDeleteUser,
   adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
 
   // cms

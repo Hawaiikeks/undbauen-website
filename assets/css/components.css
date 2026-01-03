@@ -1181,13 +1181,17 @@
   align-items: center;
   gap: 8px;
   padding: 16px 0;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-secondary);
   flex-wrap: wrap;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
 }
 
 .breadcrumb-link{
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -1197,13 +1201,14 @@
 }
 
 .breadcrumb-separator{
-  color: var(--text-muted);
-  margin: 0 4px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0 6px;
 }
 
 .breadcrumb-current{
-  color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 @media (max-width: 768px){

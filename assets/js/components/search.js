@@ -20,7 +20,7 @@ class GlobalSearch {
             type="text" 
             class="search-input" 
             id="globalSearchInput"
-            placeholder="Suche nach Mitgliedern, Events, Forum..."
+            placeholder="Suche nach Mitgliedern, Events, Forum, Knowledge, Resources..."
             aria-label="Suchfeld"
             autocomplete="off"
           />
@@ -72,11 +72,13 @@ class GlobalSearch {
       return;
     }
 
-    // Search members, events, forum
+    // Search members, events, forum, knowledge, resources
     const results = {
       members: [],
       events: [],
-      forum: []
+      forum: [],
+      knowledge: [],
+      resources: []
     };
 
     try {
@@ -108,6 +110,37 @@ class GlobalSearch {
         );
         results.forum = threads.slice(0, 5);
       }
+
+      // Search knowledge items (only published, only if logged in)
+      if (window.api && window.api.isLoggedIn && window.api.isLoggedIn()) {
+        try {
+          const { knowledgeRepository } = await import('../services/repositories/knowledgeRepository.js');
+          const knowledgeItems = await knowledgeRepository.search(q);
+          const published = knowledgeItems.filter(item => item.status === 'published');
+          results.knowledge = published.slice(0, 5);
+        } catch (e) {
+          console.warn('Knowledge search not available:', e);
+        }
+      }
+
+      // Search resources (only if logged in)
+      if (window.api && window.api.isLoggedIn && window.api.isLoggedIn()) {
+        try {
+          const { resourceRepository } = await import('../services/repositories/resourceRepository.js');
+          const allResources = await resourceRepository.findAll();
+          const memberResources = allResources.filter(r => 
+            r.visibility === 'member' || r.visibility === 'public'
+          );
+          const matching = memberResources.filter(r =>
+            (r.title && r.title.toLowerCase().includes(q)) ||
+            (r.description && r.description.toLowerCase().includes(q)) ||
+            (r.tags && r.tags.some(t => t.toLowerCase().includes(q)))
+          );
+          results.resources = matching.slice(0, 5);
+        } catch (e) {
+          console.warn('Resource search not available:', e);
+        }
+      }
     } catch (e) {
       console.error('Search error:', e);
     }
@@ -116,7 +149,9 @@ class GlobalSearch {
   }
 
   renderResults(results) {
-    const hasResults = results.members.length > 0 || results.events.length > 0 || results.forum.length > 0;
+    const hasResults = results.members.length > 0 || results.events.length > 0 || 
+                      results.forum.length > 0 || results.knowledge.length > 0 || 
+                      results.resources.length > 0;
     
     if (!hasResults) {
       this.resultsContainer.innerHTML = `
@@ -170,11 +205,45 @@ class GlobalSearch {
         <div class="search-section">
           <div class="search-section-title">Forum</div>
           ${results.forum.map(t => `
-            <a href="app/forum-thread.html?id=${t.id}" class="search-result-item">
+            <a href="app/forum-thread.html?thread=${t.id}" class="search-result-item">
               <div class="search-result-icon">💬</div>
               <div class="search-result-content">
                 <div class="search-result-title">${t.title}</div>
                 <div class="search-result-subtitle">${t.replyCount || 0} Antworten</div>
+              </div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    if (results.knowledge.length > 0) {
+      html += `
+        <div class="search-section">
+          <div class="search-section-title">Knowledge Base</div>
+          ${results.knowledge.map(item => `
+            <a href="app/knowledge.html" class="search-result-item" onclick="event.preventDefault(); window.location.href='app/knowledge.html'; setTimeout(() => { document.querySelector('#knowledgeSearch').value='${item.title}'; document.querySelector('#knowledgeSearch').dispatchEvent(new Event('input')); }, 100);">
+              <div class="search-result-icon">📖</div>
+              <div class="search-result-content">
+                <div class="search-result-title">${item.title}</div>
+                <div class="search-result-subtitle">${item.summary || item.type || 'Artikel'}</div>
+              </div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    if (results.resources.length > 0) {
+      html += `
+        <div class="search-section">
+          <div class="search-section-title">Resources</div>
+          ${results.resources.map(r => `
+            <a href="app/resources.html" class="search-result-item" onclick="event.preventDefault(); window.location.href='app/resources.html'; setTimeout(() => { document.querySelector('#resourceSearch').value='${r.title}'; document.querySelector('#resourceSearch').dispatchEvent(new Event('input')); }, 100);">
+              <div class="search-result-icon">📚</div>
+              <div class="search-result-content">
+                <div class="search-result-title">${r.title}</div>
+                <div class="search-result-subtitle">${r.description || 'Ressource'}</div>
               </div>
             </a>
           `).join('')}

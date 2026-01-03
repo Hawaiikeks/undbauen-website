@@ -74,6 +74,11 @@ export const avatarGenerator = {
   getAvatar(user) {
     if (!user) return this.generateInitialsAvatar('?');
     
+    // Check if user has uploaded a custom image
+    if (user.avatarType === 'upload' && user.avatarImage) {
+      return `<img src="${user.avatarImage}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    }
+    
     if (user.avatarType === 'icon' && user.avatarId) {
       return this.generateIconAvatar(user.avatarId);
     }
@@ -84,7 +89,23 @@ export const avatarGenerator = {
   renderAvatar(user, size = 48) {
     const avatar = this.getAvatar(user);
     return `<div class="avatar" style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;display:inline-block;flex-shrink:0;">${avatar}</div>`;
+  },
+  
+  getAvatarUrl(user) {
+    if (!user) return null;
+    
+    // Check if user has uploaded a custom image
+    if (user.avatarType === 'upload' && user.avatarImage) {
+      return user.avatarImage;
+    }
+    
+    return null;
   }
 };
+
+
+
+
+
 
 

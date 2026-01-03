@@ -86,11 +86,11 @@ class Breadcrumbs {
 
     breadcrumbContainer.innerHTML = breadcrumbs.map((crumb, index) => {
       if (crumb.href) {
-        return `<a href="${crumb.href}" class="breadcrumb-link">${crumb.label}</a>`;
+        return `<a href="${crumb.href}" class="breadcrumb-link"><strong>${crumb.label}</strong></a>`;
       } else {
-        return `<span class="breadcrumb-current" aria-current="page">${crumb.label}</span>`;
+        return `<span class="breadcrumb-current" aria-current="page"><strong>${crumb.label}</strong></span>`;
       }
-    }).join('<span class="breadcrumb-separator" aria-hidden="true">›</span>');
+    }).join('<span class="breadcrumb-separator" aria-hidden="true"><strong> › </strong></span>');
   }
 
   update(crumbs) {
@@ -99,6 +99,11 @@ class Breadcrumbs {
 }
 
 export const breadcrumbs = new Breadcrumbs();
+
+
+
+
+
 
 
 

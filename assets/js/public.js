@@ -303,7 +303,7 @@ const renderPublicPubs = () => {
     items = items.filter(x => {
       const pubDate = new Date(x.createdAt || x.date || Date.now());
       return pubDate >= threeMonthsAgo;
-    }).slice(0, 6); // Show up to 6 publications
+    }).slice(0, 3); // Show only 3 publications
     
     // Sort by date (newest first)
     items.sort((a, b) => {
@@ -351,10 +351,6 @@ const renderPublicPubs = () => {
           <div class="font-bold" style="font-size:14px;">${title}</div>
           <p class="p mt-sm" style="font-size:13px;line-height:1.5;">${abstractShort}</p>
           ${tags.length > 0 ? `<div class="chips mt-sm" style="font-size:11px;">${tags.map(t => `<span class="chip">${t}</span>`).join("")}</div>` : ''}
-          <div class="mt-md flex gap-sm">
-            <span class="badge" style="font-size:11px;">Member-only</span>
-            <button class="btn small" data-open-auth aria-label="Einloggen zum Lesen">Einloggen</button>
-          </div>
         </div>
       </div>
     `;
@@ -670,9 +666,23 @@ function updateNetworkSlider(){
     const linkedin = p.links?.linkedin || "";
     const website = p.links?.website || "";
     const location = p.location || "";
-    // Avatar-Bild generieren mit DiceBear API
-    // Fallback zu Initialen-Avatar wenn Dicebear langsam ist
-    const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    // Standard-Personenbilder (Unsplash Portraits)
+    const defaultPortraits = [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces'
+    ];
+    
+    // Verwende Hash des Namens/E-Mails für konsistente Bildzuordnung
+    const nameHash = (p.name || p.email).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const portraitIndex = nameHash % defaultPortraits.length;
+    const avatarUrl = defaultPortraits[portraitIndex];
+    
     const initials = (p.name || p.email).split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
     
     return `
@@ -748,8 +758,24 @@ function updateNetworkSlider(){
       const skills = [...(p.skills || []), ...(p.interests || [])].slice(0, 3).map(s => sanitizeHTML(s));
       const location = sanitizeHTML(p.location || "");
       const email = sanitizeHTML(p.email || "");
-      // Fallback zu Initialen-Avatar wenn Dicebear langsam ist
-      const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+      
+      // Standard-Personenbilder (Unsplash Portraits)
+      const defaultPortraits = [
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces'
+      ];
+      
+      // Verwende Hash des Namens/E-Mails für konsistente Bildzuordnung
+      const nameHash = (name || email).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const portraitIndex = nameHash % defaultPortraits.length;
+      const avatarUrl = defaultPortraits[portraitIndex];
+      
       const initials = (name || email).split(" ").map(n=>n[0]).join("").toUpperCase().slice(0,2);
       
       return `
@@ -1313,7 +1339,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       if($("#authErr")) $("#authErr").textContent = res.ok ? "" : res.error;
       if(res.ok) {
         toast.success("Erfolgreich eingeloggt!");
-        setTimeout(() => window.location.href = "app/dashboard.html", 500);
+        closeAuth(); // Modal schließen
+        setTimeout(() => {
+          // Absoluter Pfad für korrekten Redirect
+          const basePath = window.location.pathname.includes('/app/') ? '../' : '';
+          window.location.href = basePath + 'app/dashboard.html';
+        }, 500);
       } else {
         toast.error(res.error || "Login fehlgeschlagen");
         btn.classList.remove("loading");

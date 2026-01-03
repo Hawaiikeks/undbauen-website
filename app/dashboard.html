@@ -8,53 +8,55 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="../assets/css/base.css?v=2.0.0"/>
-  <link rel="stylesheet" href="../assets/css/app.css?v=2.0.0"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=3.0.0"/>
+  <link rel="stylesheet" href="../assets/css/app.css?v=3.0.0"/>
+  <link rel="stylesheet" href="../assets/css/sidebar.css?v=3.0.0"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body data-page="dashboard">
   <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
-  <header class="appHeader" role="banner">
-    <div class="container appHeaderInner">
-      <a class="brand" href="dashboard.html" aria-label="…undbauen Dashboard">…undbauen</a>
-      <nav class="appNav" id="appNav" aria-label="Hauptnavigation" role="navigation">
-        <a href="dashboard.html" data-nav="dashboard" aria-current="page">Dashboard</a>
-        <a href="termine.html" data-nav="termine">Termine</a>
-        <a href="forum.html" data-nav="forum">Forum</a>
-        <a href="nachrichten.html" data-nav="nachrichten">Nachrichten</a>
-        <a href="mitglieder.html" data-nav="mitglieder">Mitglieder</a>
-        <a href="einstellungen.html" data-nav="einstellungen">Einstellungen</a>
-        <a href="admin.html" data-nav="admin" id="adminLink" style="display:none" aria-label="Admin-Bereich">Admin</a>
-      </nav>
-      <div class="appRight">
-        <button class="btn" id="themeToggle" aria-label="Theme wechseln" aria-pressed="false" title="Theme wechseln">🌓</button>
-        <div class="userPill" aria-label="Benutzer-Informationen"><span class="dot" aria-hidden="true"></span><span id="userLabel">Member</span></div>
-        <button class="btn" id="logoutBtn" aria-label="Ausloggen">⎋ Logout</button>
+  
+  <!-- Sidebar Container -->
+  <div id="sidebarContainer"></div>
+  
+  <!-- Main Layout -->
+  <div id="mainLayout" class="main-layout">
+    <header class="appHeader" role="banner">
+      <div class="appHeaderInner">
+        <button class="btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menü öffnen" style="display: none;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+        </button>
+        <a class="brand" href="dashboard.html" aria-label="…undbauen Dashboard">…undbauen</a>
+        <div class="appRight">
+          <div id="notificationBellContainer"></div>
+          <button class="btn" id="themeToggle" aria-label="Theme wechseln" aria-pressed="false" title="Theme wechseln">🌓</button>
+          <div class="userPill" aria-label="Benutzer-Informationen"><span class="dot" aria-hidden="true"></span><span id="userLabel">Member</span></div>
+          <button class="btn" id="logoutBtn" aria-label="Ausloggen">⎋ Logout</button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main id="main-content" class="container pageWrap" role="main">
+    <main id="main-content" class="pageWrap" role="main">
     <div class="h2">Dashboard</div>
-    <p class="p">Überblick & nächste Schritte.</p>
+    <p class="p">Übersicht & nützliche Schritte</p>
 
-    <div class="kpiGrid" style="margin-top:14px">
+    <!-- Quick Metrics Row -->
+    <div id="quickMetricsRow" style="display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap;"></div>
+
+    <!-- Widgets Row -->
+    <div class="grid grid-3" style="margin-top: 20px">
       <div class="card kpiCard" id="cardNext"></div>
-      <div class="card kpiCard" id="cardSaved"></div>
       <div class="card kpiCard" id="cardRecs"></div>
       <div class="card kpiCard" id="cardFavs"></div>
     </div>
 
-    <div class="grid grid-2" style="margin-top:16px">
-      <div class="card pane" id="cardNotifs"></div>
+    <!-- Aktivitäten & Idee einreichen -->
+    <div class="grid grid-2" style="margin-top: 20px">
       <div class="card pane" id="cardActivity"></div>
+      <div class="card pane" id="ticketCtaContainer"></div>
     </div>
-    
-    <div class="card pane" style="margin-top:16px">
-      <div style="font-weight:900; margin-bottom:16px">Aktivitätsstatistiken</div>
-      <canvas id="activityChart" style="max-height:300px;"></canvas>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <!-- Modal for booked event details -->
   <div class="modalOverlay" id="bookedEventOverlay" style="display:none;">
@@ -67,7 +69,7 @@
     </div>
   </div>
 
-  <script type="module" src="../assets/js/app.js?v=2.0.0"></script>
+  <script type="module" src="../assets/js/app.js?v=3.0.1"></script>
 </body>
 </html>
 

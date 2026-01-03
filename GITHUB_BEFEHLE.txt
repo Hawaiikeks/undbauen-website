@@ -1,6 +1,0 @@
-# Befehle zum Ausführen (nachdem Repository auf GitHub erstellt wurde):
-
-git remote add origin https://github.com/hawaiikeks/undbauen-website.git
-git branch -M main
-git push -u origin main
-

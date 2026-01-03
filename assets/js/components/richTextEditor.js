@@ -1,4 +1,6 @@
 // Rich Text Editor Component using Quill.js
+import { sanitizeRichText } from '../services/validation.js';
+
 export const richTextEditor = {
   editors: new Map(),
   
@@ -27,22 +29,34 @@ export const richTextEditor = {
   
   initializeEditors() {
     // Initialize all textareas with data-rich-text attribute
+    // Aber nur wenn sie sichtbar sind (nicht in versteckten Modals)
     document.querySelectorAll('[data-rich-text]').forEach(textarea => {
+      // Prüfe ob das Textarea in einem versteckten Modal ist
+      const modal = textarea.closest('.modalOverlay, .modal');
+      if (modal) {
+        const isVisible = modal.style.display !== 'none' && 
+                         window.getComputedStyle(modal).display !== 'none';
+        if (!isVisible) {
+          // Überspringe Editoren in versteckten Modals
+          return;
+        }
+      }
       this.createEditor(textarea);
     });
   },
   
   createEditor(textarea) {
-    const container = document.createElement('div');
-    container.className = 'quill-editor-container';
-    container.style.minHeight = '200px';
-    
-    // Insert container before textarea
-    textarea.parentNode.insertBefore(container, textarea);
-    textarea.style.display = 'none';
-    
-    // Create Quill instance with extended modules (mention removed to prevent errors)
-    const quill = new Quill(container, {
+    try {
+      const container = document.createElement('div');
+      container.className = 'quill-editor-container';
+      container.style.minHeight = '200px';
+      
+      // Insert container before textarea
+      textarea.parentNode.insertBefore(container, textarea);
+      textarea.style.display = 'none';
+      
+      // Create Quill instance with extended modules (mention removed to prevent errors)
+      const quill = new Quill(container, {
       theme: 'snow',
       modules: {
         toolbar: {
@@ -50,7 +64,8 @@ export const richTextEditor = {
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['link', 'image'],
+            ['link'],
+            ['image'],
             ['blockquote', 'code-block'],
             [{ 'color': [] }, { 'background': [] }],
             ['clean']
@@ -81,8 +96,8 @@ export const richTextEditor = {
     if (!textarea.id) {
       textarea.id = editorId;
     }
-    container.id = `quill-${editorId}`;
-    
+      container.id = `quill-${editorId}`;
+      
       // Store editor reference
       this.editors.set(editorId, {
         quill,
@@ -130,10 +145,11 @@ export const richTextEditor = {
     input.click();
   },
   
-  getContent(editorId) {
+  getContent(editorId, sanitize = true) {
     const editor = this.editors.get(editorId);
     if (!editor) return '';
-    return editor.quill.root.innerHTML;
+    const content = editor.quill.root.innerHTML;
+    return sanitize ? sanitizeRichText(content) : content;
   },
   
   setContent(editorId, content) {

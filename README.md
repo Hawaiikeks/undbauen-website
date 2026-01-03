@@ -1,122 +1,164 @@
-# …undbauen – Innovationsnetzwerk
+# …undbauen - Community Platform
 
-Professionelle Netzwerk-/Community-Plattform im AEC-Umfeld.
+Eine vollständige Community-Plattform mit Tickets, Resources, Knowledge Base, und mehr.
 
-## 🚀 Schnellstart
+## 🚀 Quick Start
 
-### Lokaler Server starten
+### Lokale Entwicklung
 
-Die Website benötigt einen lokalen Server, da ES6-Module verwendet werden.
-
-**Windows (PowerShell):**
-```powershell
-python -m http.server 8000
-```
-
-**Windows (CMD):**
-```cmd
-python -m http.server 8000
-```
-
-**Alternative (Node.js):**
+1. **Server starten:**
 ```bash
-npx http-server -p 8000
+python -m http.server 8000
 ```
 
-Dann öffne: `http://localhost:8000`
+2. **Browser öffnen:**
+```
+http://localhost:8000
+```
+
+3. **Demo-Daten laden (optional):**
+```javascript
+// In Browser Console
+import { seedDemoData } from './assets/js/seed/demoData.js';
+await seedDemoData();
+```
 
 ## 📁 Projektstruktur
 
 ```
 /
-├── index.html              # Public Onepager
-├── app/                    # Member-App Seiten
+├── app/                    # Member Area
 │   ├── dashboard.html
-│   ├── termine.html
-│   ├── forum.html
+│   ├── tickets.html
+│   ├── resources.html
+│   └── ...
+├── backoffice/            # Admin/Moderator Area
+│   ├── index.html
+│   ├── inbox.html
 │   └── ...
 ├── assets/
-│   ├── css/
-│   │   ├── base.css        # Design System (Variablen, Typografie, Buttons, Cards)
-│   │   ├── public.css      # Public-spezifische Styles
-│   │   └── app.css         # App-spezifische Styles
+│   ├── css/              # Stylesheets
 │   └── js/
-│       ├── public.js       # Public-Seite Logik
-│       ├── app.js          # App-Seite Logik
-│       └── services/
-│           ├── apiClient.js
-│           └── storageAdapter.js  # localStorage "Backend"
-└── README.md
+│       ├── app.js        # Main application
+│       ├── components/   # UI Components
+│       ├── pages/        # Page logic
+│       ├── services/     # Services & Repositories
+│       └── seed/          # Demo data
+└── index.html            # Landing page
 ```
 
-## 🎨 Design System
+## ✨ Features
 
-- **Font:** Inter (400, 500, 600)
-- **Farbpalette:** Light/Dark Mode mit CSS-Variablen
-- **Typografie:** H1 (36px/600), H2 (28px/600), H3 (20px/500), Body (16px/400)
-- **Buttons:** Primary, Secondary, Ghost
-- **Cards:** Surface mit Border, Hover-Effekte
+### Member Area
+- ✅ Dashboard mit Übersicht
+- ✅ Tickets (Ideenbox) - Vorschläge einreichen
+- ✅ Resources - Dateien & Links
+- ✅ Knowledge Base - Artikel & Guides
+- ✅ Events - Termine verwalten
+- ✅ Forum - Diskussionen
+- ✅ Messages - Nachrichten
+- ✅ Profile & Settings
 
-## 🔐 Login
+### Backoffice
+- ✅ Ticket Inbox (Moderator+)
+- ✅ Reports Queue (Moderator+)
+- ✅ Content Management (Editor+)
+- ✅ Public Pages CMS (Editor+)
+- ✅ Resources Management (Editor+)
+- ✅ Knowledge Management (Editor+)
+- ✅ User Management (Admin)
+- ✅ Audit Log (Admin)
 
-**Admin Seed:**
-- Email: `admin@undbauen.local`
-- Passwort: `adminadmin`
+### Core Features
+- ✅ Global Search (Ctrl+K)
+- ✅ Notifications
+- ✅ Role-Based Access Control
+- ✅ File Upload & Storage
+- ✅ Rich Text Editor
+- ✅ Responsive Design
+- ✅ Accessibility (ARIA, Keyboard Nav)
 
-## 🛠️ Entwicklung
+## 🔐 Rollen
 
-### Design-System anpassen
+- **guest**: Nicht eingeloggt
+- **member**: Standard-Mitglied
+- **editor**: Content erstellen/bearbeiten
+- **moderator**: Tickets/Reports verwalten
+- **admin**: Vollzugriff
 
-Alle Farben, Typografie und Komponenten sind in `assets/css/base.css` definiert:
+## 🛠️ Tech Stack
 
-- CSS-Variablen: `:root` und `[data-theme="dark"]`
-- Buttons: `.btn`, `.btn.primary`, `.btn.secondary`, `.btn.ghost`
-- Cards: `.card`
-- Forms: `.input`, `.textarea`, `.select`
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **Storage**: localStorage (Development), S3-ready (Production)
+- **Editor**: Quill.js
+- **Development**: Python http.server
 
-### Neue Features hinzufügen
+## 📚 Dokumentation
 
-1. **Public-Seite:** `index.html` + `assets/js/public.js`
-2. **App-Seite:** `app/*.html` + `assets/js/app.js`
-3. **Backend-Logik:** `assets/js/services/storageAdapter.js`
+- [Implementation Guide](./IMPLEMENTATION_GUIDE.md) - Vollständige Dokumentation
+- [Phase 4 Complete](./PHASE_4_COMPLETE.md) - Integration Details
 
-## 📝 Zusammenarbeit
+## 🧪 Testing
 
-### Git Workflow
+### Demo-Daten
 
-1. **Branch erstellen:**
-   ```bash
-   git checkout -b feature/mein-feature
-   ```
+```javascript
+// Laden
+import { seedDemoData } from './assets/js/seed/demoData.js';
+await seedDemoData();
 
-2. **Änderungen committen:**
-   ```bash
-   git add .
-   git commit -m "Beschreibung der Änderung"
-   ```
+// Löschen
+import { clearDemoData } from './assets/js/seed/demoData.js';
+await clearDemoData();
+```
 
-3. **Branch pushen:**
-   ```bash
-   git push origin feature/mein-feature
-   ```
+### Test-Checkliste
 
-4. **Pull Request erstellen** auf GitHub
+Siehe [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+
+## 🔄 Migration zu Backend
+
+Die Anwendung ist vorbereitet für Backend-Integration:
+
+1. **API Endpoints** erstellen
+2. **Repositories** anpassen (BackendRepository)
+3. **File Storage** migrieren (S3)
+4. **Authentication** implementieren (JWT)
+
+Details siehe [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md#deployment)
+
+## 📝 Entwicklung
+
+### Code-Organisation
+
+- **Components**: Wiederverwendbare UI-Komponenten
+- **Pages**: Page-spezifische Logik
+- **Services**: Business Logic & Repositories
+- **Seed**: Demo-Daten
 
 ### Best Practices
 
-- **Kleine, fokussierte Commits**
-- **Aussagekräftige Commit-Messages**
-- **Branches für Features/Features verwenden**
-- **Vor dem Push testen** (lokaler Server)
+- ES6 Modules verwenden
+- Try-Catch für async Operations
+- Validation für alle Inputs
+- ARIA-Attribute für Accessibility
+- Focus Trap für Modals
 
-## 🔄 Backend-Migration
+## 🐛 Bekannte Probleme
 
-Aktuell verwendet das Projekt `localStorage` als MVP-Backend. Für die Migration zu einem echten Backend:
-
-1. `assets/js/services/apiClient.js` anpassen
-2. `storageAdapter.js` durch HTTP-Adapter ersetzen
-3. API-Endpoints implementieren
+- localStorage hat Größenlimit (~5-10MB)
+- Base64 File Storage ist ineffizient (nur für Development)
+- Keine echte Backend-Integration (noch)
 
 ## 📄 Lizenz
 
-[Lizenz hier einfügen]
+Proprietär - Alle Rechte vorbehalten
+
+## 👥 Kontakt
+
+Bei Fragen oder Problemen siehe [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)
+
+---
+
+**Version:** 1.0.0  
+**Status:** Development
