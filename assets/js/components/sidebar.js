@@ -44,8 +44,10 @@ export function getNavigationItems(role) {
         isCollapsible: true,
         children: [
           { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
-          { id: 'content-management', label: 'Inhaltsverwaltung', icon: 'file-text', path: '/app/admin.html?tab=content' },
-          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' }
+          { id: 'content-management', label: 'Monatsupdatesverwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
+          { id: 'resources-management', label: 'Ressourcenverwaltung', icon: 'folder-open', path: '/backoffice/resources.html' },
+          { id: 'knowledge-management', label: 'Wissensverwaltung', icon: 'book-open', path: '/backoffice/knowledge.html' }
         ]
       },
       { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
@@ -88,8 +90,10 @@ export function getNavigationItems(role) {
         isCollapsible: true,
         children: [
           { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
-          { id: 'content-management', label: 'Inhaltsverwaltung', icon: 'file-text', path: '/app/admin.html?tab=content' },
-          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' }
+          { id: 'content-management', label: 'Monatsupdatesverwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
+          { id: 'resources-management', label: 'Ressourcenverwaltung', icon: 'folder-open', path: '/backoffice/resources.html' },
+          { id: 'knowledge-management', label: 'Wissensverwaltung', icon: 'book-open', path: '/backoffice/knowledge.html' }
         ]
       },
       { 
