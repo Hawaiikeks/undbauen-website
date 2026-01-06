@@ -26,13 +26,27 @@ export async function renderResourcesAdmin() {
   const container = document.querySelector('#resourcesAdminContainer') || document.querySelector('main');
   if (!container) return;
 
-  const allResources = await resourceRepository.findAll();
-  const sortedResources = allResources.sort((a, b) => 
-    new Date(b.createdAt) - new Date(a.createdAt)
-  );
+  try {
+    const allResources = await resourceRepository.findAll();
+    const sortedResources = allResources.sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-  container.innerHTML = renderAdminPage(sortedResources, allResources);
-  wireAdminEvents(allResources);
+    container.innerHTML = renderAdminPage(sortedResources, allResources);
+    wireAdminEvents(allResources);
+  } catch (error) {
+    console.error('Error loading resources:', error);
+    container.innerHTML = `
+      <div class="card pane" style="text-align: center; padding: 48px 24px;">
+        <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.5;">⚠️</div>
+        <div style="font-weight: 600; margin-bottom: 8px;">Fehler beim Laden</div>
+        <div style="color: var(--text-secondary); margin-bottom: 24px;">
+          Die Ressourcen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
+        </div>
+        <button class="btn primary" onclick="location.reload()">Neu laden</button>
+      </div>
+    `;
+  }
 }
 
 /**

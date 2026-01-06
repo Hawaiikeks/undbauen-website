@@ -231,14 +231,110 @@ function wireKnowledgeEvents() {
     renderKnowledge();
   };
 
-  window.viewKnowledgeItem = (itemId) => {
-    // Would open detail view or modal
-    window.location.href = `knowledge-detail.html?id=${itemId}`;
+  window.viewKnowledgeItem = async (itemId) => {
+    // Show knowledge item in modal
+    try {
+      const item = await knowledgeRepository.findById(itemId);
+      if (!item) {
+        toast.error('Artikel nicht gefunden');
+        return;
+      }
+      
+      showKnowledgeDetailModal(item);
+    } catch (error) {
+      console.error('Error loading knowledge item:', error);
+      toast.error('Fehler beim Laden des Artikels');
+    }
   };
 
   window.viewCollection = (collectionId) => {
     // Would show collection items
     toast.info('Sammlung wird geladen...');
   };
+}
+
+/**
+ * Show knowledge detail modal
+ */
+function showKnowledgeDetailModal(item) {
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.style.display = 'flex';
+  
+  modal.innerHTML = `
+    <div class="modal" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+      <div class="modalHeader">
+        <div class="modalTitle">${item.title || 'Unbenannt'}</div>
+        <button class="btn" onclick="this.closest('.modalOverlay').remove()">✕</button>
+      </div>
+      <div class="modalBody">
+        ${item.type ? `
+          <span class="badge" style="background: var(--primary); color: white; margin-bottom: 16px; display: inline-block;">
+            ${item.type}
+          </span>
+        ` : ''}
+        
+        ${item.summary ? `
+          <div style="font-size: 16px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
+            ${item.summary}
+          </div>
+        ` : ''}
+        
+        ${item.content ? `
+          <div style="line-height: 1.8; margin-bottom: 24px;">
+            ${item.content.replace(/\n/g, '<br>')}
+          </div>
+        ` : ''}
+        
+        ${(item.tags || []).length > 0 ? `
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+            <div style="font-weight: 600; margin-bottom: 12px;">Tags</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${item.tags.map(tag => `
+                <span class="badge">${tag}</span>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${(item.links || []).length > 0 ? `
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+            <div style="font-weight: 600; margin-bottom: 12px;">Weiterführende Links</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${item.links.map(link => `
+                <a href="${link.url}" target="_blank" rel="noopener" 
+                   style="color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                  <span>🔗</span>
+                  <span style="text-decoration: underline;">${link.title || link.url}</span>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary);">
+          Zuletzt aktualisiert: ${new Date(item.updatedAt || item.createdAt).toLocaleDateString('de-DE')}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+  
+  // Close on Escape key
+  const escHandler = (e) => {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+  document.addEventListener('keydown', escHandler);
 }
 
