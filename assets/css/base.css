@@ -278,6 +278,21 @@ p, .p{
   transform: translateY(-1px) !important;
 }
 
+/* Dark mode: All buttons (except primary and danger) should have proper contrast */
+[data-theme="dark"] .btn:not(.primary):not(.danger) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn:not(.primary):not(.danger):hover {
+  background: var(--bg);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 2px 4px rgba(255, 140, 90, 0.15);
+  transform: translateY(-1px);
+}
+
 /* Touch optimizations for mobile */
 @media (max-width: 768px){
   .btn{
@@ -371,6 +386,18 @@ p, .p{
   box-shadow: 0 2px 4px rgba(99, 102, 241, 0.15) !important;
 }
 
+[data-theme="dark"] .btn.secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn.secondary:hover {
+  background: var(--bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 /* Ghost Button */
 .btn.ghost{
   background: none;
@@ -384,8 +411,15 @@ p, .p{
   color: var(--primary);
 }
 
+[data-theme="dark"] .btn.ghost{
+  background: transparent;
+  border: none;
+  color: var(--primary);
+}
+
 [data-theme="dark"] .btn.ghost:hover{
-  background: rgba(129, 140, 248, 0.15);
+  background: rgba(255, 140, 90, 0.15);
+  color: var(--primary);
 }
 
 [data-theme="light"] .btn.ghost {
@@ -410,6 +444,17 @@ p, .p{
 
 .btn.danger:hover{
   background: var(--danger);
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .btn.danger {
+  background: transparent;
+  border: 1px solid #EF4444;
+  color: #EF4444;
+}
+
+[data-theme="dark"] .btn.danger:hover {
+  background: #EF4444;
   color: #FFFFFF;
 }
 
@@ -453,12 +498,12 @@ p, .p{
   margin: 0 0 8px; 
 }
 
-:root .label{
-  color: #ffffff;
+[data-theme="light"] .label{
+  color: #1a1a1a;
 }
 
-[data-theme="light"] .label{
-  color: #000000;
+[data-theme="dark"] .label{
+  color: #F1F5F9;
 }
 .row{ display:flex; gap:14px; }
 @media(max-width:900px){ .row{ flex-direction:column; } }
@@ -468,24 +513,32 @@ p, .p{
   padding:.22rem .55rem;
   border-radius:999px;
   border:1px solid var(--border);
-  color:var(--muted);
+  color: var(--text-primary);
   font-size:.82rem;
-}
-
-:root .badge{
-  color: #ffffff;
-  border-color: rgba(255,255,255,0.2);
+  background: var(--surface);
 }
 
 [data-theme="light"] .badge{
-  color: #000000;
+  color: #1a1a1a;
   border-color: rgba(0,0,0,0.15);
-  background: #ffffff !important;
+  background: #ffffff;
 }
-.badge.blue{ border-color: rgba(76,141,255,.5); color: var(--blue); background: rgba(76,141,255,.08); }
-.badge.ok{ border-color: rgba(34,197,94,.45); color: var(--ok); background: rgba(34,197,94,.08); }
-.badge.warn{ border-color: rgba(251,191,36,.45); color: var(--warn); background: rgba(251,191,36,.08); }
-.badge.danger{ border-color: rgba(255,77,109,.45); color: var(--danger); background: rgba(255,77,109,.08); }
+
+[data-theme="dark"] .badge{
+  color: #F1F5F9;
+  border-color: rgba(255,255,255,0.2);
+  background: var(--surface);
+}
+
+.badge.blue{ border-color: rgba(76,141,255,.5); color: #4C8DFF; background: rgba(76,141,255,.12); }
+.badge.ok{ border-color: rgba(34,197,94,.45); color: #22C55E; background: rgba(34,197,94,.12); }
+.badge.warn{ border-color: rgba(251,191,36,.45); color: #FBBF24; background: rgba(251,191,36,.12); }
+.badge.danger{ border-color: rgba(255,77,109,.45); color: #EF4444; background: rgba(255,77,109,.12); }
+
+[data-theme="dark"] .badge.blue{ color: #60A5FA; background: rgba(96,165,250,.15); border-color: rgba(96,165,250,.4); }
+[data-theme="dark"] .badge.ok{ color: #34D399; background: rgba(52,211,153,.15); border-color: rgba(52,211,153,.4); }
+[data-theme="dark"] .badge.warn{ color: #FCD34D; background: rgba(252,211,77,.15); border-color: rgba(252,211,77,.4); }
+[data-theme="dark"] .badge.danger{ color: #F87171; background: rgba(248,113,113,.15); border-color: rgba(248,113,113,.4); }
 
 .chips{ 
   display: flex; 
@@ -500,7 +553,13 @@ p, .p{
   color: var(--text-secondary); 
   font-size: 13px; 
   font-weight: 400;
-  background: var(--bg);
+  background: var(--surface);
+}
+
+[data-theme="dark"] .chip{
+  color: var(--text-primary);
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 [data-theme="light"] .chip {
