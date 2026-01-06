@@ -7,7 +7,8 @@ import { api } from '../services/apiClient.js';
 
 let sidebarState = {
   collapsed: false,
-  mobileOpen: false
+  mobileOpen: false,
+  expandedItems: [] // Track which collapsible items are expanded
 };
 
 /**
@@ -18,47 +19,92 @@ let sidebarState = {
 export function getNavigationItems(role) {
   const baseItems = {
     member: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: 'dashboard.html' },
-      { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: 'nachrichten.html', badge: 'unread' },
-      { id: 'forum', label: 'Forum', icon: 'messages-square', path: 'forum.html' },
-      { id: 'termine', label: 'Termine', icon: 'calendar', path: 'termine.html' },
-      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: 'monatsupdates.html' },
-      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: 'resources.html' },
-      { id: 'knowledge', label: 'Knowledge', icon: 'book-open', path: 'knowledge.html' },
-      { id: 'profil', label: 'Profil', icon: 'user', path: 'einstellungen.html' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: '/app/dashboard.html' },
+      { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: '/app/nachrichten.html', badge: 'unread' },
+      { id: 'forum', label: 'Forum', icon: 'messages-square', path: '/app/forum.html' },
+      { id: 'termine', label: 'Termine', icon: 'calendar', path: '/app/termine.html' },
+      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: '/app/monatsupdates.html' },
+      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: '/app/resources.html' },
+      { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
+      { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
     ],
     editor: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: 'dashboard.html' },
-      { id: 'content', label: 'Content', icon: 'file-text', path: 'admin.html?tab=content' },
-      { id: 'public-pages', label: 'Public Pages', icon: 'layout-template', path: '../backoffice/public-pages.html' },
-      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: 'monatsupdates.html' },
-      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: 'resources.html' },
-      { id: 'knowledge', label: 'Knowledge', icon: 'book-open', path: 'knowledge.html' },
-      { id: 'profil', label: 'Profil', icon: 'user', path: 'einstellungen.html' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: '/app/dashboard.html' },
+      { id: 'forum', label: 'Forum', icon: 'messages-square', path: '/app/forum.html' },
+      { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: '/app/nachrichten.html', badge: 'unread' },
+      { id: 'termine', label: 'Termine', icon: 'calendar', path: '/app/termine.html' },
+      { id: 'mitglieder', label: 'Mitglieder', icon: 'users', path: '/app/mitglieder.html' },
+      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: '/app/monatsupdates.html' },
+      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: '/app/resources.html' },
+      { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
+      { 
+        id: 'editor', 
+        label: 'Redaktion', 
+        icon: 'edit', 
+        isCollapsible: true,
+        children: [
+          { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
+          { id: 'content-management', label: 'Inhaltsverwaltung', icon: 'file-text', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' }
+        ]
+      },
+      { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
     ],
     moderator: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: 'dashboard.html' },
-      { id: 'inbox', label: 'Inbox', icon: 'inbox', path: '../backoffice/inbox.html', badge: 'tickets' },
-      { id: 'reports', label: 'Reports', icon: 'flag', path: '../backoffice/reports.html', badge: 'reports' },
-      { id: 'content', label: 'Content', icon: 'file-text', path: 'admin.html?tab=content' },
-      { id: 'events', label: 'Events', icon: 'calendar', path: 'admin.html?tab=events' },
-      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: 'monatsupdates.html' },
-      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: 'resources.html' },
-      { id: 'knowledge', label: 'Knowledge', icon: 'book-open', path: 'knowledge.html' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: '/app/dashboard.html' },
+      { id: 'forum', label: 'Forum', icon: 'messages-square', path: '/app/forum.html' },
+      { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: '/app/nachrichten.html', badge: 'unread' },
+      { id: 'termine', label: 'Termine', icon: 'calendar', path: '/app/termine.html' },
+      { id: 'mitglieder', label: 'Mitglieder', icon: 'users', path: '/app/mitglieder.html' },
+      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: '/app/monatsupdates.html' },
+      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: '/app/resources.html' },
+      { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
+      { 
+        id: 'backoffice', 
+        label: 'Backoffice', 
+        icon: 'briefcase', 
+        isCollapsible: true,
+        children: [
+          { id: 'inbox', label: 'Ticket-Inbox', icon: 'inbox', path: '/backoffice/inbox.html', badge: 'tickets' },
+          { id: 'reports', label: 'Berichte', icon: 'flag', path: '/backoffice/reports.html', badge: 'reports' },
+          { id: 'audit', label: 'Aktivitätsprotokoll', icon: 'activity', path: '/backoffice/audit.html' }
+        ]
+      },
+      { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
     ],
     admin: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: 'dashboard.html' },
-      { id: 'inbox', label: 'Inbox', icon: 'inbox', path: '../backoffice/inbox.html', badge: 'tickets' },
-      { id: 'reports', label: 'Reports', icon: 'flag', path: '../backoffice/reports.html', badge: 'reports' },
-      { id: 'content', label: 'Content', icon: 'file-text', path: 'admin.html?tab=content' },
-      { id: 'events', label: 'Events', icon: 'calendar', path: 'admin.html?tab=events' },
-      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: 'monatsupdates.html' },
-      { id: 'public-pages', label: 'Public Pages', icon: 'layout-template', path: '../backoffice/public-pages.html' },
-      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: 'resources.html' },
-      { id: 'knowledge', label: 'Knowledge', icon: 'book-open', path: 'knowledge.html' },
-      { id: 'users', label: 'Users', icon: 'users', path: 'admin.html?tab=users' },
-      { id: 'settings', label: 'Settings', icon: 'settings', path: 'admin.html?tab=settings' },
-      { id: 'audit', label: 'Audit Log', icon: 'activity', path: '../backoffice/audit.html' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', path: '/app/dashboard.html' },
+      { id: 'forum', label: 'Forum', icon: 'messages-square', path: '/app/forum.html' },
+      { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: '/app/nachrichten.html', badge: 'unread' },
+      { id: 'termine', label: 'Termine', icon: 'calendar', path: '/app/termine.html' },
+      { id: 'mitglieder', label: 'Mitglieder', icon: 'users', path: '/app/mitglieder.html' },
+      { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: '/app/monatsupdates.html' },
+      { id: 'resources', label: 'Ressourcen', icon: 'folder', path: '/app/resources.html' },
+      { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
+      { 
+        id: 'editor', 
+        label: 'Redaktion', 
+        icon: 'edit', 
+        isCollapsible: true,
+        children: [
+          { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
+          { id: 'content-management', label: 'Inhaltsverwaltung', icon: 'file-text', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' }
+        ]
+      },
+      { 
+        id: 'backoffice', 
+        label: 'Backoffice', 
+        icon: 'briefcase', 
+        isCollapsible: true,
+        children: [
+          { id: 'inbox', label: 'Ticket-Inbox', icon: 'inbox', path: '/backoffice/inbox.html', badge: 'tickets' },
+          { id: 'reports', label: 'Berichte', icon: 'flag', path: '/backoffice/reports.html', badge: 'reports' },
+          { id: 'user-management', label: 'Benutzerverwaltung', icon: 'users-cog', path: '/app/admin.html?tab=users' },
+          { id: 'audit', label: 'Aktivitätsprotokoll', icon: 'activity', path: '/backoffice/audit.html' }
+        ]
+      },
+      { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
     ]
   };
 
@@ -234,6 +280,17 @@ export async function renderSidebar(userRole, currentPath, forceRender = false) 
   if (savedState !== null) {
     sidebarState.collapsed = savedState === 'true';
   }
+  
+  const savedExpandedItems = localStorage.getItem('sidebarExpandedItems');
+  if (savedExpandedItems) {
+    try {
+      sidebarState.expandedItems = JSON.parse(savedExpandedItems);
+    } catch (e) {
+      sidebarState.expandedItems = [];
+    }
+  } else {
+    sidebarState.expandedItems = [];
+  }
 
   const navItems = getNavigationItems(userRole);
   const isCollapsed = sidebarState.collapsed;
@@ -258,6 +315,63 @@ export async function renderSidebar(userRole, currentPath, forceRender = false) 
   }
   
   const navHTML = navItems.map(item => {
+    // Check if this is a collapsible parent item
+    if (item.isCollapsible && item.children) {
+      const isExpanded = sidebarState.expandedItems?.includes(item.id) || false;
+      const iconHTML = getIcon(item.icon, 20);
+      const chevronHTML = getIcon(isExpanded ? 'chevron-down' : 'chevron-right', 16);
+      
+      // Check if any child is active
+      let hasActiveChild = false;
+      for (const child of item.children) {
+        if (isActiveRoute(child.path, currentPath)) {
+          hasActiveChild = true;
+          break;
+        }
+      }
+      
+      // Build children HTML
+      const childrenHTML = item.children.map(child => {
+        const isActive = isActiveRoute(child.path, currentPath);
+        const childBadgeCount = badgeCounts[child.id] || 0;
+        const childIconHTML = getIcon(child.icon, 18);
+        
+        return `
+          <a 
+            href="${child.path}" 
+            class="sidebar-item sidebar-child ${isActive ? 'active' : ''}" 
+            data-nav-id="${child.id}"
+            aria-label="${child.label}"
+          >
+            <span class="sidebar-icon" aria-hidden="true">${childIconHTML}</span>
+            ${childBadgeCount > 0 ? `<span class="sidebar-badge">${childBadgeCount > 99 ? '99+' : childBadgeCount}</span>` : ''}
+            ${!isCollapsed || isMobile ? `<span class="sidebar-label">${child.label}</span>` : ''}
+          </a>
+        `;
+      }).join('');
+      
+      return `
+        <div class="sidebar-group ${hasActiveChild ? 'has-active-child' : ''}">
+          <button 
+            class="sidebar-item sidebar-parent ${isExpanded ? 'expanded' : ''}" 
+            data-nav-id="${item.id}"
+            data-collapsible="true"
+            aria-label="${item.label}"
+            aria-expanded="${isExpanded}"
+            ${isCollapsed && !isMobile ? 'title="' + item.label + '"' : ''}
+          >
+            <span class="sidebar-icon" aria-hidden="true">${iconHTML}</span>
+            ${!isCollapsed || isMobile ? `<span class="sidebar-label">${item.label}</span>` : ''}
+            ${!isCollapsed || isMobile ? `<span class="sidebar-chevron">${chevronHTML}</span>` : ''}
+          </button>
+          <div class="sidebar-children ${isExpanded ? 'expanded' : ''}" style="display: ${isExpanded ? 'block' : 'none'};">
+            ${childrenHTML}
+          </div>
+        </div>
+      `;
+    }
+    
+    // Regular item
     const isActive = item.id === activeItemId;
     const badgeCount = badgeCounts[item.id] || 0;
     const iconHTML = getIcon(item.icon, 20);
@@ -308,6 +422,35 @@ function attachSidebarEvents() {
   if (toggleBtn) {
     toggleBtn.addEventListener('click', toggleSidebar);
   }
+
+  // Collapsible items
+  const collapsibleItems = document.querySelectorAll('[data-collapsible="true"]');
+  collapsibleItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const itemId = item.dataset.navId;
+      const childrenContainer = item.nextElementSibling;
+      
+      if (sidebarState.expandedItems.includes(itemId)) {
+        // Collapse
+        sidebarState.expandedItems = sidebarState.expandedItems.filter(id => id !== itemId);
+        item.classList.remove('expanded');
+        item.setAttribute('aria-expanded', 'false');
+        childrenContainer.classList.remove('expanded');
+        childrenContainer.style.display = 'none';
+      } else {
+        // Expand
+        sidebarState.expandedItems.push(itemId);
+        item.classList.add('expanded');
+        item.setAttribute('aria-expanded', 'true');
+        childrenContainer.classList.add('expanded');
+        childrenContainer.style.display = 'block';
+      }
+      
+      // Save state
+      localStorage.setItem('sidebarExpandedItems', JSON.stringify(sidebarState.expandedItems));
+    });
+  });
 
   // Mobile overlay
   const overlay = document.getElementById('sidebarOverlay');

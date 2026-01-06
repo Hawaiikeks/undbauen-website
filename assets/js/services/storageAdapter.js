@@ -19,7 +19,10 @@ const K = {
   favoritesPrefix: "favorites:",
   activityPrefix: "activity:",
   cmsUpdates: "cms:updates",
-  cmsPubs: "cms:publications"
+  cmsPubs: "cms:publications",
+  resources: "resources",
+  knowledge: "knowledge",
+  auditLog: "auditLog"
 };
 
 function nowISO(){ return new Date().toISOString(); }
@@ -530,12 +533,207 @@ function seedCMSIfEmpty(){
   }
 }
 
+function seedResourcesIfEmpty(){
+  const resources = getJSON(K.resources, []);
+  if(resources.length) return;
+  setJSON(K.resources, [
+    {
+      id: uid("res"),
+      title: "BIM Implementation Guide",
+      description: "Umfassender Leitfaden zur Implementierung von BIM in Architektur- und Ingenieurbüros.",
+      categoryId: "cat_guides",
+      tags: ["BIM", "Implementation", "Guide"],
+      fileUrl: "/assets/resources/bim-implementation-guide.pdf",
+      fileType: "pdf",
+      fileSize: 2457600,
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      title: "Dynamo Script Library",
+      description: "Sammlung von Dynamo-Skripten für häufige Automatisierungsaufgaben in Revit.",
+      categoryId: "cat_scripts",
+      tags: ["Dynamo", "Automation", "Revit", "Scripts"],
+      fileUrl: "/assets/resources/dynamo-scripts.zip",
+      fileType: "zip",
+      fileSize: 1048576,
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      title: "Sustainable Building Materials Database",
+      description: "Datenbank nachhaltiger Baumaterialien mit Umweltbewertungen und Verfügbarkeit.",
+      categoryId: "cat_databases",
+      tags: ["Nachhaltigkeit", "Materialien", "Database"],
+      fileUrl: "https://docs.google.com/spreadsheets/d/example",
+      fileType: "link",
+      fileSize: 0,
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      title: "IFC Best Practices",
+      description: "Best Practices für den Export und Import von IFC-Dateien in verschiedenen Softwarelösungen.",
+      categoryId: "cat_guides",
+      tags: ["IFC", "OpenBIM", "Interoperability"],
+      fileUrl: "/assets/resources/ifc-best-practices.pdf",
+      fileType: "pdf",
+      fileSize: 3145728,
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      title: "Presentation Template: Innovationsabend",
+      description: "PowerPoint-Vorlage für Präsentationen bei …undbauen Innovationsabenden.",
+      categoryId: "cat_templates",
+      tags: ["Template", "Präsentation", "Branding"],
+      fileUrl: "/assets/resources/presentation-template.pptx",
+      fileType: "pptx",
+      fileSize: 524288,
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ]);
+}
+
+function seedKnowledgeIfEmpty(){
+  const knowledge = getJSON(K.knowledge, []);
+  if(knowledge.length) return;
+  setJSON(K.knowledge, [
+    {
+      id: uid("know"),
+      title: "Was ist BIM?",
+      slug: "was-ist-bim",
+      excerpt: "Building Information Modeling (BIM) ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden.",
+      content: "<h2>Building Information Modeling (BIM)</h2><p>BIM ist mehr als nur 3D-Modellierung. Es ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden mit Hilfe von Software.</p><h3>Die 7 BIM-Dimensionen</h3><ul><li><strong>3D:</strong> Geometrie</li><li><strong>4D:</strong> Zeit/Ablauf</li><li><strong>5D:</strong> Kosten</li><li><strong>6D:</strong> Nachhaltigkeit</li><li><strong>7D:</strong> Facility Management</li></ul>",
+      categoryId: "cat_basics",
+      tags: ["BIM", "Grundlagen", "Methodik"],
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("know"),
+      title: "IFC - Industry Foundation Classes",
+      slug: "ifc-industry-foundation-classes",
+      excerpt: "IFC ist ein offener Standard für den Austausch von BIM-Daten zwischen verschiedenen Softwareplattformen.",
+      content: "<h2>Industry Foundation Classes (IFC)</h2><p>IFC ist ein offener, internationaler Standard (ISO 16739) für den Austausch von BIM-Daten. Er ermöglicht die Interoperabilität zwischen verschiedenen Softwareplattformen.</p><h3>Vorteile</h3><ul><li>Herstellerunabhängigkeit</li><li>Langzeitarchivierung</li><li>Durchgängiger Datenaustausch</li><li>Transparenz</li></ul><h3>IFC-Versionen</h3><p>Aktuell sind IFC 2x3 und IFC4 die am häufigsten verwendeten Versionen.</p>",
+      categoryId: "cat_standards",
+      tags: ["IFC", "OpenBIM", "Standards", "Interoperability"],
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("know"),
+      title: "Dynamo für Revit",
+      slug: "dynamo-fuer-revit",
+      excerpt: "Dynamo ist eine visuelle Programmierumgebung für die Automatisierung von Workflows in Revit und anderen Autodesk-Produkten.",
+      content: "<h2>Dynamo für Revit</h2><p>Dynamo ist eine Open-Source-Plattform für visuelle Programmierung, die eng mit Revit integriert ist.</p><h3>Anwendungsfälle</h3><ul><li>Parametrisches Design</li><li>Datenextraktion und -analyse</li><li>Automatisierung wiederkehrender Aufgaben</li><li>BIM-Modellprüfung</li><li>Generatives Design</li></ul><h3>Getting Started</h3><p>Dynamo ist in Revit bereits enthalten. Öffnen Sie es über die Registerkarte \"Verwalten\" → \"Dynamo\".</p>",
+      categoryId: "cat_tools",
+      tags: ["Dynamo", "Revit", "Automation", "Visual Programming"],
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("know"),
+      title: "Circular Economy im Bauwesen",
+      slug: "circular-economy-im-bauwesen",
+      excerpt: "Kreislaufwirtschaft im Bauwesen bedeutet, Gebäude und Materialien so zu gestalten, dass sie wiederverwendet, repariert oder recycelt werden können.",
+      content: "<h2>Circular Economy im Bauwesen</h2><p>Die Kreislaufwirtschaft ist ein regeneratives System, in dem Ressourcenverbrauch und Abfälle, Emissionen und Energieverschwendung minimiert werden.</p><h3>Prinzipien</h3><ol><li><strong>Design for Disassembly:</strong> Gebäude für Rückbau konzipieren</li><li><strong>Materialpass:</strong> Dokumentation verbauter Materialien</li><li><strong>Urban Mining:</strong> Gebäude als Materialbank</li><li><strong>Lifecycle Thinking:</strong> Gesamter Lebenszyklus im Fokus</li></ol><h3>Vorteile</h3><ul><li>Ressourcenschonung</li><li>CO2-Reduktion</li><li>Wirtschaftlichkeit</li><li>Innovationspotenzial</li></ul>",
+      categoryId: "cat_sustainability",
+      tags: ["Nachhaltigkeit", "Circular Economy", "Kreislaufwirtschaft", "Ressourcen"],
+      visibility: "member",
+      status: "published",
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ]);
+}
+
+function seedAuditLogIfEmpty(){
+  const auditLog = getJSON(K.auditLog, []);
+  if(auditLog.length) return;
+  setJSON(K.auditLog, [
+    {
+      id: uid("audit"),
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      action: "user.login",
+      userId: "admin@undbauen.local",
+      details: { method: "password", ip: "127.0.0.1" },
+      severity: "info"
+    },
+    {
+      id: uid("audit"),
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      action: "event.created",
+      userId: "admin@undbauen.local",
+      details: { eventId: "evt_2026_01_12", title: "Innovationsabend: AEC Design Workflow Automation" },
+      severity: "info"
+    },
+    {
+      id: uid("audit"),
+      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      action: "user.role.changed",
+      userId: "admin@undbauen.local",
+      details: { targetUser: "moderator@undbauen.local", oldRole: "member", newRole: "moderator" },
+      severity: "warning"
+    },
+    {
+      id: uid("audit"),
+      timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      action: "content.published",
+      userId: "editor@undbauen.local",
+      details: { contentType: "publication", contentId: "pub_123", title: "AEC Automation Patterns" },
+      severity: "info"
+    },
+    {
+      id: uid("audit"),
+      timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      action: "ticket.resolved",
+      userId: "moderator@undbauen.local",
+      details: { ticketId: "tkt_456", category: "technical" },
+      severity: "info"
+    }
+  ]);
+}
+
 function ensureSeeds(){
   seedUsersIfEmpty();
   seedExampleMembers(); // Beispiel-Mitglieder hinzufügen
   seedEventsIfEmpty();
   seedForumIfEmpty();
   seedCMSIfEmpty();
+  seedResourcesIfEmpty();
+  seedKnowledgeIfEmpty();
+  seedAuditLogIfEmpty();
 }
 
 /* ========== AUTH / SESSION ========== */
@@ -575,37 +773,39 @@ function login(email, password){
   ensureSeeds();
   const users = getUsers();
   const user = users.find(u => u.email.toLowerCase() === (email||"").toLowerCase());
-  if(!user) return { ok:false, error:"Account nicht gefunden." };
-  if(user.status === "blocked") return { ok:false, error:"Account gesperrt." };
-  if(user.password !== password) return { ok:false, error:"Passwort falsch." };
+  if(!user) return { success:false, error:"Account nicht gefunden." };
+  if(user.status === "blocked") return { success:false, error:"Account gesperrt." };
+  if(user.password !== password) return { success:false, error:"Passwort falsch." };
 
   seedProfileIfMissing(user);
-  setSession({ userId:user.id, email:user.email, role:user.role, createdAt:nowISO() });
-  return { ok:true };
+  const token = `token_${uid()}`;
+  setSession({ userId:user.id, email:user.email, role:user.role, token:token, createdAt:nowISO() });
+  return { success:true, user: { id:user.id, name:user.name, email:user.email, role:user.role }, token:token };
 }
 
 function register(name, email, password){
   ensureSeeds();
-  if(!name || name.trim().length < 2) return { ok:false, error:"Bitte Namen angeben." };
+  if(!name || name.trim().length < 2) return { success:false, error:"Bitte Namen angeben." };
   // Email-Validierung: muss @ enthalten und mit .de, .com, etc. enden
-  if(!email || !email.includes("@")) return { ok:false, error:"Bitte gültige E-Mail angeben." };
+  if(!email || !email.includes("@")) return { success:false, error:"Bitte gültige E-Mail angeben." };
   const emailParts = email.split("@");
-  if(emailParts.length !== 2 || !emailParts[1].includes(".")) return { ok:false, error:"Bitte gültige E-Mail angeben." };
-  if(!password || password.length < 8) return { ok:false, error:"Passwort min. 8 Zeichen." };
+  if(emailParts.length !== 2 || !emailParts[1].includes(".")) return { success:false, error:"Bitte gültige E-Mail angeben." };
+  if(!password || password.length < 8) return { success:false, error:"Passwort min. 8 Zeichen." };
 
   const users = getUsers();
   if(users.some(u => u.email.toLowerCase() === email.toLowerCase())){
-    return { ok:false, error:"E-Mail ist bereits registriert." };
+    return { success:false, error:"E-Mail ist bereits registriert." };
   }
   const user = { id:uid("u"), name:name.trim(), email:email.trim(), password, role:"member", status:"active" };
   users.push(user);
   saveUsers(users);
   seedProfileIfMissing(user);
-  setSession({ userId:user.id, email:user.email, role:user.role, createdAt:nowISO() });
-  return { ok:true };
+  const token = `token_${uid()}`;
+  setSession({ userId:user.id, email:user.email, role:user.role, token:token, createdAt:nowISO() });
+  return { success:true, user: { id:user.id, name:user.name, email:user.email, role:user.role }, token:token };
 }
 
-function logout(){ clearSession(); return { ok:true }; }
+function logout(){ clearSession(); return { success:true }; }
 
 /* ========== PROFILES ========== */
 function getProfileByEmail(email){
@@ -637,13 +837,13 @@ function updateMyProfile(payload){
     payload.avatarId = current.avatarId || '';
   }
   const u = me();
-  if(!u) return { ok:false, error:"Not logged in" };
+  if(!u) return { success:false, error:"Not logged in" };
   const key = K.profilesPrefix + u.email.toLowerCase();
   const prof = getJSON(key, null);
-  if(!prof) return { ok:false, error:"Profil nicht gefunden." };
+  if(!prof) return { success:false, error:"Profil nicht gefunden." };
 
   const bio = (payload.bio ?? prof.bio ?? "");
-  if(bio.length > 500) return { ok:false, error:"Bio max 500 Zeichen." };
+  if(bio.length > 500) return { success:false, error:"Bio max 500 Zeichen." };
 
   const next = {
     ...prof,
@@ -654,7 +854,7 @@ function updateMyProfile(payload){
   };
   setJSON(key, next);
   // sync: name im users array (optional)
-  return { ok:true, profile: next };
+  return { success:true, profile: next };
 }
 
 function listMembers(query=""){
@@ -753,17 +953,17 @@ function addActivity(userId, act){
 
 function bookEvent(eventId){
   const u = me();
-  if(!u) return { ok:false, error:"Not logged in" };
-  if(u.status === "blocked") return { ok:false, error:"Account gesperrt." };
+  if(!u) return { success:false, error:"Not logged in" };
+  if(u.status === "blocked") return { success:false, error:"Account gesperrt." };
 
   const ev = getEvent(eventId);
-  if(!ev) return { ok:false, error:"Event nicht gefunden." };
+  if(!ev) return { success:false, error:"Event nicht gefunden." };
 
   const current = getParticipants(eventId);
-  if(current.some(p => p.userId === u.id)) return { ok:true };
+  if(current.some(p => p.userId === u.id)) return { success:true };
 
   if(bookingsCount(eventId) >= ev.capacity){
-    return { ok:false, error:"Ausgebucht." };
+    return { success:false, error:"Ausgebucht." };
   }
 
   current.push({ userId:u.id, email:u.email, role:"participant", createdAt: nowISO() });
@@ -778,21 +978,21 @@ function bookEvent(eventId){
   addNotification(u.email, { type:"booking", title:"Termin gebucht", message: ev.title });
   addActivity(u.id, { type:"event_booked", referenceType:"event", referenceId:eventId });
 
-  return { ok:true };
+  return { success:true };
 }
 
 function cancelBooking(eventId){
   const u = me();
-  if(!u) return { ok:false, error:"Not logged in" };
+  if(!u) return { success:false, error:"Not logged in" };
 
   const ev = getEvent(eventId);
-  if(!ev) return { ok:false, error:"Event nicht gefunden." };
+  if(!ev) return { success:false, error:"Event nicht gefunden." };
 
   const current = getParticipants(eventId);
   const filtered = current.filter(p => p.userId !== u.id);
   
   if(filtered.length === current.length){
-    return { ok:false, error:"Du bist nicht für diesen Termin gebucht." };
+    return { success:false, error:"Du bist nicht für diesen Termin gebucht." };
   }
 
   setParticipants(eventId, filtered);
@@ -807,17 +1007,17 @@ function cancelBooking(eventId){
   addNotification(u.email, { type:"booking_cancelled", title:"Termin storniert", message: ev.title });
   addActivity(u.id, { type:"event_cancelled", referenceType:"event", referenceId:eventId });
 
-  return { ok:true };
+  return { success:true };
 }
 
 function saveEvent(eventId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const ids = getSavedIds(u.email);
   const has = ids.includes(eventId);
   const next = has ? ids.filter(x=>x!==eventId) : [...ids, eventId];
   setSavedIds(u.email, next);
   addActivity(u.id, { type: has ? "unfavorite" : "favorite", referenceType:"event_saved", referenceId:eventId });
-  return { ok:true, saved: !has };
+  return { success:true, saved: !has };
 }
 
 /* ICS */
@@ -862,18 +1062,18 @@ function downloadText(filename, text){
 }
 function exportICSForEvent(eventId){
   const ev = getEvent(eventId);
-  if(!ev) return { ok:false, error:"Event nicht gefunden" };
+  if(!ev) return { success:false, error:"Event nicht gefunden" };
   const ics = generateICSForEvent(ev);
   downloadText(`${eventId}.ics`, ics);
-  return { ok:true };
+  return { success:true };
 }
 function exportICSForBooked(){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const ids = getBookedIds(u.email);
   const evs = ids.map(getEvent).filter(Boolean);
   const blocks = evs.map(generateICSForEvent);
   downloadText(`undbauen-booked.ics`, blocks.join("\r\n"));
-  return { ok:true };
+  return { success:true };
 }
 
 /* ========== FORUM ========== */
@@ -967,7 +1167,7 @@ function ensureEventThread(eventId){
 }
 
 function createForumThread(categoryId, title, body){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const threads = getForumThreads();
   const threadId = uid("thr");
   const t = {
@@ -986,14 +1186,14 @@ function createForumThread(categoryId, title, body){
   }]);
 
   addActivity(u.id, { type:"thread_created", referenceType:"thread", referenceId: threadId });
-  return { ok:true, threadId };
+  return { success:true, threadId };
 }
 
 function replyForumThread(threadId, body){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const t = getForumThread(threadId);
-  if(!t) return { ok:false, error:"Thread nicht gefunden" };
-  if(t.locked) return { ok:false, error:"Thread ist geschlossen." };
+  if(!t) return { success:false, error:"Thread nicht gefunden" };
+  if(t.locked) return { success:false, error:"Thread ist geschlossen." };
 
   const posts = getForumPosts(threadId);
   posts.push({ id:uid("post"), threadId, type:"reply", authorEmail:u.email, body: body.trim(), createdAt: nowISO(), deleted:false });
@@ -1007,38 +1207,38 @@ function replyForumThread(threadId, body){
   if(t.createdBy && t.createdBy !== u.email){
     addNotification(t.createdBy, { type:"forum_reply", title:"Neue Antwort", message:`${u.name} hat geantwortet: ${t.title}` });
   }
-  return { ok:true };
+  return { success:true };
 }
 
 /* Admin moderation */
 function adminPinThread(threadId, pinned){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const threads = getForumThreads().map(t => t.id===threadId ? ({...t, pinned:!!pinned}) : t);
   saveForumThreads(threads);
-  return { ok:true };
+  return { success:true };
 }
 function adminLockThread(threadId, locked){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const threads = getForumThreads().map(t => t.id===threadId ? ({...t, locked:!!locked}) : t);
   saveForumThreads(threads);
-  return { ok:true };
+  return { success:true };
 }
 function adminDeleteThread(threadId){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const threads = getForumThreads().map(t => t.id===threadId ? ({...t, deleted:true}) : t);
   setJSON(K.forumThreads, threads);
-  return { ok:true };
+  return { success:true };
 }
 
 function deleteForumPost(threadId, postId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const posts = getForumPosts(threadId);
   const post = posts.find(p => p.id === postId);
-  if(!post) return { ok:false, error:"Post nicht gefunden" };
+  if(!post) return { success:false, error:"Post nicht gefunden" };
   
   // Check if user is author or admin
   if(post.authorEmail.toLowerCase() !== u.email.toLowerCase() && !isAdmin()){
-    return { ok:false, error:"Nicht berechtigt" };
+    return { success:false, error:"Nicht berechtigt" };
   }
   
   // Mark post as deleted
@@ -1049,15 +1249,15 @@ function deleteForumPost(threadId, postId){
   const remainingPosts = updatedPosts.filter(p => !p.deleted);
   const isLastPost = remainingPosts.length === 0;
   
-  return { ok:true, isLastPost };
+  return { success:true, isLastPost };
 }
 
 // Forum Interactions
 function likeThread(threadId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const threads = getForumThreads();
   const thread = threads.find(t => t.id === threadId);
-  if(!thread) return { ok:false, error:"Thread nicht gefunden" };
+  if(!thread) return { success:false, error:"Thread nicht gefunden" };
   
   if(!thread.likes) thread.likes = [];
   const userEmail = u.email.toLowerCase();
@@ -1071,14 +1271,14 @@ function likeThread(threadId){
   
   const updatedThreads = threads.map(t => t.id === threadId ? thread : t);
   saveForumThreads(updatedThreads);
-  return { ok:true, liked: index === -1, likes: thread.likes.length };
+  return { success:true, liked: index === -1, likes: thread.likes.length };
 }
 
 function watchThread(threadId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const threads = getForumThreads();
   const thread = threads.find(t => t.id === threadId);
-  if(!thread) return { ok:false, error:"Thread nicht gefunden" };
+  if(!thread) return { success:false, error:"Thread nicht gefunden" };
   
   if(!thread.watchedBy) thread.watchedBy = [];
   const userEmail = u.email.toLowerCase();
@@ -1092,7 +1292,7 @@ function watchThread(threadId){
   
   const updatedThreads = threads.map(t => t.id === threadId ? thread : t);
   saveForumThreads(updatedThreads);
-  return { ok:true, watching: index === -1 };
+  return { success:true, watching: index === -1 };
 }
 
 /* ========== MESSAGES ========== */
@@ -1119,8 +1319,8 @@ function ensureDMThread(emailA, emailB, subject=""){
 }
 
 function sendMessage({to, subject="", body="", attachments=[]}){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
-  if(!to) return { ok:false, error:"Empfänger fehlt" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
+  if(!to) return { success:false, error:"Empfänger fehlt" };
 
   const threadId = ensureDMThread(u.email, to, subject);
   const msg = { id:uid("msg"), threadId, from:u.email, to, subject, body, attachments: attachments || [], createdAt: nowISO(), readBy:[u.email] };
@@ -1148,11 +1348,11 @@ function sendMessage({to, subject="", body="", attachments=[]}){
   addNotification(to, { type:"message", title:"Neue Nachricht", message:`Von ${u.name}` });
   addActivity(u.id, { type:"message_sent", referenceType:"thread", referenceId: threadId });
 
-  return { ok:true, threadId };
+  return { success:true, threadId };
 }
 
 function markThreadRead(threadId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const threads = getThreads(u.email).map(t => t.id===threadId ? ({...t, unreadCount:0}) : t);
   setThreads(u.email, threads);
 
@@ -1162,7 +1362,7 @@ function markThreadRead(threadId){
     return {...m, readBy:[...rb]};
   });
   setMessages(threadId, msgs);
-  return { ok:true };
+  return { success:true };
 }
 
 function listSystemMessages(){
@@ -1176,11 +1376,11 @@ function listNotifications(){
   return getJSON(K.notificationsPrefix + u.email.toLowerCase(), []);
 }
 function markNotificationRead(id){
-  const u = me(); if(!u) return { ok:false };
+  const u = me(); if(!u) return { success:false };
   const key = K.notificationsPrefix + u.email.toLowerCase();
   const arr = getJSON(key, []).map(n => n.id===id ? ({...n, read:true}) : n);
   setJSON(key, arr);
-  return { ok:true };
+  return { success:true };
 }
 
 /* ========== FAVORITES + RECOMMENDATIONS + ACTIVITY ========== */
@@ -1189,14 +1389,14 @@ function getFavorites(){
   return getJSON(K.favoritesPrefix + u.id, []);
 }
 function toggleFavorite(targetType, targetId){
-  const u = me(); if(!u) return { ok:false, error:"Not logged in" };
+  const u = me(); if(!u) return { success:false, error:"Not logged in" };
   const key = K.favoritesPrefix + u.id;
   const arr = getJSON(key, []);
   const exists = arr.some(f => f.targetType===targetType && f.targetId===targetId);
   const next = exists ? arr.filter(f=> !(f.targetType===targetType && f.targetId===targetId)) : [{ id:uid("fav"), userId:u.id, targetType, targetId, createdAt: nowISO() }, ...arr];
   setJSON(key, next);
   addActivity(u.id, { type: exists ? "favorite_removed":"favorited", referenceType: targetType, referenceId: targetId });
-  return { ok:true, active: !exists };
+  return { success:true, active: !exists };
 }
 function listActivity(){
   const u = me(); if(!u) return [];
@@ -1236,20 +1436,20 @@ function adminListUsers(){
   return getUsers();
 }
 function adminSetUserRole(userId, role){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const users = getUsers().map(u => u.id===userId ? ({...u, role}) : u);
   saveUsers(users);
-  return { ok:true };
+  return { success:true };
 }
 function adminSetUserStatus(userId, status){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const users = getUsers().map(u => u.id===userId ? ({...u, status}) : u);
   saveUsers(users);
-  return { ok:true };
+  return { success:true };
 }
 
 function adminDeleteUser(userId){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const allUsers = getUsers();
   const user = allUsers.find(u => u.id === userId);
   if (user && user.email) {
@@ -1262,28 +1462,28 @@ function adminDeleteUser(userId){
   }
   const users = allUsers.filter(u => u.id !== userId);
   saveUsers(users);
-  return { ok:true };
+  return { success:true };
 }
 
 function adminCreateEvent(payload){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const events = listEvents();
   const ev = { id:uid("evt"), eventThreadId:null, status:"scheduled", visibility:"public", createdBy: me().email, ...payload };
   events.push(ev);
   saveEvents(events);
-  return { ok:true, id: ev.id };
+  return { success:true, id: ev.id };
 }
 function adminUpdateEvent(eventId, payload){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const events = listEvents().map(e => e.id===eventId ? ({...e, ...payload}) : e);
   saveEvents(events);
-  return { ok:true };
+  return { success:true };
 }
 function adminDeleteEvent(eventId){
-  if(!isAdmin()) return { ok:false, error:"Not admin" };
+  if(!isAdmin()) return { success:false, error:"Not admin" };
   const events = listEvents().map(e => e.id===eventId ? ({...e, deleted:true}) : e);
   saveEvents(events);
-  return { ok:true };
+  return { success:true };
 }
 
 /* CMS */
@@ -1306,19 +1506,19 @@ function listPublicationsMember(){
   return getJSON(K.cmsPubs, []).filter(x=>x.status==="published");
 }
 function adminCreateUpdate(payload){
-  if(!isAdmin()) return { ok:false, error:"Keine Berechtigung." };
+  if(!isAdmin()) return { success:false, error:"Keine Berechtigung." };
   // Prüfe ob für diesen Monat bereits ein Update existiert
   const arr = getJSON(K.cmsUpdates, []);
   const existing = arr.find(u => u.month === payload.month && u.status === "published");
   if(existing) {
-    return { ok:false, error:`Für ${payload.month} existiert bereits ein Monatsupdate. Pro Monat ist nur ein Update möglich.` };
+    return { success:false, error:`Für ${payload.month} existiert bereits ein Monatsupdate. Pro Monat ist nur ein Update möglich.` };
   }
   arr.unshift({ id:uid("upd"), status:"published", visibility:"member", createdAt:nowISO(), updatedAt:nowISO(), ...payload });
   setJSON(K.cmsUpdates, arr);
-  return { ok:true };
+  return { success:true };
 }
 function adminDeleteUpdate(id){
-  if(!isAdmin()) return { ok:false, error:"Keine Berechtigung" };
+  if(!isAdmin()) return { success:false, error:"Keine Berechtigung" };
   
   // Lösche aus dem Standard-Speicher
   const arr = getJSON(K.cmsUpdates, []).filter(x=>x.id!==id);
@@ -1333,26 +1533,29 @@ function adminDeleteUpdate(id){
     console.warn("Fehler beim Löschen aus direktem localStorage:", e);
   }
   
-  return { ok:true };
+  return { success:true };
 }
 function adminCreatePublication(payload){
-  if(!isAdmin()) return { ok:false };
+  if(!isAdmin()) return { success:false };
   const arr = getJSON(K.cmsPubs, []);
   arr.unshift({ id:uid("pub"), status:"published", visibility:"member", createdAt:nowISO(), updatedAt:nowISO(), ...payload });
   setJSON(K.cmsPubs, arr);
-  return { ok:true };
+  return { success:true };
 }
 function adminDeletePublication(id){
-  if(!isAdmin()) return { ok:false };
+  if(!isAdmin()) return { success:false };
   const arr = getJSON(K.cmsPubs, []).filter(x=>x.id!==id);
   setJSON(K.cmsPubs, arr);
-  return { ok:true };
+  return { success:true };
 }
+
+// Alias for compatibility with httpAdapter
+const getCurrentUser = me;
 
 /* exported adapter */
 export const storageAdapter = {
   // auth
-  login, register, logout, me, isLoggedIn, isAdmin, hasRole, hasAnyRole,
+  login, register, logout, me, getCurrentUser, isLoggedIn, isAdmin, hasRole, hasAnyRole,
 
   // profiles
   getProfileByEmail, getProfileByEmailPublic, updateMyProfile, listMembers, listMembersPublic,
@@ -1388,4 +1591,6 @@ export const storageAdapter = {
   adminCreatePublication, adminDeletePublication
 };
 
+// Ensure seeds are created immediately on module load
+ensureSeeds();
 

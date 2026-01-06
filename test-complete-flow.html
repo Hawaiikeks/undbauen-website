@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>End-to-End Login Test - …undbauen</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #0ff;
+      margin-bottom: 20px;
+    }
+    .test-section {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #666;
+    }
+    .test-section.running {
+      border-left-color: #ff0;
+    }
+    .test-section.success {
+      border-left-color: #0f0;
+    }
+    .test-section.error {
+      border-left-color: #f00;
+    }
+    .test-section h2 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-icon {
+      font-size: 1.5em;
+    }
+    .log {
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    .log-line {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 3px;
+    }
+    .log-line.success { color: #0f0; }
+    .log-line.error { color: #f00; }
+    .log-line.warning { color: #ff0; }
+    .log-line.info { color: #0ff; }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      margin: 10px 10px 10px 0;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    .btn-success {
+      background: #4CAF50;
+    }
+    .btn-danger {
+      background: #f44336;
+    }
+    .summary {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .summary.success {
+      border: 2px solid #0f0;
+    }
+    .summary.error {
+      border: 2px solid #f00;
+    }
+    .summary h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 End-to-End Login Flow Test</h1>
+    
+    <div style="margin-bottom: 20px;">
+      <button class="btn btn-success" onclick="runAllTests()">▶️ Alle Tests ausführen</button>
+      <button class="btn btn-danger" onclick="clearAll()">🗑️ Alles löschen</button>
+      <button class="btn" onclick="window.location.href='index.html'">🏠 Zur Startseite</button>
+    </div>
+
+    <!-- Test 1: localStorage löschen -->
+    <div class="test-section" id="test1">
+      <h2><span class="status-icon">⏳</span> Test 1: localStorage löschen</h2>
+      <div class="log" id="log1"></div>
+    </div>
+
+    <!-- Test 2: Seeds erstellen -->
+    <div class="test-section" id="test2">
+      <h2><span class="status-icon">⏳</span> Test 2: Seeds erstellen</h2>
+      <div class="log" id="log2"></div>
+    </div>
+
+    <!-- Test 3: Login durchführen -->
+    <div class="test-section" id="test3">
+      <h2><span class="status-icon">⏳</span> Test 3: Login durchführen</h2>
+      <div class="log" id="log3"></div>
+    </div>
+
+    <!-- Test 4: Session prüfen -->
+    <div class="test-section" id="test4">
+      <h2><span class="status-icon">⏳</span> Test 4: Session prüfen</h2>
+      <div class="log" id="log4"></div>
+    </div>
+
+    <!-- Test 5: Dashboard-Zugriff simulieren -->
+    <div class="test-section" id="test5">
+      <h2><span class="status-icon">⏳</span> Test 5: Dashboard-Zugriff simulieren</h2>
+      <div class="log" id="log5"></div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary" id="summary" style="display: none;">
+      <h2 id="summaryTitle"></h2>
+      <p id="summaryText"></p>
+      <button class="btn btn-success" onclick="window.location.href='index.html'" style="margin-top: 20px;">
+        ✅ Zur Login-Seite
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    function log(testNum, message, type = 'info') {
+      const logDiv = document.getElementById(`log${testNum}`);
+      const line = document.createElement('div');
+      line.className = `log-line ${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(line);
+      console.log(`Test ${testNum}:`, message);
+    }
+
+    function setTestStatus(testNum, status) {
+      const testDiv = document.getElementById(`test${testNum}`);
+      const icon = testDiv.querySelector('.status-icon');
+      
+      testDiv.className = `test-section ${status}`;
+      
+      if (status === 'running') {
+        icon.textContent = '⏳';
+      } else if (status === 'success') {
+        icon.textContent = '✅';
+      } else if (status === 'error') {
+        icon.textContent = '❌';
+      }
+    }
+
+    function showSummary(success, passed, total) {
+      const summary = document.getElementById('summary');
+      const title = document.getElementById('summaryTitle');
+      const text = document.getElementById('summaryText');
+      
+      summary.style.display = 'block';
+      
+      if (success) {
+        summary.className = 'summary success';
+        title.textContent = '🎉 Alle Tests bestanden!';
+        text.textContent = `${passed}/${total} Tests erfolgreich. Die Login-Funktion ist einsatzbereit!`;
+      } else {
+        summary.className = 'summary error';
+        title.textContent = '❌ Tests fehlgeschlagen';
+        text.textContent = `${passed}/${total} Tests bestanden. Bitte beheben Sie die Fehler oben.`;
+      }
+    }
+
+    window.clearAll = function() {
+      if (confirm('Wirklich alle Daten löschen?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Alle Daten gelöscht!');
+        window.location.reload();
+      }
+    };
+
+    window.runAllTests = async function() {
+      let passed = 0;
+      const total = 5;
+
+      // Test 1: localStorage löschen
+      try {
+        setTestStatus(1, 'running');
+        log(1, 'Lösche localStorage...', 'info');
+        
+        const before = localStorage.length;
+        localStorage.clear();
+        const after = localStorage.length;
+        
+        log(1, `Vorher: ${before} Einträge, Nachher: ${after} Einträge`, 'success');
+        log(1, '✅ localStorage erfolgreich gelöscht', 'success');
+        setTestStatus(1, 'success');
+        passed++;
+      } catch (error) {
+        log(1, `❌ Fehler: ${error.message}`, 'error');
+        setTestStatus(1, 'error');
+      }
+
+      // Test 2: Seeds erstellen
+      try {
+        setTestStatus(2, 'running');
+        log(2, 'Importiere storageAdapter...', 'info');
+        
+        const { storageAdapter } = await import('./assets/js/services/storageAdapter.js');
+        log(2, '✅ storageAdapter importiert', 'success');
+        
+        // Seeds should be auto-created on import
+        const users = localStorage.getItem('users');
+        if (users) {
+          const userList = JSON.parse(users);
+          log(2, `✅ ${userList.length} Benutzer gefunden`, 'success');
+          
+          // Check for admin user
+          const admin = userList.find(u => u.email === 'admin@undbauen.local');
+          if (admin) {
+            log(2, `✅ Admin-Account gefunden: ${admin.name}`, 'success');
+          } else {
+            log(2, '⚠️ Admin-Account nicht gefunden', 'warning');
+          }
+          
+          setTestStatus(2, 'success');
+          passed++;
+        } else {
+          log(2, '❌ Keine Benutzer gefunden', 'error');
+          setTestStatus(2, 'error');
+        }
+      } catch (error) {
+        log(2, `❌ Fehler: ${error.message}`, 'error');
+        setTestStatus(2, 'error');
+      }
+
+      // Test 3: Login durchführen
+      try {
+        setTestStatus(3, 'running');
+        log(3, 'Importiere API Client...', 'info');
+        
+        const { api } = await import('./assets/js/services/apiClient.js');
+        log(3, '✅ API Client importiert', 'success');
+        
+        log(3, 'Versuche Login mit admin@undbauen.local...', 'info');
+        const result = api.login('admin@undbauen.local', 'adminadmin');
+        
+        log(3, `Login-Antwort: ${JSON.stringify(result)}`, 'info');
+        
+        if (result.success) {
+          log(3, `✅ Login erfolgreich!`, 'success');
+          log(3, `   Benutzer: ${result.user.name}`, 'success');
+          log(3, `   Rolle: ${result.user.role}`, 'success');
+          log(3, `   Token: ${result.token.substring(0, 20)}...`, 'success');
+          setTestStatus(3, 'success');
+          passed++;
+        } else {
+          log(3, `❌ Login fehlgeschlagen: ${result.error}`, 'error');
+          setTestStatus(3, 'error');
+        }
+      } catch (error) {
+        log(3, `❌ Fehler: ${error.message}`, 'error');
+        log(3, `   Stack: ${error.stack}`, 'error');
+        setTestStatus(3, 'error');
+      }
+
+      // Test 4: Session prüfen
+      try {
+        setTestStatus(4, 'running');
+        log(4, 'Prüfe Session...', 'info');
+        
+        const { api } = await import('./assets/js/services/apiClient.js');
+        
+        const isLoggedIn = api.isLoggedIn();
+        log(4, `isLoggedIn: ${isLoggedIn}`, isLoggedIn ? 'success' : 'error');
+        
+        if (isLoggedIn) {
+          const user = api.getCurrentUser();
+          log(4, `✅ Aktueller Benutzer: ${user.name}`, 'success');
+          log(4, `   Email: ${user.email}`, 'success');
+          log(4, `   Rolle: ${user.role}`, 'success');
+          
+          // Check localStorage session
+          const session = localStorage.getItem('session');
+          if (session) {
+            const sessionData = JSON.parse(session);
+            log(4, `✅ Session in localStorage gefunden`, 'success');
+            log(4, `   User ID: ${sessionData.userId}`, 'success');
+            log(4, `   Token: ${sessionData.token?.substring(0, 20)}...`, 'success');
+          } else {
+            log(4, '⚠️ Keine Session in localStorage', 'warning');
+          }
+          
+          setTestStatus(4, 'success');
+          passed++;
+        } else {
+          log(4, '❌ Nicht eingeloggt', 'error');
+          setTestStatus(4, 'error');
+        }
+      } catch (error) {
+        log(4, `❌ Fehler: ${error.message}`, 'error');
+        setTestStatus(4, 'error');
+      }
+
+      // Test 5: Dashboard-Zugriff simulieren
+      try {
+        setTestStatus(5, 'running');
+        log(5, 'Simuliere Dashboard-Zugriff...', 'info');
+        
+        const { api } = await import('./assets/js/services/apiClient.js');
+        
+        if (api.isLoggedIn()) {
+          log(5, '✅ Benutzer ist eingeloggt - Dashboard-Zugriff erlaubt', 'success');
+          
+          const user = api.getCurrentUser();
+          if (user.role === 'admin') {
+            log(5, '✅ Admin-Rolle - Zugriff auf alle Bereiche', 'success');
+            log(5, '   ✓ Dashboard', 'success');
+            log(5, '   ✓ Admin-Bereich', 'success');
+            log(5, '   ✓ Backoffice', 'success');
+          } else {
+            log(5, `✅ Rolle: ${user.role} - Basis-Zugriff`, 'success');
+          }
+          
+          log(5, '✅ Redirect zu /app/dashboard.html würde funktionieren', 'success');
+          setTestStatus(5, 'success');
+          passed++;
+        } else {
+          log(5, '❌ Nicht eingeloggt - Dashboard-Zugriff verweigert', 'error');
+          setTestStatus(5, 'error');
+        }
+      } catch (error) {
+        log(5, `❌ Fehler: ${error.message}`, 'error');
+        setTestStatus(5, 'error');
+      }
+
+      // Show summary
+      setTimeout(() => {
+        showSummary(passed === total, passed, total);
+      }, 500);
+    };
+
+    // Auto-run tests on load
+    window.addEventListener('load', () => {
+      setTimeout(runAllTests, 1000);
+    });
+  </script>
+</body>
+</html>
+

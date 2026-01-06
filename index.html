@@ -4,159 +4,38 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>…undbauen – Innovationsnetzwerk</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta name="keywords" content="Innovation, Bauen, Nachhaltigkeit, Community, Netzwerk" />
+  <meta name="author" content="…undbauen" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://undbauen.de/" />
+  <meta property="og:title" content="…undbauen – Innovationsnetzwerk" />
+  <meta property="og:description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta property="og:image" content="https://undbauen.de/assets/images/og-image.jpg" />
+  <meta property="og:site_name" content="…undbauen" />
+  <meta property="og:locale" content="de_DE" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://undbauen.de/" />
+  <meta name="twitter:title" content="…undbauen – Innovationsnetzwerk" />
+  <meta name="twitter:description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta name="twitter:image" content="https://undbauen.de/assets/images/og-image.jpg" />d
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://undbauen.de/" />
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <link rel="stylesheet" href="assets/css/base.css?v=4.0.0" />
-  <link rel="stylesheet" href="assets/css/public.css?v=4.0.0" />
-  <link rel="stylesheet" href="assets/css/components.css?v=4.0.0" />
-  <script>
-    // DEV_ONLY: Aggressive cache clearing - only runs on localhost or with ?dev=1
-    (function() {
-      const isDev = window.location.hostname === 'localhost' || 
-                    window.location.hostname === '127.0.0.1' ||
-                    new URLSearchParams(window.location.search).has('dev');
-      
-      if (!isDev) {
-        // Production: Use stable versioning (no aggressive cache clearing)
-        const EXPECTED_VERSION = '4.0.0';
-        return;
-      }
-      
-      // DEV MODE: Aggressive cache clearing
-      const EXPECTED_VERSION = '4.0.0';
-      console.log('🔧 DEV MODE: Aggressive cache clearing enabled');
-      
-      // Check if we're loading old cached version
-      const currentVersion = document.querySelector('link[rel="stylesheet"]')?.href?.match(/v=([\d.]+)/)?.[1];
-      if (currentVersion && currentVersion !== EXPECTED_VERSION) {
-        console.warn('⚠️ Old version detected:', currentVersion, 'Expected:', EXPECTED_VERSION);
-        if (sessionStorage.getItem('reloadAttempted') !== 'true') {
-          sessionStorage.setItem('reloadAttempted', 'true');
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 100);
-          return;
-        } else {
-          sessionStorage.removeItem('reloadAttempted');
-        }
-      }
-      
-      // Service Worker deaktiviert für Development
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister().then(() => {
-              console.log('✅ Service Worker unregistered (DEV)');
-            }).catch(err => console.error('❌ SW unregister error:', err));
-          }
-        }).catch(err => console.error('❌ SW getRegistrations error:', err));
-        
-        if ('caches' in window) {
-          function clearAllCaches() {
-            caches.keys().then(function(names) {
-              console.log('🗑️ Found caches (DEV):', names);
-              const deletePromises = names.map(name => {
-                return caches.delete(name).then(() => {
-                  console.log('✅ Cache deleted (DEV):', name);
-                }).catch(err => console.error('❌ Cache delete error:', err));
-              });
-              return Promise.all(deletePromises);
-            }).catch(err => console.error('❌ Cache keys error:', err));
-          }
-          
-          clearAllCaches();
-          setTimeout(clearAllCaches, 50);
-          setTimeout(clearAllCaches, 100);
-          setTimeout(clearAllCaches, 250);
-          setTimeout(clearAllCaches, 500);
-          setTimeout(clearAllCaches, 1000);
-          
-          const originalRegister = navigator.serviceWorker.register;
-          navigator.serviceWorker.register = function() {
-            console.log('🚫 Service Worker registration blocked (DEV)');
-            return Promise.reject(new Error('Service Worker registration disabled'));
-          };
-          
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-              registrations.forEach(reg => {
-                reg.unregister().then(() => console.log('✅ SW unregistered on load (DEV)'));
-              });
-            });
-            clearAllCaches();
-          });
-          
-          document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-              clearAllCaches();
-            }
-          });
-        }
-      }
-      
-      // Force reload CSS/JS with cache bust - BEFORE page load (DEV ONLY)
-      function forceReloadAssets() {
-        const timestamp = Date.now();
-        
-        const links = document.querySelectorAll('link[rel="stylesheet"]');
-        links.forEach(link => {
-          const href = link.href;
-          if (href && !href.includes('fonts.googleapis.com') && !href.includes('fonts.gstatic.com')) {
-            try {
-              const url = new URL(href, window.location.href);
-              url.searchParams.set('_cb', timestamp);
-              url.searchParams.set('_v', EXPECTED_VERSION);
-              const newHref = url.toString();
-              if (link.href !== newHref) {
-                link.href = newHref;
-                console.log('🔄 Reloaded stylesheet (DEV):', newHref);
-              }
-            } catch(e) {
-              console.error('Error reloading stylesheet:', e);
-            }
-          }
-        });
-        
-        const scripts = document.querySelectorAll('script[src]');
-        scripts.forEach(script => {
-          const src = script.src;
-          if (src && !src.includes('cdn.quilljs.com') && !src.includes('fonts.googleapis.com') && !src.includes('fonts.gstatic.com')) {
-            try {
-              const url = new URL(src, window.location.href);
-              url.searchParams.set('_cb', timestamp);
-              url.searchParams.set('_v', EXPECTED_VERSION);
-              const newSrc = url.toString();
-              if (script.src !== newSrc) {
-                script.src = newSrc;
-                console.log('🔄 Reloaded script (DEV):', newSrc);
-              }
-            } catch(e) {
-              console.error('Error reloading script:', e);
-            }
-          }
-        });
-      }
-      
-      forceReloadAssets();
-      
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forceReloadAssets);
-      }
-      
-      window.addEventListener('load', function() {
-        forceReloadAssets();
-        setTimeout(forceReloadAssets, 100);
-      });
-      
-      if (window.performance && window.performance.clearResourceTimings) {
-        window.performance.clearResourceTimings();
-      }
-    })();
-  </script>
+  <link rel="stylesheet" href="assets/css/base.css?v=4.1.0" />
+  <link rel="stylesheet" href="assets/css/public.css?v=4.1.0" />
+  <link rel="stylesheet" href="assets/css/components.css?v=4.1.0" />
 </head>
 <body>
   <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
@@ -573,7 +452,43 @@
     </div>
   </div>
 
-  <script type="module" src="assets/js/public.js?v=4.0.0"></script>
+  <script>
+    // Set API base URL for development
+    window.API_BASE_URL = 'http://localhost:3000/api';
+  </script>
+  <script type="module" src="assets/js/public.js?v=4.1.1"></script>
+  <script type="module">
+    // Initialize meta tags and structured data
+    import { initDefaultMetaTags } from './assets/js/services/metaTags.js';
+    initDefaultMetaTags();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "…undbauen",
+    "url": "https://undbauen.de",
+    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation",
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "…undbauen",
+    "url": "https://undbauen.de",
+    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://undbauen.de/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </body>
 </html>
 

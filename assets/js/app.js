@@ -26,7 +26,11 @@ import { guardRoute, canAccessRoute } from './services/authGuard.js';
 import { getCurrentPath, getCurrentRoute } from './services/router.js';
 
 function guard(){
-  if(!api.isLoggedIn()){
+  console.log('🔵 guard() called');
+  const isLoggedIn = api.isLoggedIn();
+  console.log('🔵 isLoggedIn:', isLoggedIn);
+  if(!isLoggedIn){
+    console.log('❌ Not logged in, redirecting...');
     // Determine correct redirect path based on current location
     const isInApp = window.location.pathname.includes('/app/');
     const redirectPath = isInApp ? '../index.html' : 'index.html';
@@ -74,20 +78,25 @@ function toggleTheme(){
   updateThemeIcon(newTheme);
 }
 
-function setShell(){
+async function setShell(){
+  console.log('🔵 setShell() STARTED');
   initTheme();
   if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
   
-  const u = api.me();
+  const u = await api.me();
+  console.log('🔵 setShell() user:', u);
   if($("#userLabel")) $("#userLabel").textContent = u?.name || "Member";
   if($("#logoutBtn")) $("#logoutBtn").addEventListener("click", ()=>{ api.logout(); window.location.href="../index.html"; });
   if($("#logoutBtn2")) $("#logoutBtn2").addEventListener("click", ()=>{ api.logout(); window.location.href="../index.html"; });
 
   // Initialize Sidebar Navigation
   if (document.getElementById('sidebarContainer')) {
+    console.log('🔵 Sidebar container found, initializing...');
     const userRole = u?.role || 'member';
     const currentPath = window.location.pathname;
+    console.log('🔵 User role:', userRole, 'Path:', currentPath);
     initSidebar(userRole, currentPath);
+    console.log('✅ Sidebar initialized');
     
     // Show mobile menu button on mobile
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -98,6 +107,8 @@ function setShell(){
       checkMobile();
       window.addEventListener('resize', checkMobile);
     }
+  } else {
+    console.warn('⚠️ No sidebar container found');
   }
 }
 
@@ -115,13 +126,15 @@ function parseTags(str){
 
 /* ========== DASHBOARD ========== */
 async function renderDashboard(){
-  const u = api.me();
+  console.log('🔵 renderDashboard() STARTED');
+  const u = await api.me();
+  console.log('🔵 User:', u);
   if (!u) {
-    console.error('User not found');
+    console.error('❌ User not found');
     return;
   }
   
-  const events = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const events = (await api.listEvents()).slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   
   // Add ticket creation CTA (nur einmal)
   const ticketCta = document.querySelector('#ticketCtaContainer');
@@ -671,10 +684,10 @@ async function renderDashboard(){
 }
 
 /* ========== EVENTS ========== */
-function renderEvents(){
+async function renderEvents(){
   const wrap = $("#eventsGrid");
-  const u = api.me();
-  const events = api.listEvents().slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const u = await api.me();
+  const events = (await api.listEvents()).slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   
   // Sicherstellen dass Event-Modal geschlossen ist beim Laden
   if ($("#evOverlay")) {
@@ -714,7 +727,7 @@ function renderEvents(){
   wrap.querySelectorAll("[data-book]").forEach(b=>b.addEventListener("click", ()=>{
     const id = b.dataset.book;
     const res = api.bookEvent(id);
-    if(!res.ok) toast.error(res.error);
+    if(!res.success) toast.error(res.error);
     renderEvents();
   }));
   wrap.querySelectorAll("[data-ics]").forEach(b=>b.addEventListener("click", ()=>api.exportICSForEvent(b.dataset.ics)));
@@ -840,7 +853,7 @@ function openBookedEventModal(eventId){
   overlay.querySelector(`[data-cancel-booking="${eventId}"]`)?.addEventListener("click", () => {
     if(confirm(`Möchtest du die Buchung für "${ev.title}" wirklich stornieren?`)){
       const res = api.cancelBooking(eventId);
-      if(res.ok){
+      if(res.success){
         alert("Buchung erfolgreich storniert.");
         overlay.style.display = "none";
         renderDashboard();
@@ -1225,7 +1238,7 @@ function renderForumCategory(){
       }
       
       const res = api.createForumThread(catId, title, body);
-      if(!res.ok){ 
+      if(!res.success){ 
         $("#thrErr").textContent = res.error; 
         btn.disabled = false;
         btn.textContent = originalText;
@@ -1394,14 +1407,14 @@ function renderForumThread(){
   if(u){
     $("#likeThreadBtn")?.addEventListener("click", () => {
       const res = api.likeThread(threadId);
-      if(res.ok){
+      if(res.success){
         location.reload();
       }
     });
     
     $("#watchThreadBtn")?.addEventListener("click", () => {
       const res = api.watchThread(threadId);
-      if(res.ok){
+      if(res.success){
         location.reload();
       }
     });
@@ -1597,7 +1610,7 @@ function renderForumThread(){
             const res = api.deleteForumPost(threadId, postId);
             console.log('Delete result:', res);
             
-            if (res && res.ok) {
+            if (res && res.success) {
               if (res.isLastPost) {
                 // Delete thread as well
                 api.adminDeleteThread(threadId);
@@ -1659,7 +1672,7 @@ function renderForumThread(){
         return; 
       }
       const res = api.replyForumThread(threadId, body);
-      if(!res.ok){ 
+      if(!res.success){ 
         if (replyErr) replyErr.textContent = res.error; 
         return; 
       }
@@ -2037,7 +2050,7 @@ function renderCompose(){
     if(!to){ $("#sendErr").textContent="Empfänger fehlt."; return; }
     if(!body){ $("#sendErr").textContent="Nachricht fehlt."; return; }
     const res = api.sendMessage({ to, subject, body });
-    if(!res.ok){ $("#sendErr").textContent=res.error; return; }
+    if(!res.success){ $("#sendErr").textContent=res.error; return; }
     window.location.href = `nachrichten.html?thread=${encodeURIComponent(res.threadId)}`;
   });
   
@@ -2572,7 +2585,7 @@ function renderMyProfile(){
     }
     
     const res = api.updateMyProfile(profileData);
-    if(!res.ok){ 
+    if(!res.success){ 
       $("#pErr").textContent=res.error; 
       return; 
     }
@@ -3220,7 +3233,33 @@ window.downloadUpdateContent = function(updateId) {
 function renderAdmin(){
   if(!api.isAdmin()){ window.location.href="dashboard.html"; return; }
 
-  let tab = "users";
+  // Get tab from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlTab = urlParams.get('tab');
+  
+  // Set initial tab based on URL or default to users
+  let tab = urlTab || "users";
+  
+  // Update page title based on tab
+  const titleMap = {
+    'users': 'Benutzerverwaltung',
+    'events': 'Terminverwaltung',
+    'content': 'Inhaltsverwaltung'
+  };
+  
+  const pageTitle = document.getElementById('adminPageTitle');
+  const tabsContainer = document.getElementById('adminTabs');
+  
+  if (urlTab) {
+    // If URL has a tab parameter, show only that tab (hide tab navigation)
+    if (pageTitle) pageTitle.textContent = titleMap[urlTab] || 'Verwaltung';
+    if (tabsContainer) tabsContainer.style.display = 'none';
+  } else {
+    // If no URL parameter, show all tabs (normal admin page)
+    if (pageTitle) pageTitle.textContent = 'Verwaltung';
+    if (tabsContainer) tabsContainer.style.display = 'block';
+  }
+  
   const setTab = (t)=>{
     tab=t;
     document.querySelectorAll("[data-admtab]").forEach(x=>x.classList.toggle("active", x.dataset.admtab===t));
@@ -3575,7 +3614,7 @@ function renderAdmin(){
         location.reload();
       } else {
         const res = api.adminCreateUpdate(payload);
-        if(res.ok) {
+        if(res.success) {
           toast.success("Update erstellt.");
           close();
           location.reload();
@@ -3645,7 +3684,7 @@ function renderAdmin(){
           
           if(confirmed) {
             const res = api.adminSetUserRole(id, newRole);
-            if(res.ok) {
+            if(res.success) {
               // Show success modal
               const { showSuccessModal } = await import('./components/successModal.js');
               showSuccessModal(`Die Rolle von ${u.name} wurde erfolgreich zu "${newRole}" geändert.`, 'Rolle geändert');
@@ -3668,7 +3707,7 @@ function renderAdmin(){
           if(isBlocked){
             // Entsperren
             const res = api.adminSetUserStatus(id, "active");
-            if(res && res.ok) {
+            if(res && res.success) {
               const { showSuccessModal } = await import('./components/successModal.js');
               showSuccessModal(`Der Benutzer "${u.name}" wurde erfolgreich entsperrt.`, 'Benutzer entsperrt');
               setTimeout(() => location.reload(), 1500);
@@ -3723,7 +3762,7 @@ function renderAdmin(){
           
           if(confirmed){
             const res = api.adminDeleteUser(id);
-            if(res && res.ok){
+            if(res && res.success){
               const { showSuccessModal } = await import('./components/successModal.js');
               showSuccessModal(`Der Benutzer "${u.name}" wurde erfolgreich entfernt.`, 'Benutzer entfernt');
               setTimeout(() => location.reload(), 1500);
@@ -3763,7 +3802,7 @@ function renderAdmin(){
           return;
         }
         const res = api.register(email, password, name);
-        if(res.ok){
+        if(res.success){
           // Set role if not member
           if(role !== "member"){
             const users = api.adminListUsers();
@@ -3846,7 +3885,7 @@ function renderAdmin(){
               const res = api.adminDeleteEvent(eventId);
               console.log('Delete result:', res);
               
-              if(res && res.ok){
+              if(res && res.success){
                 const { showSuccessModal } = await import('./components/successModal.js');
                 showSuccessModal('Der Termin wurde erfolgreich entfernt.', 'Termin entfernt');
                 // Reload after a short delay to show the success message
@@ -3942,7 +3981,7 @@ function renderAdmin(){
               const res = api.adminDeleteUpdate(updateId);
               console.log('Delete update result:', res);
               
-              if(res && res.ok){
+              if(res && res.success){
                 const { showSuccessModal } = await import('./components/successModal.js');
                 showSuccessModal('Das Monatsupdate wurde erfolgreich entfernt.', 'Monatsupdate entfernt');
                 // Reload after a short delay to show the success message
@@ -3978,7 +4017,7 @@ function renderAdmin(){
             const res = api.adminDeletePublication(b.dataset.delpub);
             console.log('Delete publication result:', res);
             
-            if(res && res.ok){
+            if(res && res.success){
               const { showSuccessModal } = await import('./components/successModal.js');
               showSuccessModal('Die Publikation wurde erfolgreich gelöscht.', 'Publikation gelöscht');
               // Reload after a short delay to show the success message
@@ -4041,6 +4080,8 @@ function renderAdmin(){
     }
   }
 
+  // System-Einstellungen Tab wurde entfernt (nicht mehr benötigt)
+
   function evFormHTML(ev){
     return `
       <label class="label">Titel</label><input class="input" id="fTitle" value="${ev.title||""}"/>
@@ -4098,9 +4139,26 @@ function renderAdmin(){
 }
 
 /* ========== ROUTER ========== */
-document.addEventListener("DOMContentLoaded", async ()=>{
+console.log('🟢 app.js: Script loaded, setting up DOMContentLoaded listener...');
+console.log('🟢 app.js: document.readyState =', document.readyState);
+
+// Check if DOM is already loaded
+if (document.readyState === 'loading') {
+  console.log('🟢 app.js: DOM still loading, adding event listener...');
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  console.log('🟢 app.js: DOM already loaded, calling initApp immediately...');
+  initApp();
+}
+
+async function initApp() {
+  console.log('🟢 initApp() STARTED');
+  console.log('🟢 DOMContentLoaded fired');
   try {
-    if(!guard()) return;
+    console.log('🟢 Calling guard()...');
+    const guardResult = guard();
+    console.log('🟢 Guard result:', guardResult);
+    if(!guardResult) return;
     
     // Seed example update if on updates page and no updates exist
     if(document.body.dataset.page === "updates") {
@@ -4116,7 +4174,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       }
     }
     
-    setShell();
+    await setShell();
     
     // Update sidebar on navigation (for SPA-like behavior)
     if (document.getElementById('sidebarContainer')) {
@@ -4181,10 +4239,15 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     localStorage.setItem('onboardingCompleted', 'true');
 
     const page = document.body.dataset.page;
+    console.log('🟢 Router: Current page =', page);
     try {
       switch(page){
-        case "dashboard": renderDashboard(); break;
-        case "termine": renderEvents(); break;
+        case "dashboard": 
+          console.log('🟢 Router: Calling renderDashboard()...');
+          await renderDashboard(); 
+          console.log('✅ Router: renderDashboard() completed');
+          break;
+        case "termine": await renderEvents(); break;
         case "forum": 
           try {
             renderForum(); 
@@ -4258,11 +4321,13 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       }
     }
   } catch (error) {
-    console.error('Critical error in router:', error);
+    console.error('❌ Critical error in router:', error);
+    console.error('Stack:', error.stack);
     // Fallback: redirect to dashboard
     if (window.location.pathname.includes('/app/')) {
       window.location.href = 'dashboard.html';
     }
   }
-});
+}
 
+console.log('🟢 app.js: End of file reached');

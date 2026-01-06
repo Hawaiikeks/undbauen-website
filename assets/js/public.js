@@ -1328,47 +1328,54 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     authModal.addEventListener("keydown", trapFocus);
   }
 
-  if($("#doLogin")) $("#doLogin").addEventListener("click", ()=>{
+  if($("#doLogin")) $("#doLogin").addEventListener("click", async ()=>{
     const btn = $("#doLogin");
     const originalText = btn.textContent;
     btn.classList.add("loading");
     btn.disabled = true;
     
     try {
-      const res = api.login($("#loginEmail").value, $("#loginPass").value);
-      if($("#authErr")) $("#authErr").textContent = res.ok ? "" : res.error;
-      if(res.ok) {
+      console.log('🔵 Login button clicked');
+      const email = $("#loginEmail").value;
+      const password = $("#loginPass").value;
+      console.log('🔵 Email:', email);
+      const res = api.login(email, password);
+      console.log('🔵 Login result:', res);
+      if($("#authErr")) $("#authErr").textContent = res.success ? "" : res.error;
+      if(res.success) {
+        console.log('✅ Login successful, redirecting to dashboard...');
         toast.success("Erfolgreich eingeloggt!");
         closeAuth(); // Modal schließen
         setTimeout(() => {
           // Absoluter Pfad für korrekten Redirect
           const basePath = window.location.pathname.includes('/app/') ? '../' : '';
-          window.location.href = basePath + 'app/dashboard.html';
+          const redirectUrl = basePath + 'app/dashboard.html';
+          console.log('🔵 Redirecting to:', redirectUrl);
+          window.location.href = redirectUrl;
         }, 500);
       } else {
+        console.error('❌ Login failed:', res.error);
         toast.error(res.error || "Login fehlgeschlagen");
         btn.classList.remove("loading");
         btn.disabled = false;
       }
     } catch(e) {
-      console.error("Login error:", e);
-      const errorMsg = "Fehler beim Login. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
-      if($("#authErr")) $("#authErr").textContent = errorMsg;
-      toast.error(errorMsg);
+      const { handleError } = await import('./services/errorHandler.js');
+      handleError(e, { context: 'login', email: $("#loginEmail")?.value });
       btn.classList.remove("loading");
       btn.disabled = false;
     }
   });
 
-  if($("#doRegister")) $("#doRegister").addEventListener("click", ()=>{
+  if($("#doRegister")) $("#doRegister").addEventListener("click", async ()=>{
     const btn = $("#doRegister");
     btn.classList.add("loading");
     btn.disabled = true;
     
     try {
-      const res = api.register($("#regName").value, $("#regEmail").value, $("#regPass").value);
-      if($("#regErr")) $("#regErr").textContent = res.ok ? "" : res.error;
-      if(res.ok) {
+      const res = await api.register($("#regName").value, $("#regEmail").value, $("#regPass").value);
+      if($("#regErr")) $("#regErr").textContent = res.success ? "" : res.error;
+      if(res.success) {
         toast.success("Konto erfolgreich erstellt!");
         setTimeout(() => window.location.href = "app/dashboard.html", 500);
       } else {
@@ -1386,10 +1393,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
         btn.disabled = false;
       }
     } catch(e) {
-      console.error("Register error:", e);
-      const errorMsg = "Fehler bei der Registrierung. Bitte öffne die Seite über einen lokalen Server (z.B. Live Server).";
-      if($("#regErr")) $("#regErr").textContent = errorMsg;
-      toast.error(errorMsg);
+      const { handleError } = await import('./services/errorHandler.js');
+      handleError(e, { context: 'register', email: $("#regEmail")?.value });
       btn.classList.remove("loading");
       btn.disabled = false;
     }

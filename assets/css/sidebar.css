@@ -163,6 +163,71 @@
   color: var(--sidebar-item-active-color);
 }
 
+/* Collapsible Parent Items */
+.sidebar-parent {
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+}
+
+.sidebar-parent:hover {
+  background: var(--sidebar-item-hover);
+}
+
+.sidebar-parent.expanded {
+  background: var(--sidebar-item-hover);
+}
+
+.sidebar-chevron {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  transition: transform var(--sidebar-transition);
+}
+
+.sidebar-parent.expanded .sidebar-chevron {
+  transform: rotate(0deg);
+}
+
+/* Sidebar Group (parent + children) */
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-group.has-active-child .sidebar-parent {
+  color: var(--sidebar-text);
+}
+
+/* Sidebar Children */
+.sidebar-children {
+  display: none;
+  padding-left: 12px;
+  overflow: hidden;
+  transition: max-height 300ms ease-out;
+}
+
+.sidebar-children.expanded {
+  display: block;
+}
+
+.sidebar-child {
+  padding: 8px 16px;
+  padding-left: 40px;
+  font-size: 13px;
+}
+
+.sidebar-child .sidebar-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar.collapsed .sidebar-children {
+  display: none !important;
+}
+
 .sidebar.collapsed .sidebar-item {
   justify-content: center;
   padding: 10px;
