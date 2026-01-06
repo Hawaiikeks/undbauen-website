@@ -3791,7 +3791,7 @@ function renderAdmin(){
       $("#admUserOverlay")?.addEventListener("click", (e)=>{
         if(e.target.id === "admUserOverlay") closeUserModal();
       });
-      $("#newUserSave")?.addEventListener("click", ()=>{
+      $("#newUserSave")?.addEventListener("click", async ()=>{
         $("#newUserErr").textContent = "";
         const name = $("#newUserName").value.trim();
         const email = $("#newUserEmail").value.trim();
@@ -3801,7 +3801,7 @@ function renderAdmin(){
           $("#newUserErr").textContent = "Alle Felder sind erforderlich.";
           return;
         }
-        const res = api.register(email, password, name);
+        const res = await api.register(email, password, name);
         if(res.success){
           // Set role if not member
           if(role !== "member"){
