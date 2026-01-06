@@ -23,6 +23,7 @@ export function getNavigationItems(role) {
       { id: 'nachrichten', label: 'Nachrichten', icon: 'message-circle', path: '/app/nachrichten.html', badge: 'unread' },
       { id: 'forum', label: 'Forum', icon: 'messages-square', path: '/app/forum.html' },
       { id: 'termine', label: 'Termine', icon: 'calendar', path: '/app/termine.html' },
+      { id: 'mitglieder', label: 'Mitglieder', icon: 'users', path: '/app/mitglieder.html' },
       { id: 'monatsupdates', label: 'Monatsupdates', icon: 'calendar', path: '/app/monatsupdates.html' },
       { id: 'resources', label: 'Ressourcen', icon: 'folder', path: '/app/resources.html' },
       { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
@@ -39,15 +40,15 @@ export function getNavigationItems(role) {
       { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
       { 
         id: 'editor', 
-        label: 'Redaktion', 
-        icon: 'edit', 
+        label: 'Content-Management', 
+        icon: 'layers', 
         isCollapsible: true,
         children: [
-          { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
-          { id: 'content-management', label: 'Monatsupdatesverwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
-          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
-          { id: 'resources-management', label: 'Ressourcenverwaltung', icon: 'folder-open', path: '/backoffice/resources.html' },
-          { id: 'knowledge-management', label: 'Wissensverwaltung', icon: 'book-open', path: '/backoffice/knowledge.html' }
+          { id: 'public-pages', label: 'Website-Inhalte', icon: 'layout-template', path: '/backoffice/public-pages.html' },
+          { id: 'content-management', label: 'Content-Verwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Veranstaltungen', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
+          { id: 'resources-management', label: 'Mediathek', icon: 'folder-open', path: '/backoffice/resources.html' },
+          { id: 'knowledge-management', label: 'Wissensdatenbank', icon: 'book-open', path: '/backoffice/knowledge.html' }
         ]
       },
       { id: 'profil', label: 'Profil', icon: 'user', path: '/app/einstellungen.html' }
@@ -63,7 +64,7 @@ export function getNavigationItems(role) {
       { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
       { 
         id: 'backoffice', 
-        label: 'Backoffice', 
+        label: 'Administration', 
         icon: 'briefcase', 
         isCollapsible: true,
         children: [
@@ -85,20 +86,20 @@ export function getNavigationItems(role) {
       { id: 'knowledge', label: 'Wissensdatenbank', icon: 'book-open', path: '/app/knowledge.html' },
       { 
         id: 'editor', 
-        label: 'Redaktion', 
-        icon: 'edit', 
+        label: 'Content-Management', 
+        icon: 'layers', 
         isCollapsible: true,
         children: [
-          { id: 'public-pages', label: 'Öffentliche Seiten', icon: 'layout-template', path: '/backoffice/public-pages.html' },
-          { id: 'content-management', label: 'Monatsupdatesverwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
-          { id: 'event-management', label: 'Terminverwaltung', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
-          { id: 'resources-management', label: 'Ressourcenverwaltung', icon: 'folder-open', path: '/backoffice/resources.html' },
-          { id: 'knowledge-management', label: 'Wissensverwaltung', icon: 'book-open', path: '/backoffice/knowledge.html' }
+          { id: 'public-pages', label: 'Website-Inhalte', icon: 'layout-template', path: '/backoffice/public-pages.html' },
+          { id: 'content-management', label: 'Content-Verwaltung', icon: 'calendar-check', path: '/app/admin.html?tab=content' },
+          { id: 'event-management', label: 'Veranstaltungen', icon: 'calendar-plus', path: '/app/admin.html?tab=events' },
+          { id: 'resources-management', label: 'Mediathek', icon: 'folder-open', path: '/backoffice/resources.html' },
+          { id: 'knowledge-management', label: 'Wissensdatenbank', icon: 'book-open', path: '/backoffice/knowledge.html' }
         ]
       },
       { 
         id: 'backoffice', 
-        label: 'Backoffice', 
+        label: 'Administration', 
         icon: 'briefcase', 
         isCollapsible: true,
         children: [
@@ -169,6 +170,10 @@ export function isActiveRoute(itemPath, currentPath) {
       }
       // If item has tab but current doesn't, not active
       if (itemTab && !currentTab) {
+        return false;
+      }
+      // If item has tab, it must match - otherwise false
+      if (itemTab) {
         return false;
       }
     }

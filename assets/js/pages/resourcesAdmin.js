@@ -6,6 +6,13 @@ import { toast } from '../components/toast.js';
 import { fileStorage } from '../services/fileStorage.js';
 import { validateFile } from '../services/validation.js';
 
+// State for filtering
+let currentFilters = {
+  search: '',
+  type: 'all',
+  visibility: 'all'
+};
+
 /**
  * Render resources admin page
  */
@@ -24,19 +31,51 @@ export async function renderResourcesAdmin() {
     new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  container.innerHTML = renderAdminPage(sortedResources);
-  wireAdminEvents();
+  container.innerHTML = renderAdminPage(sortedResources, allResources);
+  wireAdminEvents(allResources);
+}
+
+/**
+ * Get resource statistics
+ */
+function getResourceStats(resources) {
+  const stats = {
+    total: resources.length,
+    public: resources.filter(r => r.visibility === 'public').length,
+    featured: resources.filter(r => r.isFeatured).length,
+    totalSize: 0
+  };
+  
+  resources.forEach(r => {
+    const version = r.versions?.[r.versions.length - 1];
+    stats.totalSize += version?.sizeBytes || 0;
+  });
+  
+  return stats;
+}
+
+/**
+ * Format file size
+ */
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
 /**
  * Render admin page
  */
-function renderAdminPage(resources) {
+function renderAdminPage(resources, allResources) {
+  const stats = getResourceStats(allResources);
+  
   return `
-    <div class="container pageWrap">
+    <div style="max-width: 1400px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div>
-          <h1 class="h2">Resources Management</h1>
+          <h1 class="h2">Mediathek</h1>
           <p class="p" style="color: var(--text-secondary); margin-top: 8px;">
             Verwalten Sie alle Ressourcen und Materialien.
           </p>
@@ -44,8 +83,49 @@ function renderAdminPage(resources) {
         <button class="btn primary" id="createResourceBtn">+ Neue Ressource</button>
       </div>
 
-      <div style="margin-bottom: 16px; color: var(--text-secondary);">
-        ${resources.length} ${resources.length === 1 ? 'Ressource' : 'Ressourcen'}
+      <!-- Statistics Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="card pane" style="padding: 16px;">
+          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 4px;">Gesamt</div>
+          <div style="font-size: 28px; font-weight: 600;">${stats.total}</div>
+          <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">Ressourcen</div>
+        </div>
+        <div class="card pane" style="padding: 16px;">
+          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 4px;">Öffentlich</div>
+          <div style="font-size: 28px; font-weight: 600;">${stats.public}</div>
+          <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">Für alle sichtbar</div>
+        </div>
+        <div class="card pane" style="padding: 16px;">
+          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 4px;">Featured</div>
+          <div style="font-size: 28px; font-weight: 600;">${stats.featured}</div>
+          <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">Hervorgehoben</div>
+        </div>
+        <div class="card pane" style="padding: 16px;">
+          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 4px;">Speicher</div>
+          <div style="font-size: 28px; font-weight: 600;">${formatFileSize(stats.totalSize)}</div>
+          <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">Gesamtgröße</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+        <input 
+          class="input" 
+          style="flex: 1; min-width: 250px;"
+          placeholder="🔍 Ressourcen durchsuchen..." 
+          id="searchResources" 
+          value="${currentFilters.search}"
+        />
+        <select class="input" id="filterType" style="min-width: 150px;">
+          <option value="all" ${currentFilters.type === 'all' ? 'selected' : ''}>Alle Typen</option>
+          <option value="file" ${currentFilters.type === 'file' ? 'selected' : ''}>Dateien</option>
+          <option value="link" ${currentFilters.type === 'link' ? 'selected' : ''}>Links</option>
+        </select>
+        <select class="input" id="filterVisibility" style="min-width: 150px;">
+          <option value="all" ${currentFilters.visibility === 'all' ? 'selected' : ''}>Alle</option>
+          <option value="public" ${currentFilters.visibility === 'public' ? 'selected' : ''}>Öffentlich</option>
+          <option value="member" ${currentFilters.visibility === 'member' ? 'selected' : ''}>Nur Mitglieder</option>
+        </select>
       </div>
 
       ${resources.length === 0 ? `
@@ -58,12 +138,39 @@ function renderAdminPage(resources) {
           <button class="btn primary" id="createResourceBtnEmpty">+ Erste Ressource erstellen</button>
         </div>
       ` : `
-        <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;" id="resourcesList">
           ${resources.map(resource => renderResourceAdminCard(resource)).join('')}
         </div>
       `}
     </div>
   `;
+}
+
+/**
+ * Get file icon based on resource type
+ */
+function getFileIcon(resource) {
+  const latestVersion = resource.versions?.[resource.versions.length - 1];
+  const mimeType = latestVersion?.mimeType || '';
+  
+  if (resource.type === 'link') return '🔗';
+  if (mimeType.includes('pdf')) return '📄';
+  if (mimeType.includes('zip') || mimeType.includes('compressed')) return '📦';
+  if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+  if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📊';
+  if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📊';
+  if (mimeType.includes('image')) return '🖼️';
+  if (mimeType.includes('video')) return '🎥';
+  return '📁';
+}
+
+/**
+ * Format date
+ */
+function formatDate(dateString) {
+  if (!dateString) return 'Unbekannt';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 /**
@@ -73,35 +180,69 @@ function renderResourceAdminCard(resource) {
   const latestVersion = resource.versions && resource.versions.length > 0 
     ? resource.versions[resource.versions.length - 1] 
     : null;
+  
+  const icon = getFileIcon(resource);
+  const fileSize = latestVersion?.sizeBytes ? formatFileSize(latestVersion.sizeBytes) : null;
+  const updatedDate = latestVersion?.createdAt || resource.createdAt;
 
   return `
-    <div class="card pane">
-      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-        <div style="flex: 1;">
-          <div style="font-weight: 600; font-size: 18px; margin-bottom: 8px;">
-            ${resource.title || 'Unbenannt'}
-          </div>
-          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 8px;">
-            ${resource.description || ''}
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
-            <span class="badge" style="background: ${resource.visibility === 'public' ? 'var(--success)' : 'var(--primary)'}; color: white;">
-              ${resource.visibility === 'public' ? 'Öffentlich' : 'Mitglieder'}
-            </span>
-            ${resource.isFeatured ? `
-              <span class="badge" style="background: var(--accent); color: white;">Featured</span>
-            ` : ''}
-            ${latestVersion ? `
-              <span style="color: var(--text-secondary); font-size: 12px;">
-                v${latestVersion.versionLabel || '1.0'}
-              </span>
-            ` : ''}
-          </div>
+    <div class="card pane" style="transition: all 0.2s; cursor: pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow=''">
+      <div style="display: flex; gap: 16px;">
+        <!-- Icon -->
+        <div style="font-size: 48px; flex-shrink: 0;">
+          ${icon}
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn small" onclick="window.editResource('${resource.id}')">Bearbeiten</button>
-          <button class="btn small" onclick="window.uploadResourceVersion('${resource.id}')">Version hochladen</button>
-          <button class="btn small danger" onclick="window.deleteResource('${resource.id}')">Löschen</button>
+        
+        <!-- Content -->
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <div style="flex: 1; min-width: 0;">
+              <h3 style="font-weight: 600; font-size: 18px; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${resource.title || 'Unbenannt'}
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 14px; margin: 0; line-height: 1.4;">
+                ${resource.description || 'Keine Beschreibung'}
+              </p>
+            </div>
+            
+            <!-- Badges -->
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; margin-left: 16px;">
+              <span class="badge" style="background: ${resource.visibility === 'public' ? 'var(--success)' : 'var(--primary)'}; color: white; font-size: 11px;">
+                ${resource.visibility === 'public' ? 'Öffentlich' : 'Mitglieder'}
+              </span>
+              ${resource.isFeatured ? `
+                <span class="badge" style="background: var(--accent); color: white; font-size: 11px;">Featured</span>
+              ` : ''}
+              ${latestVersion ? `
+                <span style="color: var(--text-secondary); font-size: 11px; font-weight: 500;">
+                  ${latestVersion.versionLabel || 'v1.0'}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+          
+          <!-- Meta Info -->
+          <div style="display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; color: var(--text-secondary); font-size: 13px;">
+            ${fileSize ? `<span>📦 ${fileSize}</span>` : ''}
+            <span>📅 ${formatDate(updatedDate)}</span>
+            ${resource.versions?.length > 1 ? `<span>🔄 ${resource.versions.length} Versionen</span>` : ''}
+          </div>
+          
+          <!-- Actions -->
+          <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+            <button class="btn small" onclick="window.editResource('${resource.id}'); event.stopPropagation();">
+              ✏️ Bearbeiten
+            </button>
+            <button class="btn small" onclick="window.uploadResourceVersion('${resource.id}'); event.stopPropagation();">
+              📤 Version
+            </button>
+            <button class="btn small" onclick="window.viewResource('${resource.id}'); event.stopPropagation();">
+              👁️ Vorschau
+            </button>
+            <button class="btn small danger" onclick="window.deleteResource('${resource.id}'); event.stopPropagation();">
+              🗑️ Löschen
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -109,17 +250,84 @@ function renderResourceAdminCard(resource) {
 }
 
 /**
+ * Filter resources based on current filters
+ */
+function filterResources(resources) {
+  return resources.filter(resource => {
+    // Search filter
+    if (currentFilters.search) {
+      const searchLower = currentFilters.search.toLowerCase();
+      const matchesTitle = resource.title?.toLowerCase().includes(searchLower);
+      const matchesDescription = resource.description?.toLowerCase().includes(searchLower);
+      const matchesTags = resource.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+      if (!matchesTitle && !matchesDescription && !matchesTags) return false;
+    }
+    
+    // Type filter
+    if (currentFilters.type !== 'all' && resource.type !== currentFilters.type) {
+      return false;
+    }
+    
+    // Visibility filter
+    if (currentFilters.visibility !== 'all' && resource.visibility !== currentFilters.visibility) {
+      return false;
+    }
+    
+    return true;
+  });
+}
+
+/**
  * Wire admin events
  */
-function wireAdminEvents() {
+function wireAdminEvents(allResources) {
   document.querySelectorAll('#createResourceBtn, #createResourceBtnEmpty').forEach(btn => {
     btn.addEventListener('click', () => {
       showResourceModal();
     });
   });
 
+  // Search filter
+  const searchInput = document.getElementById('searchResources');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentFilters.search = e.target.value;
+      updateResourcesList(allResources);
+    });
+  }
+
+  // Type filter
+  const typeFilter = document.getElementById('filterType');
+  if (typeFilter) {
+    typeFilter.addEventListener('change', (e) => {
+      currentFilters.type = e.target.value;
+      updateResourcesList(allResources);
+    });
+  }
+
+  // Visibility filter
+  const visibilityFilter = document.getElementById('filterVisibility');
+  if (visibilityFilter) {
+    visibilityFilter.addEventListener('change', (e) => {
+      currentFilters.visibility = e.target.value;
+      updateResourcesList(allResources);
+    });
+  }
+
   window.editResource = (resourceId) => {
     showResourceModal(resourceId);
+  };
+
+  window.viewResource = async (resourceId) => {
+    const resource = await resourceRepository.findById(resourceId);
+    if (!resource) return;
+    
+    const latestVersion = resource.versions?.[resource.versions.length - 1];
+    if (latestVersion?.fileKeyOrUrl) {
+      window.open(latestVersion.fileKeyOrUrl, '_blank');
+    } else {
+      toast.error('Keine Datei verfügbar');
+    }
   };
 
   window.uploadResourceVersion = async (resourceId) => {
@@ -202,6 +410,21 @@ function wireAdminEvents() {
       toast.error('Fehler beim Löschen');
     }
   };
+}
+
+/**
+ * Update resources list based on filters
+ */
+function updateResourcesList(allResources) {
+  const filtered = filterResources(allResources);
+  const sorted = filtered.sort((a, b) => 
+    new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  
+  const listContainer = document.getElementById('resourcesList');
+  if (listContainer) {
+    listContainer.innerHTML = sorted.map(resource => renderResourceAdminCard(resource)).join('');
+  }
 }
 
 /**

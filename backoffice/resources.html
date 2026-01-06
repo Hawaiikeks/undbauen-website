@@ -3,58 +3,61 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Resources Management – …undbauen Backoffice</title>
+  <title>Mediathek – …undbauen</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="../assets/css/base.css?v=3.0.0"/>
-  <link rel="stylesheet" href="../assets/css/app.css?v=3.0.0"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=4.1.1"/>
+  <link rel="stylesheet" href="../assets/css/app.css?v=4.1.1"/>
+  <link rel="stylesheet" href="../assets/css/sidebar.css?v=4.1.1"/>
 </head>
 <body data-page="resources-admin">
   <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
-  <header class="appHeader" role="banner">
-    <div class="container appHeaderInner">
-      <a class="brand" href="index.html" aria-label="…undbauen Backoffice">…undbauen Backoffice</a>
-      <nav class="appNav" id="appNav" aria-label="Hauptnavigation" role="navigation">
-        <a href="index.html" data-nav="backoffice">Dashboard</a>
-        <a href="inbox.html" data-nav="inbox">Inbox</a>
-        <a href="reports.html" data-nav="reports">Reports</a>
-        <a href="content.html" data-nav="content">Content</a>
-        <a href="events.html" data-nav="events">Events</a>
-        <a href="public-pages.html" data-nav="public-pages">Public Pages</a>
-        <a href="resources.html" data-nav="resources" aria-current="page">Resources</a>
-        <a href="knowledge.html" data-nav="knowledge">Knowledge</a>
-        <a href="users.html" data-nav="users" id="adminLink" style="display:none">Users</a>
-        <a href="audit.html" data-nav="audit" id="adminLink2" style="display:none">Audit</a>
-      </nav>
-      <div class="appRight">
-        <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>
-        <div class="userPill"><span class="dot"></span><span id="userLabel">Editor</span></div>
-        <button class="btn" id="logoutBtn">⎋ Logout</button>
+  
+  <!-- Sidebar Container -->
+  <div id="sidebarContainer"></div>
+  
+  <!-- Main Layout -->
+  <div id="mainLayout" class="main-layout">
+    <header class="appHeader" role="banner">
+      <div class="appHeaderInner">
+        <button class="btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menü öffnen" style="display: none;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+        </button>
+        <a class="brand" href="../app/dashboard.html" aria-label="…undbauen Dashboard">…undbauen</a>
+        <div class="appRight">
+          <div id="notificationBellContainer"></div>
+          <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>
+          <div class="userPill"><span class="dot"></span><span id="userLabel">Editor</span></div>
+          <button class="btn" id="logoutBtn">⎋ Logout</button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main id="resourcesAdminContainer" class="container pageWrap">
-    <!-- Content will be rendered by resourcesAdmin.js -->
-  </main>
+    <main id="main-content" class="pageWrap">
+      <div id="resourcesAdminContainer">
+        <!-- Content will be rendered by resourcesAdmin.js -->
+      </div>
+    </main>
+  </div>
 
+  <script type="module" src="../assets/js/app.js?v=4.1.1"></script>
   <script type="module">
     import { renderResourcesAdmin } from '../assets/js/pages/resourcesAdmin.js';
     import { api } from '../assets/js/services/apiClient.js';
     import { hasAnyRole } from '../assets/js/services/authGuard.js';
     
-    if (!api.isLoggedIn()) {
-      window.location.href = '../index.html';
-    } else if (!hasAnyRole(['editor', 'moderator', 'admin'])) {
-      window.location.href = '../app/dashboard.html';
-    } else {
-      renderResourcesAdmin();
-    }
+    // Ensure sidebar is loaded first
+    setTimeout(() => {
+      if (!api.isLoggedIn()) {
+        window.location.href = '../index.html';
+      } else if (!hasAnyRole(['editor', 'moderator', 'admin'])) {
+        window.location.href = '../app/dashboard.html';
+      } else {
+        renderResourcesAdmin();
+      }
+    }, 100);
   </script>
-  <script type="module" src="../assets/js/app.js?v=3.0.0"></script>
 </body>
 </html>
-
-
