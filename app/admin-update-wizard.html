@@ -29,53 +29,42 @@
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px">
     <div>
       <div class="h2" style="margin:0">Monatsupdate erstellen</div>
-      <div class="p" style="margin:4px 0 0 0; color:var(--text-secondary)">Schritt <span id="currentStep">1</span> von <span id="totalSteps">7</span></div>
+      <div class="p" style="margin:4px 0 0 0; color:var(--text-secondary)">
+        <span id="autoSaveStatus" style="display:inline-flex; align-items:center; gap:6px; font-size:13px">
+          <span id="autoSaveIcon">💾</span>
+          <span id="autoSaveText">Gespeichert</span>
+        </span>
+      </div>
     </div>
     <div style="display:flex; gap:8px">
-      <button class="btn" id="saveDraft">💾 Entwurf speichern</button>
-      <button class="btn primary" id="publishBtn" style="display:none">📢 Veröffentlichen</button>
+      <button class="btn" id="saveDraft" style="position:relative">
+        <span id="saveDraftText">💾 Entwurf speichern</span>
+        <span id="saveDraftBadge" style="display:none; position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:20px; height:20px; font-size:11px; display:flex; align-items:center; justify-content:center">!</span>
+      </button>
+      <button class="btn primary" id="publishBtn">📢 Veröffentlichen</button>
     </div>
   </div>
   
-  <div style="display:grid; grid-template-columns: 280px 1fr 400px; gap:24px; min-height:600px">
-    <!-- Steps Navigation Links -->
-    <div class="card pane" style="position:sticky; top:100px; max-height:calc(100vh - 150px); overflow-y:auto">
-      <div style="font-weight:700; margin-bottom:16px; font-size:14px">Schritte</div>
-      <nav id="stepsNav" style="display:flex; flex-direction:column; gap:4px">
-        <a href="#" class="step-link active" data-step="1">
-          <div style="font-weight:600">1. Basics</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Titel, Datum, Status</div>
-        </a>
-        <a href="#" class="step-link" data-step="2">
-          <div style="font-weight:600">2. Hero</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Bild & Editorial</div>
-        </a>
-        <a href="#" class="step-link" data-step="3">
-          <div style="font-weight:600">3. Highlights</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Themen & Inhalte</div>
-        </a>
-        <a href="#" class="step-link" data-step="4">
-          <div style="font-weight:600">4. Teilnehmer</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Wer war dabei</div>
-        </a>
-        <a href="#" class="step-link" data-step="5">
-          <div style="font-weight:600">5. Takeaways</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Quotes & Learnings</div>
-        </a>
-        <a href="#" class="step-link" data-step="6">
-          <div style="font-weight:600">6. Resources</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Links & Next Event</div>
-        </a>
-        <a href="#" class="step-link" data-step="7">
-          <div style="font-weight:600">7. SEO & Publish</div>
-          <div style="font-size:12px; color:var(--text-secondary)">Meta & Veröffentlichung</div>
-        </a>
-      </nav>
-    </div>
-    
-    <!-- Main Form Area -->
+  <div style="display:grid; grid-template-columns: 1fr 400px; gap:24px; min-height:600px">
+    <!-- Main Form Area with Tabs -->
     <div class="card pane" style="overflow-y:auto; max-height:calc(100vh - 150px)">
-      <div id="stepContent"></div>
+      <!-- Tab Navigation -->
+      <div style="display:flex; gap:4px; border-bottom:2px solid var(--border); margin-bottom:24px; padding-bottom:0">
+        <button class="tab-btn active" data-tab="basics" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-primary); transition:all 0.2s">
+          Basics
+        </button>
+        <button class="tab-btn" data-tab="content" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Content
+        </button>
+        <button class="tab-btn" data-tab="participants" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Teilnehmer
+        </button>
+        <button class="tab-btn" data-tab="publish" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Veröffentlichen
+        </button>
+      </div>
+      
+      <div id="tabContent"></div>
     </div>
     
     <!-- Live Preview -->

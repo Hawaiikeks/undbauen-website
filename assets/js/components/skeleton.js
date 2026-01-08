@@ -1,72 +1,165 @@
-// Skeleton Screen Component
-export const skeleton = {
-  // Generate skeleton for thread list
-  threadList(count = 3) {
-    return Array(count).fill(0).map(() => `
-      <div class="skeleton-card" style="margin-bottom:12px">
-        <div style="display:flex; gap:12px">
-          <div class="skeleton-avatar"></div>
-          <div style="flex:1">
-            <div class="skeleton-line" style="width:60%; margin-bottom:8px"></div>
-            <div class="skeleton-line" style="width:80%"></div>
+/* Skeleton: Standardized loading state components */
+
+/**
+ * Create skeleton screen
+ * @param {string} type - Skeleton type
+ * @param {number} count - Number of skeletons
+ * @param {Object} options - Options
+ * @returns {string} HTML string
+ */
+export function createSkeleton(type = 'card', count = 1, options = {}) {
+  const {
+    animated = true,
+    className = ''
+  } = options;
+
+  const animationClass = animated ? 'skeleton-animated' : '';
+  const skeletons = {
+    card: `
+      <div class="skeleton-card ${animationClass} ${className}" style="
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div class="skeleton-line" style="height: 20px; background: var(--border); border-radius: 4px; margin-bottom: 12px; width: 60%;"></div>
+        <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; width: 80%; margin-bottom: 8px;"></div>
+        <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; width: 70%;"></div>
+      </div>
+    `,
+    list: `
+      <div class="skeleton-list-item ${animationClass} ${className}" style="
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+      ">
+        <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; width: 100%;"></div>
+      </div>
+    `,
+    avatar: `
+      <div class="skeleton-avatar ${animationClass} ${className}" style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--border);
+        margin-bottom: 8px;
+      "></div>
+    `,
+    text: `
+      <div class="skeleton-text ${animationClass} ${className}" style="
+        height: 16px;
+        background: var(--border);
+        border-radius: 4px;
+        margin-bottom: 8px;
+        width: 100%;
+      "></div>
+    `,
+    image: `
+      <div class="skeleton-image ${animationClass} ${className}" style="
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: var(--border);
+        border-radius: 8px;
+        margin-bottom: 12px;
+      "></div>
+    `,
+    button: `
+      <div class="skeleton-button ${animationClass} ${className}" style="
+        height: 40px;
+        width: 120px;
+        background: var(--border);
+        border-radius: 6px;
+        margin-bottom: 8px;
+      "></div>
+    `,
+    table: `
+      <div class="skeleton-table ${animationClass} ${className}" style="
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div class="skeleton-line" style="height: 20px; background: var(--border); border-radius: 4px; margin-bottom: 16px; width: 40%;"></div>
+        ${Array(5).fill(0).map(() => `
+          <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+            <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; flex: 1;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; flex: 1;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; flex: 1;"></div>
           </div>
+        `).join('')}
+      </div>
+    `,
+    dashboard: `
+      <div class="skeleton-dashboard ${animationClass} ${className}" style="
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 16px;
+      ">
+        <div class="skeleton-line" style="height: 24px; background: var(--border); border-radius: 4px; margin-bottom: 16px; width: 50%;"></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          ${Array(4).fill(0).map(() => `
+            <div style="padding: 16px; background: var(--surface); border-radius: 8px;">
+              <div class="skeleton-line" style="height: 16px; background: var(--border); border-radius: 4px; margin-bottom: 8px; width: 60%;"></div>
+              <div class="skeleton-line" style="height: 24px; background: var(--border); border-radius: 4px; width: 80%;"></div>
+            </div>
+          `).join('')}
         </div>
+        <div class="skeleton-line" style="height: 200px; background: var(--border); border-radius: 8px; width: 100%;"></div>
       </div>
-    `).join('');
-  },
+    `
+  };
+
+  const skeletonHTML = skeletons[type] || skeletons.card;
   
-  // Generate skeleton for forum thread list
-  forumThreadList(count = 5) {
-    return Array(count).fill(0).map(() => `
-      <div class="skeleton-card" style="margin-bottom:12px; padding:16px">
-        <div class="skeleton-line" style="width:70%; height:18px; margin-bottom:12px"></div>
-        <div class="skeleton-line" style="width:50%; height:14px"></div>
-      </div>
-    `).join('');
-  },
-  
-  // Generate skeleton for message list
-  messageList(count = 4) {
-    return Array(count).fill(0).map(() => `
-      <div class="skeleton-card" style="margin-bottom:10px">
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px">
-          <div class="skeleton-line" style="width:120px; height:16px"></div>
-          <div class="skeleton-line" style="width:60px; height:14px"></div>
-        </div>
-        <div class="skeleton-line" style="width:90%"></div>
-      </div>
-    `).join('');
-  },
-  
-  // Generate skeleton for member grid
-  memberGrid(count = 6) {
-    return Array(count).fill(0).map(() => `
-      <div class="skeleton-card">
-        <div class="skeleton-avatar" style="width:64px; height:64px; margin:0 auto 12px"></div>
-        <div class="skeleton-line" style="width:70%; margin:0 auto 8px"></div>
-        <div class="skeleton-line short" style="width:50%; margin:0 auto"></div>
-      </div>
-    `).join('');
-  },
-  
-  // Generate skeleton for event grid
-  eventGrid(count = 3) {
-    return Array(count).fill(0).map(() => `
-      <div class="skeleton-card">
-        <div class="skeleton" style="width:100%; height:150px; margin-bottom:12px; border-radius:var(--radius)"></div>
-        <div class="skeleton-line" style="width:80%; margin-bottom:8px"></div>
-        <div class="skeleton-line" style="width:60%"></div>
-      </div>
-    `).join('');
-  }
-};
+  return Array(count).fill(0).map(() => skeletonHTML).join('');
+}
 
+/**
+ * Create skeleton element
+ * @param {string} type - Skeleton type
+ * @param {number} count - Number of skeletons
+ * @param {Object} options - Options
+ * @returns {HTMLElement}
+ */
+export function createSkeletonElement(type = 'card', count = 1, options = {}) {
+  const container = document.createElement('div');
+  container.className = 'skeleton-container';
+  container.innerHTML = createSkeleton(type, count, options);
+  return container;
+}
 
+/**
+ * Ensure skeleton animations CSS is loaded
+ */
+export function ensureSkeletonStyles() {
+  if (document.getElementById('skeletonStyles')) return;
 
+  const style = document.createElement('style');
+  style.id = 'skeletonStyles';
+  style.textContent = `
+    @keyframes skeleton-pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
 
+    .skeleton-animated {
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+    }
 
+    .skeleton-line {
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
-
-
-
-
+// Initialize styles on load
+if (typeof document !== 'undefined') {
+  ensureSkeletonStyles();
+}

@@ -211,4 +211,191 @@ export function validateForm(data, rules) {
   };
 }
 
+/**
+ * Real-time validation helper
+ * Validates a field and shows inline feedback
+ * @param {HTMLElement} field - Input field element
+ * @param {Object} rules - Validation rules for this field
+ * @param {Object} formData - Complete form data (for cross-field validation)
+ * @returns {{valid: boolean, error?: string}}
+ */
+export function validateField(field, rules, formData = {}) {
+  if (!field || !rules) return { valid: true };
+  
+  const value = field.type === 'checkbox' ? field.checked : field.value;
+  const fieldName = field.name || field.id || 'field';
+  
+  // Required check
+  if (rules.required && !isRequired(value)) {
+    return {
+      valid: false,
+      error: rules.requiredMessage || `${fieldName} ist erforderlich`
+    };
+  }
+  
+  // Skip other validations if field is empty and not required
+  if (!value && !rules.required) {
+    return { valid: true };
+  }
+  
+  // Email validation
+  if (rules.email && !isValidEmail(value)) {
+    return {
+      valid: false,
+      error: rules.emailMessage || 'Ungültige E-Mail-Adresse'
+    };
+  }
+  
+  // URL validation
+  if (rules.url && !isValidURL(value)) {
+    return {
+      valid: false,
+      error: rules.urlMessage || 'Ungültige URL'
+    };
+  }
+  
+  // Length validation
+  if (rules.minLength && !validateLength(value, rules.minLength)) {
+    return {
+      valid: false,
+      error: rules.minLengthMessage || `Mindestens ${rules.minLength} Zeichen erforderlich`
+    };
+  }
+  
+  if (rules.maxLength && !validateLength(value, 0, rules.maxLength)) {
+    return {
+      valid: false,
+      error: rules.maxLengthMessage || `Maximal ${rules.maxLength} Zeichen erlaubt`
+    };
+  }
+  
+  // Custom validator
+  if (rules.validator && typeof rules.validator === 'function') {
+    const result = rules.validator(value, formData);
+    if (result !== true) {
+      return {
+        valid: false,
+        error: result || `${fieldName} ist ungültig`
+      };
+    }
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * Setup inline validation for a field
+ * @param {HTMLElement} field - Input field element
+ * @param {Object} rules - Validation rules
+ * @param {Object} options - Options (showError, showSuccess, formData)
+ */
+export function setupInlineValidation(field, rules, options = {}) {
+  const {
+    showError = true,
+    showSuccess = true,
+    formData = {}
+  } = options;
+  
+  if (!field) return;
+  
+  // Remove existing error message
+  const existingError = field.parentElement?.querySelector('.field-error');
+  if (existingError) existingError.remove();
+  
+  // Remove existing success indicator
+  const existingSuccess = field.parentElement?.querySelector('.field-success');
+  if (existingSuccess) existingSuccess.remove();
+  
+  // Validate on blur
+  field.addEventListener('blur', () => {
+    const result = validateField(field, rules, formData);
+    updateFieldValidation(field, result, { showError, showSuccess });
+  });
+  
+  // Validate on input (debounced)
+  let timeout;
+  field.addEventListener('input', () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const result = validateField(field, rules, formData);
+      updateFieldValidation(field, result, { showError, showSuccess });
+    }, 500);
+  });
+}
+
+/**
+ * Update field validation UI
+ * @param {HTMLElement} field - Input field element
+ * @param {Object} result - Validation result
+ * @param {Object} options - Options
+ */
+function updateFieldValidation(field, result, options = {}) {
+  const { showError = true, showSuccess = true } = options;
+  
+  // Remove existing indicators
+  const existingError = field.parentElement?.querySelector('.field-error');
+  if (existingError) existingError.remove();
+  
+  const existingSuccess = field.parentElement?.querySelector('.field-success');
+  if (existingSuccess) existingSuccess.remove();
+  
+  // Remove validation classes
+  field.classList.remove('field-invalid', 'field-valid');
+  
+  if (!result.valid && showError) {
+    field.classList.add('field-invalid');
+    
+    // Add error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.style.cssText = 'color: var(--danger); font-size: 12px; margin-top: 4px;';
+    errorDiv.textContent = result.error;
+    field.parentElement?.appendChild(errorDiv);
+  } else if (result.valid && showSuccess && field.value) {
+    field.classList.add('field-valid');
+    
+    // Add success indicator
+    const successDiv = document.createElement('div');
+    successDiv.className = 'field-success';
+    successDiv.style.cssText = 'color: var(--success, #10B981); font-size: 12px; margin-top: 4px;';
+    successDiv.textContent = '✓';
+    field.parentElement?.appendChild(successDiv);
+  }
+}
+
+/**
+ * Validation rules presets
+ */
+export const ValidationRules = {
+  required: {
+    required: true,
+    requiredMessage: 'Dieses Feld ist erforderlich'
+  },
+  email: {
+    required: true,
+    email: true,
+    emailMessage: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
+  },
+  url: {
+    url: true,
+    urlMessage: 'Bitte geben Sie eine gültige URL ein'
+  },
+  title: {
+    required: true,
+    minLength: 3,
+    maxLength: 200,
+    minLengthMessage: 'Titel muss mindestens 3 Zeichen lang sein',
+    maxLengthMessage: 'Titel darf maximal 200 Zeichen lang sein'
+  },
+  text: {
+    required: true,
+    minLength: 10,
+    maxLength: 1000,
+    minLengthMessage: 'Text muss mindestens 10 Zeichen lang sein',
+    maxLengthMessage: 'Text darf maximal 1000 Zeichen lang sein'
+  }
+};
+
+
+
 

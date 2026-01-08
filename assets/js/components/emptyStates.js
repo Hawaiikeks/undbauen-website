@@ -81,7 +81,9 @@ export function renderErrorState(options = {}) {
     title = 'Fehler',
     message = 'Ein Fehler ist aufgetreten.',
     retryLabel = 'Erneut versuchen',
-    retryCallback = null
+    retryCallback = null,
+    showDetails = false,
+    errorDetails = null
   } = options;
 
   return `
@@ -90,13 +92,28 @@ export function renderErrorState(options = {}) {
       <div style="font-weight: 600; font-size: 18px; margin-bottom: 8px; color: var(--danger);">
         ${title}
       </div>
-      <div style="color: var(--text-secondary); margin-bottom: ${retryLabel ? '24px' : '0'};">
+      <div style="color: var(--text-secondary); margin-bottom: ${retryLabel ? '24px' : '0'}; max-width: 600px; margin-left: auto; margin-right: auto;">
         ${message}
       </div>
       ${retryLabel ? `
-        <button class="btn primary" id="errorStateRetry">
-          ${retryLabel}
-        </button>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn primary" id="errorStateRetry">
+            ${retryLabel}
+          </button>
+          <button class="btn" id="errorStateReload" onclick="window.location.reload()">
+            Seite neu laden
+          </button>
+        </div>
+      ` : ''}
+      ${showDetails && errorDetails ? `
+        <details style="margin-top: 24px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+          <summary style="cursor: pointer; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">
+            Fehlerdetails anzeigen
+          </summary>
+          <pre style="font-size: 12px; overflow: auto; max-height: 200px; padding: 12px; background: var(--bg); border-radius: 6px; margin-top: 8px;">
+${typeof errorDetails === 'string' ? errorDetails : JSON.stringify(errorDetails, null, 2)}
+          </pre>
+        </details>
       ` : ''}
     </div>
   `;
@@ -127,5 +144,7 @@ export function ensureAnimations() {
 if (typeof document !== 'undefined') {
   ensureAnimations();
 }
+
+
 
 

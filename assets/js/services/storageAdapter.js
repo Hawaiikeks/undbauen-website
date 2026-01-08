@@ -22,6 +22,9 @@ const K = {
   cmsPubs: "cms:publications",
   resources: "resources",
   knowledge: "knowledge",
+  knowledgeTopics: "knowledge:topics",
+  knowledgeRelations: "knowledge:relations",
+  resourceCategories: "resource:categories",
   auditLog: "auditLog"
 };
 
@@ -533,147 +536,597 @@ function seedCMSIfEmpty(){
   }
 }
 
+// Seed Resource Categories
+function seedResourceCategoriesIfEmpty(){
+  const categories = getJSON(K.resourceCategories, []);
+  if(categories.length) return;
+  setJSON(K.resourceCategories, [
+    {
+      id: "cat_bim",
+      title: "BIM – Methoden & Werkzeuge",
+      description: "Umfassende Ressourcen zu Building Information Modeling: Methoden, Software, Standards und Best Practices für moderne Planungs- und Bauprozesse.",
+      iconKey: "cube",
+      order: 1,
+      parentId: null,
+      visibility: "member"
+    },
+    {
+      id: "cat_ai",
+      title: "KI & Automation Tools",
+      description: "Künstliche Intelligenz und Automatisierung im Bauwesen: Tools, Skripte, Plugins und Workflows für effizientere Arbeitsprozesse.",
+      iconKey: "brain",
+      order: 2,
+      parentId: null,
+      visibility: "member"
+    },
+    {
+      id: "cat_standards",
+      title: "Standards & Normen",
+      description: "Sammlung relevanter Standards, Normen und Richtlinien: DIN, ISO, buildingSMART Standards, Gesetze und Verordnungen.",
+      iconKey: "book-open",
+      order: 3,
+      parentId: null,
+      visibility: "member"
+    },
+    {
+      id: "cat_templates",
+      title: "Templates & Vorlagen",
+      description: "Einsatzbereite Vorlagen für Projektdokumentation, Verträge, BIM Execution Plans, Checklisten und mehr.",
+      iconKey: "file-text",
+      order: 4,
+      parentId: null,
+      visibility: "member"
+    },
+    {
+      id: "cat_workshops",
+      title: "Workshop-Materialien",
+      description: "Präsentationen, Handouts und Aufzeichnungen aus vergangenen Workshops und Innovationsabenden.",
+      iconKey: "users",
+      order: 5,
+      parentId: null,
+      visibility: "member"
+    },
+    {
+      id: "cat_media",
+      title: "Mediathek",
+      description: "Videos, Podcasts, Webinar-Aufzeichnungen und andere Medieninhalte rund um Innovation im Bauwesen.",
+      iconKey: "video",
+      order: 6,
+      parentId: null,
+      visibility: "member"
+    }
+  ]);
+}
+
 function seedResourcesIfEmpty(){
   const resources = getJSON(K.resources, []);
   if(resources.length) return;
-  setJSON(K.resources, [
+  
+  const items = [
+    // BIM Category
     {
       id: uid("res"),
+      categoryId: "cat_bim",
+      type: "file",
       title: "BIM Implementation Guide",
-      description: "Umfassender Leitfaden zur Implementierung von BIM in Architektur- und Ingenieurbüros.",
-      categoryId: "cat_guides",
-      tags: ["BIM", "Implementation", "Guide"],
-      fileUrl: "/assets/resources/bim-implementation-guide.pdf",
-      fileType: "pdf",
-      fileSize: 2457600,
+      description: "Umfassender Leitfaden zur Implementierung von BIM in Architektur- und Ingenieurbüros mit Schritt-für-Schritt-Anleitungen.",
+      tags: ["BIM", "Implementation", "Guide", "PDF"],
       visibility: "member",
-      status: "published",
-      createdBy: "admin@undbauen.local",
+      isFeatured: true,
+      contextRefs: [],
+      fileKey: "/assets/resources/bim-implementation-guide.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: 2457600,
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: uid("res"),
-      title: "Dynamo Script Library",
-      description: "Sammlung von Dynamo-Skripten für häufige Automatisierungsaufgaben in Revit.",
-      categoryId: "cat_scripts",
-      tags: ["Dynamo", "Automation", "Revit", "Scripts"],
-      fileUrl: "/assets/resources/dynamo-scripts.zip",
-      fileType: "zip",
-      fileSize: 1048576,
+      categoryId: "cat_bim",
+      type: "file",
+      title: "IFC Best Practices Handbook",
+      description: "Best Practices für Export und Import von IFC-Dateien in verschiedenen Softwarelösungen. Inklusive Checklisten und Troubleshooting.",
+      tags: ["IFC", "OpenBIM", "Interoperability", "PDF"],
       visibility: "member",
-      status: "published",
-      createdBy: "admin@undbauen.local",
+      isFeatured: false,
+      contextRefs: [],
+      fileKey: "/assets/resources/ifc-best-practices.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: 3145728,
+      createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_bim",
+      type: "link",
+      title: "buildingSMART Deutschland",
+      description: "Offizielle Website von buildingSMART Deutschland e.V. mit Standards, Zertifizierungen und aktuellen Informationen zu OpenBIM.",
+      tags: ["buildingSMART", "OpenBIM", "Standards"],
+      visibility: "public",
+      isFeatured: false,
+      contextRefs: [],
+      platform: "other",
+      url: "https://www.buildingsmart.de",
+      createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    // AI & Automation
+    {
+      id: uid("res"),
+      categoryId: "cat_ai",
+      type: "file",
+      title: "Dynamo Script Library",
+      description: "Sammlung von 25+ Dynamo-Skripten für häufige Automatisierungsaufgaben in Revit. Inkl. Dokumentation und Beispiele.",
+      tags: ["Dynamo", "Automation", "Revit", "Scripts"],
+      visibility: "member",
+      isFeatured: true,
+      contextRefs: [],
+      fileKey: "/assets/resources/dynamo-scripts.zip",
+      mimeType: "application/zip",
+      sizeBytes: 1048576,
       createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: uid("res"),
-      title: "Sustainable Building Materials Database",
-      description: "Datenbank nachhaltiger Baumaterialien mit Umweltbewertungen und Verfügbarkeit.",
-      categoryId: "cat_databases",
-      tags: ["Nachhaltigkeit", "Materialien", "Database"],
-      fileUrl: "https://docs.google.com/spreadsheets/d/example",
-      fileType: "link",
-      fileSize: 0,
+      categoryId: "cat_ai",
+      type: "tool",
+      title: "Miro Board: AI Use Cases im Bauwesen",
+      description: "Interaktives Miro Board mit gesammelten KI-Anwendungsfällen, Tools und Best Practices aus dem Netzwerk.",
+      tags: ["KI", "Miro", "Brainstorming", "Collaboration"],
       visibility: "member",
-      status: "published",
-      createdBy: "admin@undbauen.local",
+      isFeatured: false,
+      contextRefs: [],
+      platform: "miro",
+      url: "https://miro.com/app/board/example-ai-construction",
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: uid("res"),
-      title: "IFC Best Practices",
-      description: "Best Practices für den Export und Import von IFC-Dateien in verschiedenen Softwarelösungen.",
-      categoryId: "cat_guides",
-      tags: ["IFC", "OpenBIM", "Interoperability"],
-      fileUrl: "/assets/resources/ifc-best-practices.pdf",
-      fileType: "pdf",
-      fileSize: 3145728,
+      categoryId: "cat_ai",
+      type: "file",
+      title: "Grasshopper Definition: Parametric Facade",
+      description: "Parametrische Fassadengestaltung mit Grasshopper. Inkl. Tutorial und Revit-Export-Workflow.",
+      tags: ["Grasshopper", "Rhino", "Parametric", "Facade"],
       visibility: "member",
-      status: "published",
-      createdBy: "admin@undbauen.local",
+      isFeatured: false,
+      contextRefs: [],
+      fileKey: "/assets/resources/grasshopper-facade.gh",
+      mimeType: "application/octet-stream",
+      sizeBytes: 524288,
+      createdAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    // Standards
+    {
+      id: uid("res"),
+      categoryId: "cat_standards",
+      type: "file",
+      title: "DIN SPEC 91400: BIM-Klassifikation",
+      description: "Deutsche BIM-Klassifikation nach Bauteilen und Eigenschaften. Übersicht und Anwendungshinweise.",
+      tags: ["DIN", "Standards", "Klassifikation", "BIM"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      fileKey: "/assets/resources/din-spec-91400.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: 1572864,
+      createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_standards",
+      type: "tool",
+      title: "OneDrive: Normverzeichnis",
+      description: "Gemeinsam gepflegtes Verzeichnis relevanter Normen und Standards mit Links zu offiziellen Quellen.",
+      tags: ["Normen", "Standards", "OneDrive", "Verzeichnis"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      platform: "onedrive",
+      url: "https://onedrive.live.com/example-standards-directory",
+      createdAt: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    // Templates
+    {
+      id: uid("res"),
+      categoryId: "cat_templates",
+      type: "template",
+      title: "BIM Execution Plan Template",
+      description: "Vollständige BEP-Vorlage nach ISO 19650 für deutsche Bauprojekte. Editierbar in Word.",
+      tags: ["BEP", "Template", "ISO 19650", "Word"],
+      visibility: "member",
+      isFeatured: true,
+      contextRefs: [],
+      templateUrl: "/assets/resources/bep-template.docx",
+      platform: "word",
+      createdAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_templates",
+      type: "template",
+      title: "Präsentationsvorlage: Innovationsabend",
+      description: "PowerPoint-Vorlage für Präsentationen bei …undbauen Innovationsabenden mit Branding und Layout-Vorschlägen.",
+      tags: ["Template", "Präsentation", "Branding", "PowerPoint"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      templateUrl: "/assets/resources/presentation-template.pptx",
+      platform: "powerpoint",
+      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_templates",
+      type: "tool",
+      title: "Notion: Projektdokumentation Template",
+      description: "Notion-Template für strukturierte Projektdokumentation mit vorgefertigten Seiten, Datenbanken und Workflows.",
+      tags: ["Notion", "Template", "Dokumentation", "Projektmanagement"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      platform: "notion",
+      url: "https://notion.so/example-project-template",
       createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
     },
+    // Workshops
     {
       id: uid("res"),
-      title: "Presentation Template: Innovationsabend",
-      description: "PowerPoint-Vorlage für Präsentationen bei …undbauen Innovationsabenden.",
-      categoryId: "cat_templates",
-      tags: ["Template", "Präsentation", "Branding"],
-      fileUrl: "/assets/resources/presentation-template.pptx",
-      fileType: "pptx",
-      fileSize: 524288,
+      categoryId: "cat_workshops",
+      type: "file",
+      title: "Workshop Slides: BIM Basics",
+      description: "Präsentation vom Workshop 'BIM Grundlagen' (März 2025) mit interaktiven Übungen und Checklisten.",
+      tags: ["Workshop", "BIM", "Slides", "Schulung"],
       visibility: "member",
-      status: "published",
-      createdBy: "admin@undbauen.local",
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+      isFeatured: false,
+      contextRefs: [{ type: "event", id: "evt_example_1" }],
+      fileKey: "/assets/resources/workshop-bim-basics.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: 5242880,
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_workshops",
+      type: "file",
+      title: "Handout: Dynamo Einführung",
+      description: "Kompaktes Handout zur Dynamo-Einführung mit Code-Beispielen und weiterführenden Links.",
+      tags: ["Handout", "Dynamo", "Tutorial", "PDF"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      fileKey: "/assets/resources/handout-dynamo-intro.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: 1048576,
+      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    // Media
+    {
+      id: uid("res"),
+      categoryId: "cat_media",
+      type: "video",
+      title: "Webinar-Aufzeichnung: OpenBIM Workflow",
+      description: "Vollständige Aufzeichnung des Webinars 'OpenBIM Workflow in der Praxis' (Januar 2025) mit Q&A.",
+      tags: ["Webinar", "OpenBIM", "Video", "Recording"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      embedUrl: "https://www.youtube.com/embed/example-openbim",
+      thumbnailUrl: "https://img.youtube.com/vi/example-openbim/maxresdefault.jpg",
+      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_media",
+      type: "video",
+      title: "Tutorial: Revit API mit Python",
+      description: "Video-Tutorial-Serie: Erste Schritte mit der Revit API und pyRevit. 3 Teile, ca. 45min.",
+      tags: ["Tutorial", "Revit API", "Python", "pyRevit"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      embedUrl: "https://www.youtube.com/embed/example-revit-api",
+      thumbnailUrl: "https://img.youtube.com/vi/example-revit-api/maxresdefault.jpg",
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: uid("res"),
+      categoryId: "cat_media",
+      type: "tool",
+      title: "Canva: Social Media Assets",
+      description: "Canva-Template-Sammlung für Social-Media-Posts, Banner und Grafiken für …undbauen Mitglieder.",
+      tags: ["Canva", "Design", "Social Media", "Template"],
+      visibility: "member",
+      isFeatured: false,
+      contextRefs: [],
+      platform: "canva",
+      url: "https://www.canva.com/design/example-undbauen-assets",
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
     }
+  ];
+  
+  setJSON(K.resources, items);
+}
+
+// Seed Topics (controlled vocabulary)
+function seedTopicsIfEmpty(){
+  const topics = getJSON(K.knowledgeTopics, []);
+  if(topics.length) return;
+  setJSON(K.knowledgeTopics, [
+    { id: "topic_bim", label: "BIM", description: "Building Information Modeling", color: "#3B82F6", icon: "cube", order: 1 },
+    { id: "topic_ai", label: "KI & Automation", description: "Künstliche Intelligenz und Automatisierung", color: "#8B5CF6", icon: "brain", order: 2 },
+    { id: "topic_prozesse", label: "Prozesse", description: "Methoden und Prozesse", color: "#10B981", icon: "workflow", order: 3 },
+    { id: "topic_standards", label: "Standards", description: "Normen und Standards", color: "#F59E0B", icon: "book-open", order: 4 },
+    { id: "topic_tools", label: "Tools", description: "Software und Werkzeuge", color: "#EF4444", icon: "wrench", order: 5 },
+    { id: "topic_nachhaltigkeit", label: "Nachhaltigkeit", description: "Nachhaltiges Bauen", color: "#22C55E", icon: "leaf", order: 6 },
+    { id: "topic_digital", label: "Digitalisierung", description: "Digitale Transformation", color: "#06B6D4", icon: "monitor", order: 7 }
   ]);
 }
 
+// Seed Knowledge Items with new structure
 function seedKnowledgeIfEmpty(){
   const knowledge = getJSON(K.knowledge, []);
   if(knowledge.length) return;
-  setJSON(K.knowledge, [
+  
+  const items = [
     {
-      id: uid("know"),
+      id: "know_bim_basics",
       title: "Was ist BIM?",
-      slug: "was-ist-bim",
-      excerpt: "Building Information Modeling (BIM) ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden.",
-      content: "<h2>Building Information Modeling (BIM)</h2><p>BIM ist mehr als nur 3D-Modellierung. Es ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden mit Hilfe von Software.</p><h3>Die 7 BIM-Dimensionen</h3><ul><li><strong>3D:</strong> Geometrie</li><li><strong>4D:</strong> Zeit/Ablauf</li><li><strong>5D:</strong> Kosten</li><li><strong>6D:</strong> Nachhaltigkeit</li><li><strong>7D:</strong> Facility Management</li></ul>",
-      categoryId: "cat_basics",
+      summary: "Building Information Modeling (BIM) ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden und Infrastruktur.",
+      body: "BIM ist mehr als nur 3D-Modellierung. Es ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden mit Hilfe von Software.\n\nDie 7 BIM-Dimensionen:\n- 3D: Geometrie\n- 4D: Zeit/Ablauf\n- 5D: Kosten\n- 6D: Nachhaltigkeit\n- 7D: Facility Management\n\nBIM ermöglicht eine durchgängige Datenhaltung über den gesamten Lebenszyklus eines Bauwerks.",
+      type: "method",
+      topics: ["topic_bim", "topic_prozesse"],
       tags: ["BIM", "Grundlagen", "Methodik"],
-      visibility: "member",
       status: "published",
+      sources: [{ sourceType: "external", reference: "https://buildingsmart.de", note: "buildingSMART Deutschland" }],
       createdBy: "admin@undbauen.local",
       createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
-      id: uid("know"),
+      id: "know_ifc",
       title: "IFC - Industry Foundation Classes",
-      slug: "ifc-industry-foundation-classes",
-      excerpt: "IFC ist ein offener Standard für den Austausch von BIM-Daten zwischen verschiedenen Softwareplattformen.",
-      content: "<h2>Industry Foundation Classes (IFC)</h2><p>IFC ist ein offener, internationaler Standard (ISO 16739) für den Austausch von BIM-Daten. Er ermöglicht die Interoperabilität zwischen verschiedenen Softwareplattformen.</p><h3>Vorteile</h3><ul><li>Herstellerunabhängigkeit</li><li>Langzeitarchivierung</li><li>Durchgängiger Datenaustausch</li><li>Transparenz</li></ul><h3>IFC-Versionen</h3><p>Aktuell sind IFC 2x3 und IFC4 die am häufigsten verwendeten Versionen.</p>",
-      categoryId: "cat_standards",
-      tags: ["IFC", "OpenBIM", "Standards", "Interoperability"],
-      visibility: "member",
+      summary: "IFC ist ein offener Standard für den Austausch von BIM-Daten zwischen verschiedenen Softwareplattformen.",
+      body: "Industry Foundation Classes (IFC) ist ein offener, internationaler Standard (ISO 16739) für den Austausch von BIM-Daten. Er ermöglicht die Interoperabilität zwischen verschiedenen Softwareplattformen.\n\nVorteile:\n- Herstellerunabhängigkeit\n- Langzeitarchivierung\n- Durchgängiger Datenaustausch\n- Transparenz\n\nIFC-Versionen: Aktuell sind IFC 2x3 und IFC4 die am häufigsten verwendeten Versionen. IFC4.3 erweitert den Standard um Infrastruktur-Elemente.",
+      type: "standard",
+      topics: ["topic_bim", "topic_standards"],
+      tags: ["IFC", "OpenBIM", "Standards", "Interoperabilität"],
       status: "published",
+      sources: [{ sourceType: "external", reference: "https://technical.buildingsmart.org", note: "buildingSMART Technical" }],
       createdBy: "admin@undbauen.local",
       createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
-      id: uid("know"),
+      id: "know_dynamo",
       title: "Dynamo für Revit",
-      slug: "dynamo-fuer-revit",
-      excerpt: "Dynamo ist eine visuelle Programmierumgebung für die Automatisierung von Workflows in Revit und anderen Autodesk-Produkten.",
-      content: "<h2>Dynamo für Revit</h2><p>Dynamo ist eine Open-Source-Plattform für visuelle Programmierung, die eng mit Revit integriert ist.</p><h3>Anwendungsfälle</h3><ul><li>Parametrisches Design</li><li>Datenextraktion und -analyse</li><li>Automatisierung wiederkehrender Aufgaben</li><li>BIM-Modellprüfung</li><li>Generatives Design</li></ul><h3>Getting Started</h3><p>Dynamo ist in Revit bereits enthalten. Öffnen Sie es über die Registerkarte \"Verwalten\" → \"Dynamo\".</p>",
-      categoryId: "cat_tools",
+      summary: "Dynamo ist eine visuelle Programmierumgebung für die Automatisierung von Workflows in Revit.",
+      body: "Dynamo ist eine Open-Source-Plattform für visuelle Programmierung, die eng mit Revit integriert ist.\n\nAnwendungsfälle:\n- Parametrisches Design\n- Datenextraktion und -analyse\n- Automatisierung wiederkehrender Aufgaben\n- BIM-Modellprüfung\n- Generatives Design\n\nGetting Started: Dynamo ist in Revit bereits enthalten. Öffnen Sie es über die Registerkarte \"Verwalten\" → \"Dynamo\".",
+      type: "tool",
+      topics: ["topic_tools", "topic_bim", "topic_ai"],
       tags: ["Dynamo", "Revit", "Automation", "Visual Programming"],
-      visibility: "member",
       status: "published",
+      sources: [{ sourceType: "external", reference: "https://dynamobim.org", note: "Dynamo BIM Official" }],
       createdBy: "admin@undbauen.local",
       createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
-      id: uid("know"),
+      id: "know_circular",
       title: "Circular Economy im Bauwesen",
-      slug: "circular-economy-im-bauwesen",
-      excerpt: "Kreislaufwirtschaft im Bauwesen bedeutet, Gebäude und Materialien so zu gestalten, dass sie wiederverwendet, repariert oder recycelt werden können.",
-      content: "<h2>Circular Economy im Bauwesen</h2><p>Die Kreislaufwirtschaft ist ein regeneratives System, in dem Ressourcenverbrauch und Abfälle, Emissionen und Energieverschwendung minimiert werden.</p><h3>Prinzipien</h3><ol><li><strong>Design for Disassembly:</strong> Gebäude für Rückbau konzipieren</li><li><strong>Materialpass:</strong> Dokumentation verbauter Materialien</li><li><strong>Urban Mining:</strong> Gebäude als Materialbank</li><li><strong>Lifecycle Thinking:</strong> Gesamter Lebenszyklus im Fokus</li></ol><h3>Vorteile</h3><ul><li>Ressourcenschonung</li><li>CO2-Reduktion</li><li>Wirtschaftlichkeit</li><li>Innovationspotenzial</li></ul>",
-      categoryId: "cat_sustainability",
+      summary: "Kreislaufwirtschaft im Bauwesen bedeutet, Gebäude und Materialien so zu gestalten, dass sie wiederverwendet, repariert oder recycelt werden können.",
+      body: "Die Kreislaufwirtschaft ist ein regeneratives System, in dem Ressourcenverbrauch und Abfälle, Emissionen und Energieverschwendung minimiert werden.\n\nPrinzipien:\n1. Design for Disassembly: Gebäude für Rückbau konzipieren\n2. Materialpass: Dokumentation verbauter Materialien\n3. Urban Mining: Gebäude als Materialbank\n4. Lifecycle Thinking: Gesamter Lebenszyklus im Fokus\n\nVorteile:\n- Ressourcenschonung\n- CO2-Reduktion\n- Wirtschaftlichkeit\n- Innovationspotenzial",
+      type: "concept",
+      topics: ["topic_nachhaltigkeit"],
       tags: ["Nachhaltigkeit", "Circular Economy", "Kreislaufwirtschaft", "Ressourcen"],
-      visibility: "member",
       status: "published",
+      sources: [],
       createdBy: "admin@undbauen.local",
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_ai_construction",
+      title: "KI im Bauwesen",
+      summary: "Künstliche Intelligenz revolutioniert die Baubranche durch Automatisierung, Optimierung und neue Möglichkeiten der Datenanalyse.",
+      body: "KI-Technologien finden zunehmend Anwendung im Bauwesen:\n\nAnwendungsbereiche:\n- Predictive Maintenance\n- Baufortschrittskontrolle\n- Energieoptimierung\n- Kostenprognosen\n- Automatisierte Planung\n- Sicherheitsüberwachung\n\nTechnologien:\n- Computer Vision für Baustellenüberwachung\n- Machine Learning für Vorhersagemodelle\n- Natural Language Processing für Dokumentenanalyse",
+      type: "concept",
+      topics: ["topic_ai", "topic_digital"],
+      tags: ["KI", "Artificial Intelligence", "Machine Learning", "Innovation"],
+      status: "published",
+      sources: [],
+      createdBy: "editor@undbauen.local",
+      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_openBIM",
+      title: "OpenBIM Workflow",
+      summary: "OpenBIM ist ein universeller Ansatz für die kollaborative Planung, Realisierung und den Betrieb von Gebäuden auf Basis offener Standards.",
+      body: "OpenBIM basiert auf dem Prinzip offener Standards und Interoperabilität.\n\nKernmerkmale:\n- Nutzung offener Datenformate (IFC, BCF)\n- Herstellerunabhängigkeit\n- Transparente Datenaustauschprozesse\n- Neutrale Koordination\n\nVorteile:\n- Reduzierte Abhängigkeit von einzelnen Software-Anbietern\n- Bessere Zusammenarbeit über Disziplinen hinweg\n- Langfristige Datensicherheit\n- Internationale Standardisierung",
+      type: "method",
+      topics: ["topic_bim", "topic_prozesse", "topic_standards"],
+      tags: ["OpenBIM", "IFC", "Interoperabilität", "Standards"],
+      status: "published",
+      sources: [{ sourceType: "external", reference: "https://www.buildingsmart.org/about/openbim/", note: "buildingSMART OpenBIM" }],
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_revit",
+      title: "Autodesk Revit",
+      summary: "Revit ist eine führende BIM-Software für Architekten, Ingenieure und Bauunternehmer.",
+      body: "Autodesk Revit ist eine der am weitesten verbreiteten BIM-Authoring-Tools.\n\nFunktionen:\n- 3D-Modellierung mit intelligenten Objekten\n- Automatische 2D-Planableitung\n- Parametrische Komponenten (Families)\n- Kollaborationsfunktionen\n- Worksharing für Teams\n\nErweiterbarkeit:\n- Revit API (C#/.NET)\n- Dynamo für visuelle Programmierung\n- Add-Ins und Plugins\n- Python Scripting (pyRevit)",
+      type: "tool",
+      topics: ["topic_tools", "topic_bim"],
+      tags: ["Revit", "Autodesk", "BIM Software", "3D Modellierung"],
+      status: "published",
+      sources: [{ sourceType: "external", reference: "https://www.autodesk.com/products/revit", note: "Autodesk Revit" }],
+      createdBy: "editor@undbauen.local",
+      createdAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_lca",
+      title: "Life Cycle Assessment (LCA)",
+      summary: "Lebenszyklusanalyse ist eine Methode zur Bewertung der Umweltauswirkungen von Gebäuden über ihren gesamten Lebenszyklus.",
+      body: "LCA (Ökobilanzierung) erfasst und bewertet die Umweltauswirkungen eines Gebäudes von der Rohstoffgewinnung bis zum Rückbau.\n\nPhasen:\n- A1-A3: Herstellung (Rohstoffe, Transport, Produktion)\n- A4-A5: Errichtung (Transport, Einbau)\n- B1-B7: Nutzung (Instandhaltung, Reparatur, Ersatz)\n- C1-C4: End of Life (Rückbau, Transport, Entsorgung)\n- D: Recycling-Potenzial\n\nRelevanz:\n- Gesetzliche Anforderungen (z.B. GEG, QNG)\n- ESG-Kriterien\n- Zertifizierungssysteme (DGNB, LEED, BREEAM)",
+      type: "method",
+      topics: ["topic_nachhaltigkeit", "topic_standards"],
+      tags: ["LCA", "Ökobilanz", "Nachhaltigkeit", "Lebenszyklus"],
+      status: "published",
+      sources: [],
+      createdBy: "editor@undbauen.local",
+      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_bcf",
+      title: "BIM Collaboration Format (BCF)",
+      summary: "BCF ist ein offenes Dateiformat für den Austausch von Kommentaren, Problemen und Koordinationspunkten in BIM-Projekten.",
+      body: "BCF wurde von buildingSMART entwickelt und ist ein XML-basiertes Format für Issue-Management in BIM-Projekten.\n\nFunktionen:\n- Verknüpfung von Issues mit 3D-Positionen\n- Screenshots und Markups\n- Workflow-Status (Offen, In Bearbeitung, Geschlossen)\n- Verantwortlichkeiten und Prioritäten\n- Software-übergreifender Austausch\n\nSupport:\n- Revit, ArchiCAD, Solibri, BIMcollab, Navisworks und viele mehr\n- BCF 2.1 und BCF 3.0 sind aktuelle Standards",
+      type: "standard",
+      topics: ["topic_bim", "topic_standards", "topic_prozesse"],
+      tags: ["BCF", "Issue Management", "Kollaboration", "buildingSMART"],
+      status: "published",
+      sources: [{ sourceType: "external", reference: "https://www.buildingsmart.org/standards/bsi-standards/bim-collaboration-format-bcf/", note: "buildingSMART BCF" }],
+      createdBy: "admin@undbauen.local",
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_grasshopper",
+      title: "Grasshopper für Rhino",
+      summary: "Grasshopper ist ein visueller Algorithmus-Editor für parametrisches Design in Rhinoceros 3D.",
+      body: "Grasshopper ermöglicht parametrisches und generatives Design ohne Programmierkenntnisse.\n\nAnwendungsbereiche:\n- Parametrische Architektur\n- Komplexe Geometrien\n- Optimierungsalgorithmen\n- Generatives Design\n- Strukturanalyse (mit Plugins)\n\nEcosystem:\n- Hunderte von Plugins verfügbar\n- Integration mit Galapagos (Optimierung)\n- Kangaroo (Physics Engine)\n- Ladybug/Honeybee (Umweltsimulation)",
+      type: "tool",
+      topics: ["topic_tools", "topic_ai"],
+      tags: ["Grasshopper", "Rhino", "Parametric Design", "Generative Design"],
+      status: "published",
+      sources: [{ sourceType: "external", reference: "https://www.grasshopper3d.com", note: "Grasshopper3D Official" }],
+      createdBy: "editor@undbauen.local",
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "know_agile_construction",
+      title: "Agile Methoden im Bauwesen",
+      summary: "Agile Ansätze aus der Softwareentwicklung finden zunehmend Anwendung in Bauprojekten.",
+      body: "Agile Methoden betonen Flexibilität, iterative Entwicklung und enge Zusammenarbeit.\n\nPrinzipien:\n- Iterative Planung (Sprints)\n- Cross-funktionale Teams\n- Regelmäßiges Feedback\n- Anpassungsfähigkeit\n- Transparenz\n\nMethoden:\n- Scrum für Bauprojekte\n- Last Planner System\n- Lean Construction\n- Integrated Project Delivery (IPD)\n\nVorteile:\n- Frühe Problemerkennung\n- Bessere Stakeholder-Einbindung\n- Reduzierte Verschwendung\n- Höhere Projektqualität",
+      type: "method",
+      topics: ["topic_prozesse"],
+      tags: ["Agile", "Lean Construction", "Projektmanagement", "Scrum"],
+      status: "published",
+      sources: [],
+      createdBy: "editor@undbauen.local",
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ];
+  
+  setJSON(K.knowledge, items);
+}
+
+// Seed Relations between knowledge items
+function seedRelationsIfEmpty(){
+  const relations = getJSON(K.knowledgeRelations, []);
+  if(relations.length) return;
+  
+  setJSON(K.knowledgeRelations, [
+    // BIM basics relates to IFC
+    {
+      id: uid("rel"),
+      fromItemId: "know_bim_basics",
+      toItemId: "know_ifc",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // BIM basics relates to OpenBIM
+    {
+      id: uid("rel"),
+      fromItemId: "know_bim_basics",
+      toItemId: "know_openBIM",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // OpenBIM depends on IFC
+    {
+      id: uid("rel"),
+      fromItemId: "know_openBIM",
+      toItemId: "know_ifc",
+      relationType: "depends_on",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // OpenBIM relates to BCF
+    {
+      id: uid("rel"),
+      fromItemId: "know_openBIM",
+      toItemId: "know_bcf",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // Dynamo is example of AI/Automation
+    {
+      id: uid("rel"),
+      fromItemId: "know_dynamo",
+      toItemId: "know_ai_construction",
+      relationType: "example_of",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // Grasshopper is alternative to Dynamo
+    {
+      id: uid("rel"),
+      fromItemId: "know_grasshopper",
+      toItemId: "know_dynamo",
+      relationType: "alternative_to",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // Revit relates to Dynamo
+    {
+      id: uid("rel"),
+      fromItemId: "know_revit",
+      toItemId: "know_dynamo",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // LCA relates to Circular Economy
+    {
+      id: uid("rel"),
+      fromItemId: "know_lca",
+      toItemId: "know_circular",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
+    },
+    // Agile methods relate to processes
+    {
+      id: uid("rel"),
+      fromItemId: "know_agile_construction",
+      toItemId: "know_openBIM",
+      relationType: "related",
+      createdAt: nowISO(),
+      createdBy: "admin@undbauen.local"
     }
   ]);
 }
@@ -731,8 +1184,11 @@ function ensureSeeds(){
   seedEventsIfEmpty();
   seedForumIfEmpty();
   seedCMSIfEmpty();
+  seedResourceCategoriesIfEmpty(); // NEW: Resource Categories
   seedResourcesIfEmpty();
+  seedTopicsIfEmpty(); // NEW: Topics for Knowledge
   seedKnowledgeIfEmpty();
+  seedRelationsIfEmpty(); // NEW: Relations between Knowledge Items
   seedAuditLogIfEmpty();
 }
 
@@ -1552,6 +2008,71 @@ function adminDeletePublication(id){
 // Alias for compatibility with httpAdapter
 const getCurrentUser = me;
 
+/* ========== RESOURCE CATEGORIES ========== */
+function listResourceCategories(){
+  ensureSeeds();
+  return getJSON(K.resourceCategories, []);
+}
+
+function getResourceCategory(id){
+  const categories = listResourceCategories();
+  return categories.find(c => c.id === id) || null;
+}
+
+function listTopLevelCategories(){
+  return listResourceCategories().filter(c => !c.parentId);
+}
+
+function listChildCategories(parentId){
+  return listResourceCategories().filter(c => c.parentId === parentId);
+}
+
+/* ========== KNOWLEDGE TOPICS ========== */
+function listTopics(){
+  ensureSeeds();
+  return getJSON(K.knowledgeTopics, []);
+}
+
+function getTopic(id){
+  const topics = listTopics();
+  return topics.find(t => t.id === id) || null;
+}
+
+/* ========== KNOWLEDGE RELATIONS ========== */
+function listRelations(){
+  ensureSeeds();
+  return getJSON(K.knowledgeRelations, []);
+}
+
+function getRelationsFrom(itemId){
+  return listRelations().filter(r => r.fromItemId === itemId);
+}
+
+function getRelationsTo(itemId){
+  return listRelations().filter(r => r.toItemId === itemId);
+}
+
+function createRelation(payload){
+  if(!isLoggedIn()) return { success: false, error: "Not logged in" };
+  const relations = listRelations();
+  const rel = {
+    id: uid("rel"),
+    createdAt: nowISO(),
+    createdBy: me().email,
+    ...payload
+  };
+  relations.push(rel);
+  setJSON(K.knowledgeRelations, relations);
+  return { success: true, relation: rel };
+}
+
+function deleteRelation(id){
+  if(!isLoggedIn()) return { success: false, error: "Not logged in" };
+  const relations = listRelations().filter(r => r.id !== id);
+  setJSON(K.knowledgeRelations, relations);
+  return { success: true };
+}
+
 /* exported adapter */
 export const storageAdapter = {
   // auth
@@ -1588,7 +2109,16 @@ export const storageAdapter = {
   listUpdatesPublic, listPublicationsPublic,
   listUpdatesMember, listPublicationsMember,
   adminCreateUpdate, adminDeleteUpdate,
-  adminCreatePublication, adminDeletePublication
+  adminCreatePublication, adminDeletePublication,
+
+  // knowledge topics & relations
+  listTopics, getTopic,
+  listRelations, getRelationsFrom, getRelationsTo,
+  createRelation, deleteRelation,
+
+  // resource categories
+  listResourceCategories, getResourceCategory,
+  listTopLevelCategories, listChildCategories
 };
 
 // Ensure seeds are created immediately on module load

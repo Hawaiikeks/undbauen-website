@@ -1,8 +1,16 @@
-// Service Worker für Offline-Cache und Performance
+/**
+ * Service Worker für Offline-Cache und Performance
+ * 
+ * Provides offline functionality, caching strategies, and background sync.
+ * 
+ * @module serviceWorker
+ */
+
 // Cache-Version für Development: Timestamp-basiert für automatisches Cache-Busting
-const CACHE_VERSION = 'v4'; // Updated version - force cache refresh
+const CACHE_VERSION = 'v6'; // Updated version - force cache refresh (removed storageAdapter)
 const CACHE_NAME = `undbauen-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `undbauen-runtime-${CACHE_VERSION}`;
+const OFFLINE_PAGE = '/index.html';
 
 // Assets die gecacht werden sollen
 const STATIC_ASSETS = [
@@ -13,7 +21,7 @@ const STATIC_ASSETS = [
   '/assets/css/components.css',
   '/assets/css/app.css',
   '/assets/js/services/apiClient.js',
-  '/assets/js/services/storageAdapter.js',
+  '/assets/js/services/httpAdapter.js', // Updated: httpAdapter instead of storageAdapter
   '/assets/js/components/toast.js',
   '/assets/js/components/hoverCard.js',
   '/assets/js/components/search.js',
@@ -161,11 +169,49 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Default: Network First
-  event.respondWith(networkFirst(request));
+  // Default: Network First with offline fallback
+  event.respondWith(
+    networkFirst(request).catch(() => {
+      // If network fails and it's a navigation request, show offline page
+      if (request.mode === 'navigate') {
+        return caches.match(OFFLINE_PAGE);
+      }
+      // For other requests, return cache or empty response
+      return caches.match(request);
+    })
+  );
 });
 
+// Background Sync for offline actions
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-queue') {
+    event.waitUntil(
+      Promise.resolve().then(() => {
+        console.log('[SW] Background sync triggered');
+        // Notify clients to process sync queue
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'SYNC_QUEUE' });
+          });
+        });
+      })
+    );
+  }
+});
 
-
+// Message handler for communication with main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CACHE_URLS') {
+    event.waitUntil(
+      caches.open(RUNTIME_CACHE).then(cache => {
+        return cache.addAll(event.data.urls);
+      })
+    );
+  }
+});
 
 

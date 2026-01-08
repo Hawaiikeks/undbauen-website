@@ -1,0 +1,33 @@
+{
+  "name": "undbauen",
+  "version": "1.0.0",
+  "description": "Community Platform für AEC-Profis",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src/assets/js/**/*.js",
+    "lint:fix": "eslint src/assets/js/**/*.js --fix",
+    "format": "prettier --write \"src/**/*.{js,json,html,css}\"",
+    "format:check": "prettier --check \"src/**/*.{js,json,html,css}\"",
+    "test": "node test_modules.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+  "keywords": [
+    "community",
+    "platform",
+    "aec"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
+
+
+
+
+
+
+
+

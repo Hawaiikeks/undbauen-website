@@ -20,13 +20,13 @@ export const routes = {
     '/app/tickets.html': { page: 'tickets', role: 'member' },
     '/app/resources.html': { page: 'resources', role: 'member' },
     '/app/knowledge.html': { page: 'knowledge', role: 'member' },
-    '/app/events.html': { page: 'termine', role: 'member' },
+    '/app/termine.html': { page: 'termine', role: 'member' },
     '/app/forum.html': { page: 'forum', role: 'member' },
-    '/app/messages.html': { page: 'messages', role: 'member' },
-    '/app/members.html': { page: 'members', role: 'member' },
-    '/app/profile.html': { page: 'profile', role: 'member' },
-    '/app/settings.html': { page: 'settings', role: 'member' },
-    '/app/updates.html': { page: 'updates', role: 'member' }
+    '/app/nachrichten.html': { page: 'messages', role: 'member' },
+    '/app/mitglieder.html': { page: 'members', role: 'member' },
+    '/app/profil.html': { page: 'profile', role: 'member' },
+    '/app/einstellungen.html': { page: 'settings', role: 'member' },
+    '/app/monatsupdates.html': { page: 'updates', role: 'member' }
   },
   
   // Backoffice routes
@@ -103,5 +103,15 @@ export function routeExists(path) {
   }
   return false;
 }
+
+
+
+
+
+
+
+
+
+
 
 

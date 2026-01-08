@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .test-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .test-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .test-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .test-step {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #testResults {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Website Navigation Test</h1>
+        <p>Dieser Test prüft die Navigation und grundlegende Funktionalität der Website.</p>
+        <button onclick="runAllTests()">Alle Tests starten</button>
+        <button onclick="clearResults()">Ergebnisse löschen</button>
+    </div>
+
+    <div class="test-container">
+        <h2>Test-Ergebnisse:</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script type="module">
+        const resultsDiv = document.getElementById('testResults');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result test-${type}`;
+            div.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function logStep(message) {
+            log(`📋 ${message}`, 'step');
+        }
+
+        function logSuccess(message) {
+            log(`✅ ${message}`, 'success');
+        }
+
+        function logError(message) {
+            log(`❌ ${message}`, 'error');
+        }
+
+        function logInfo(message) {
+            log(`ℹ️ ${message}`, 'info');
+        }
+
+        window.clearResults = function() {
+            resultsDiv.innerHTML = '';
+        };
+
+        window.runAllTests = async function() {
+            clearResults();
+            logInfo('Test-Suite gestartet');
+            
+            try {
+                // Test 1: Prüfe ob Hauptseite lädt
+                logStep('Test 1: Hauptseite laden');
+                const indexResponse = await fetch('/index.html');
+                if (indexResponse.ok) {
+                    logSuccess('Hauptseite (index.html) lädt erfolgreich');
+                } else {
+                    logError(`Hauptseite fehlgeschlagen: ${indexResponse.status}`);
+                }
+
+                // Test 2: Prüfe CSS-Dateien
+                logStep('Test 2: CSS-Dateien prüfen');
+                const cssFiles = [
+                    '/assets/css/base.css',
+                    '/assets/css/public.css',
+                    '/assets/css/app.css',
+                    '/assets/css/sidebar.css',
+                    '/assets/css/components.css'
+                ];
+                for (const css of cssFiles) {
+                    const response = await fetch(css);
+                    if (response.ok) {
+                        logSuccess(`CSS geladen: ${css}`);
+                    } else {
+                        logError(`CSS fehlt: ${css} (${response.status})`);
+                    }
+                }
+
+                // Test 3: Prüfe JS-Module
+                logStep('Test 3: JavaScript-Module prüfen');
+                const jsFiles = [
+                    '/assets/js/public.js',
+                    '/assets/js/app.js',
+                    '/assets/js/services/apiClient.js',
+                    '/assets/js/services/storageAdapter.js',
+                    '/assets/js/services/router.js',
+                    '/assets/js/services/authGuard.js',
+                    '/assets/js/components/sidebar.js'
+                ];
+                for (const js of jsFiles) {
+                    const response = await fetch(js);
+                    if (response.ok) {
+                        logSuccess(`JS-Modul vorhanden: ${js}`);
+                    } else {
+                        logError(`JS-Modul fehlt: ${js} (${response.status})`);
+                    }
+                }
+
+                // Test 4: Prüfe App-Seiten
+                logStep('Test 4: App-Seiten prüfen');
+                const appPages = [
+                    '/app/dashboard.html',
+                    '/app/nachrichten.html',
+                    '/app/forum.html',
+                    '/app/termine.html',
+                    '/app/mitglieder.html',
+                    '/app/profil.html',
+                    '/app/einstellungen.html'
+                ];
+                for (const page of appPages) {
+                    const response = await fetch(page);
+                    if (response.ok) {
+                        logSuccess(`App-Seite vorhanden: ${page}`);
+                    } else {
+                        logError(`App-Seite fehlt: ${page} (${response.status})`);
+                    }
+                }
+
+                // Test 5: Prüfe Backoffice-Seiten
+                logStep('Test 5: Backoffice-Seiten prüfen');
+                const backofficePages = [
+                    '/backoffice/index.html',
+                    '/backoffice/inbox.html',
+                    '/backoffice/reports.html',
+                    '/backoffice/audit.html'
+                ];
+                for (const page of backofficePages) {
+                    const response = await fetch(page);
+                    if (response.ok) {
+                        logSuccess(`Backoffice-Seite vorhanden: ${page}`);
+                    } else {
+                        logError(`Backoffice-Seite fehlt: ${page} (${response.status})`);
+                    }
+                }
+
+                // Test 6: Prüfe API-Client Konfiguration
+                logStep('Test 6: API-Client prüfen');
+                try {
+                    const { api } = await import('/assets/js/services/apiClient.js');
+                    if (api) {
+                        logSuccess('API-Client erfolgreich geladen');
+                        
+                        // Teste Login-Funktion
+                        if (typeof api.login === 'function') {
+                            logSuccess('api.login() verfügbar');
+                        } else {
+                            logError('api.login() nicht verfügbar');
+                        }
+                        
+                        // Teste isLoggedIn-Funktion
+                        if (typeof api.isLoggedIn === 'function') {
+                            logSuccess('api.isLoggedIn() verfügbar');
+                            const loggedIn = api.isLoggedIn();
+                            logInfo(`Aktueller Login-Status: ${loggedIn}`);
+                        } else {
+                            logError('api.isLoggedIn() nicht verfügbar');
+                        }
+                    } else {
+                        logError('API-Client konnte nicht geladen werden');
+                    }
+                } catch (error) {
+                    logError(`API-Client Fehler: ${error.message}`);
+                }
+
+                // Test 7: Prüfe Router-Konfiguration
+                logStep('Test 7: Router prüfen');
+                try {
+                    const { routes, getCurrentPath } = await import('/assets/js/services/router.js');
+                    if (routes) {
+                        logSuccess('Router erfolgreich geladen');
+                        logInfo(`Anzahl Member-Routes: ${Object.keys(routes.member || {}).length}`);
+                        logInfo(`Anzahl Backoffice-Routes: ${Object.keys(routes.backoffice || {}).length}`);
+                        
+                        // Prüfe ob Router die deutschen Dateinamen hat
+                        if (routes.member['/app/nachrichten.html']) {
+                            logSuccess('Router hat korrekte deutsche Dateinamen (nachrichten.html)');
+                        } else {
+                            logError('Router hat noch englische Dateinamen (messages.html)');
+                        }
+                    } else {
+                        logError('Router-Routes nicht verfügbar');
+                    }
+                } catch (error) {
+                    logError(`Router Fehler: ${error.message}`);
+                }
+
+                logInfo('✨ Test-Suite abgeschlossen!');
+                
+            } catch (error) {
+                logError(`Kritischer Fehler: ${error.message}`);
+                console.error(error);
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+
+
+

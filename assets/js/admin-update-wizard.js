@@ -10,10 +10,11 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 let currentUpdate = null;
-let currentStep = 1;
-const totalSteps = 7;
+let currentTab = 'basics';
+const tabs = ['basics', 'content', 'participants', 'publish'];
 let autoSaveTimer = null;
-let isDraftSaved = false;
+let isDraftSaved = true;
+let hasUnsavedChanges = false;
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,10 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
     createNewUpdate();
   }
 
-  setupStepNavigation();
+  setupTabNavigation();
   setupAutoSave();
   setupDeviceToggle();
-  renderStep(1);
+  renderTab('basics');
 });
 
 function createNewUpdate() {
@@ -102,54 +103,60 @@ function migrateToNewFormat(oldUpdate) {
   return newUpdate;
 }
 
-function setupStepNavigation() {
-  $$(".step-link").forEach(link => {
-    link.addEventListener("click", (e) => {
+function setupTabNavigation() {
+  $$(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const step = parseInt(link.dataset.step);
-      if (step >= 1 && step <= totalSteps) {
-        goToStep(step);
+      const tab = btn.dataset.tab;
+      if (tabs.includes(tab)) {
+        switchTab(tab);
       }
     });
   });
-  
-  // Next/Previous buttons (will be added to each step)
 }
 
-function goToStep(step) {
-  if (step < 1 || step > totalSteps) return;
+function switchTab(tab) {
+  if (!tabs.includes(tab)) return;
   
-  // Save current step data
-  saveCurrentStepData();
+  // Save current tab data
+  saveCurrentTabData();
   
-  currentStep = step;
-  updateStepNavigation();
-  renderStep(step);
+  currentTab = tab;
+  updateTabNavigation();
+  renderTab(tab);
   updatePreview();
 }
 
-function updateStepNavigation() {
-  $("#currentStep").textContent = currentStep;
-  $$(".step-link").forEach((link, idx) => {
-    const stepNum = idx + 1;
-    link.classList.toggle("active", stepNum === currentStep);
-    link.classList.toggle("completed", stepNum < currentStep);
+function updateTabNavigation() {
+  $$(".tab-btn").forEach(btn => {
+    const isActive = btn.dataset.tab === currentTab;
+    btn.classList.toggle("active", isActive);
+    if (isActive) {
+      btn.style.color = "var(--text-primary)";
+      btn.style.borderBottomColor = "var(--primary)";
+    } else {
+      btn.style.color = "var(--text-secondary)";
+      btn.style.borderBottomColor = "transparent";
+    }
   });
   
   // Show/hide publish button
-  $("#publishBtn").style.display = currentStep === totalSteps ? "block" : "none";
+  $("#publishBtn").style.display = currentTab === 'publish' ? "block" : "none";
 }
 
 function setupAutoSave() {
-  // Auto-save draft every 2 seconds after changes
+  // Auto-save draft every 3 seconds after changes
   const debouncedSave = debounce(() => {
-    saveDraft();
-  }, 2000);
+    saveDraft(false);
+    updateAutoSaveStatus(true);
+  }, 3000);
   
   // Listen to all input changes
   document.addEventListener("input", () => {
-    debouncedSave();
+    hasUnsavedChanges = true;
     isDraftSaved = false;
+    updateAutoSaveStatus(false);
+    debouncedSave();
   });
   
   $("#saveDraft").addEventListener("click", () => {
@@ -159,12 +166,41 @@ function setupAutoSave() {
   $("#publishBtn").addEventListener("click", () => {
     publishUpdate();
   });
+  
+  // Warn before leaving with unsaved changes
+  window.addEventListener("beforeunload", (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?";
+      return e.returnValue;
+    }
+  });
+}
+
+function updateAutoSaveStatus(saved) {
+  const icon = $("#autoSaveIcon");
+  const text = $("#autoSaveText");
+  const badge = $("#saveDraftBadge");
+  
+  if (saved) {
+    if (icon) icon.textContent = "💾";
+    if (text) text.textContent = "Gespeichert";
+    if (text) text.style.color = "var(--text-secondary)";
+    if (badge) badge.style.display = "none";
+    hasUnsavedChanges = false;
+    isDraftSaved = true;
+  } else {
+    if (icon) icon.textContent = "⏳";
+    if (text) text.textContent = "Wird gespeichert...";
+    if (text) text.style.color = "var(--text-secondary)";
+    if (badge) badge.style.display = "flex";
+  }
 }
 
 function saveDraft(showToast = false) {
   if (!currentUpdate) return;
   
-  saveCurrentStepData();
+  saveCurrentTabData();
   
   currentUpdate.status = "draft";
   currentUpdate.updatedAt = new Date().toISOString();
@@ -187,11 +223,13 @@ function saveDraft(showToast = false) {
   }
   
   isDraftSaved = true;
+  hasUnsavedChanges = false;
+  updateAutoSaveStatus(true);
 }
 
 function publishUpdate() {
-  // Save all current step data first
-  saveCurrentStepData();
+  // Save all current tab data first
+  saveCurrentTabData();
   
   // Validate
   const validation = MonthlyUpdateModel.validate(currentUpdate);
@@ -242,32 +280,268 @@ function publishUpdate() {
   }, 2000);
 }
 
-function saveCurrentStepData() {
+function saveCurrentTabData() {
   if (!currentUpdate) return;
   
-  switch (currentStep) {
-    case 1:
-      saveStep1Basics();
+  switch (currentTab) {
+    case 'basics':
+      if ($("#step1Month")) saveStep1Basics();
+      if ($("#step2Alt")) saveStep2Hero();
       break;
-    case 2:
-      saveStep2Hero();
+    case 'content':
+      if ($("#hlTitle_0")) saveStep3Highlights();
+      if ($("#takeawayText_0")) saveStep5Takeaways();
+      if ($("#resourceTitle_0")) saveStep6Resources();
       break;
-    case 3:
-      saveStep3Highlights();
+    case 'participants':
+      if ($("#participantSelect")) saveStep4Participants();
       break;
-    case 4:
-      saveStep4Participants();
-      break;
-    case 5:
-      saveStep5Takeaways();
-      break;
-    case 6:
-      saveStep6Resources();
-      break;
-    case 7:
-      saveStep7SEO();
+    case 'publish':
+      if ($("#step7MetaDesc")) saveStep7SEO();
       break;
   }
+}
+
+function renderTab(tab) {
+  currentTab = tab;
+  updateTabNavigation();
+  
+  switch (tab) {
+    case 'basics':
+      renderTabBasics();
+      break;
+    case 'content':
+      renderTabContent();
+      break;
+    case 'participants':
+      renderTabParticipants();
+      break;
+    case 'publish':
+      renderTabPublish();
+      break;
+  }
+  
+  updatePreview();
+}
+
+// ========== TAB 1: BASICS ==========
+function renderTabBasics() {
+  $("#tabContent").innerHTML = `
+    <div style="max-width:700px">
+      <div style="font-weight:700; font-size:20px; margin-bottom:24px">Basics</div>
+      
+      ${renderStep1Content()}
+      <div style="margin-top:32px"></div>
+      ${renderStep2Content()}
+    </div>
+  `;
+  
+  // Wire up events
+  if ($("#step1Title")) {
+    $("#step1Title").addEventListener("input", () => {
+      const title = $("#step1Title").value;
+      const month = $("#step1Month")?.value;
+      if (title && month) {
+        currentUpdate.slug = MonthlyUpdateModel.generateSlug(title, month);
+        if ($("#step1Slug")) $("#step1Slug").textContent = currentUpdate.slug;
+      }
+    });
+  }
+  
+  if ($("#step1Month")) {
+    $("#step1Month").addEventListener("change", () => {
+      const title = $("#step1Title")?.value;
+      const month = $("#step1Month").value;
+      if (title && month) {
+        currentUpdate.slug = MonthlyUpdateModel.generateSlug(title, month);
+        if ($("#step1Slug")) $("#step1Slug").textContent = currentUpdate.slug;
+      }
+    });
+  }
+  
+  // Character counter for editorial
+  const editorial = $("#step2Editorial");
+  const counter = $("#editorialCount");
+  if (editorial && counter) {
+    editorial.addEventListener("input", () => {
+      counter.textContent = editorial.value.length;
+      counter.style.color = editorial.value.length > 600 ? "var(--danger)" : "var(--text-secondary)";
+    });
+    counter.textContent = editorial.value.length;
+  }
+}
+
+function renderStep1Content() {
+  return `
+    <div style="margin-bottom:32px">
+      <div style="font-weight:600; font-size:16px; margin-bottom:16px; color:var(--text-secondary)">Grundinformationen</div>
+      
+      <label class="label">Monat (YYYY-MM)</label>
+      <input class="input" id="step1Month" type="month" value="${currentUpdate.issueDate || ''}" placeholder="2026-02"/>
+      <div class="small" style="color:var(--text-secondary); margin-top:4px">Das Datum des Innovationsabends</div>
+      
+      <label class="label" style="margin-top:16px">Titel *</label>
+      <input class="input" id="step1Title" value="${currentUpdate.title || ''}" placeholder="Monatsupdate Februar 2026"/>
+      <div class="small" style="color:var(--text-secondary); margin-top:4px">Haupttitel des Updates</div>
+      
+      <label class="label" style="margin-top:16px">Untertitel</label>
+      <input class="input" id="step1Subtitle" value="${currentUpdate.subtitle || ''}" placeholder="Optional: Kurzer Untertitel"/>
+      
+      <label class="label" style="margin-top:16px">Status</label>
+      <select class="input" id="step1Status">
+        <option value="draft" ${currentUpdate.status === 'draft' ? 'selected' : ''}>Entwurf</option>
+        <option value="published" ${currentUpdate.status === 'published' ? 'selected' : ''}>Veröffentlicht</option>
+        <option value="archived" ${currentUpdate.status === 'archived' ? 'selected' : ''}>Archiviert</option>
+      </select>
+      
+      <div style="margin-top:16px; padding:12px; background:var(--bg); border-radius:6px">
+        <div style="font-weight:600; margin-bottom:8px">URL-Slug</div>
+        <div style="font-family:monospace; font-size:14px; color:var(--text-secondary)" id="step1Slug">${currentUpdate.slug || ''}</div>
+        <div class="small" style="color:var(--text-secondary); margin-top:4px">Wird automatisch aus Titel und Datum generiert</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderStep2Content() {
+  return `
+    <div>
+      <div style="font-weight:600; font-size:16px; margin-bottom:16px; color:var(--text-secondary)">Hero & Editorial</div>
+      
+      <label class="label">Hero-Bild</label>
+      <div style="margin-bottom:16px">
+        ${currentUpdate.heroImage?.url ? `
+          <div id="heroImageContainer" style="position:relative; margin-bottom:12px; cursor:crosshair">
+            <img src="${currentUpdate.heroImage.url}" alt="Hero" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; object-position:${(currentUpdate.heroImage.focalPoint?.x || 0.5) * 100}% ${(currentUpdate.heroImage.focalPoint?.y || 0.5) * 100}%"/>
+            <div id="heroFocalPoint" style="position:absolute; width:20px; height:20px; border:3px solid var(--primary); border-radius:50%; background:rgba(255,255,255,0.8); transform:translate(-50%, -50%); pointer-events:none; z-index:10; left:${(currentUpdate.heroImage.focalPoint?.x || 0.5) * 100}%; top:${(currentUpdate.heroImage.focalPoint?.y || 0.5) * 100}%"></div>
+            <button class="btn danger small" onclick="removeHeroImage()" style="position:absolute; top:8px; right:8px; z-index:20">✕ Entfernen</button>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <button class="btn small" onclick="openHeroCrop()">✂️ Focal Point setzen</button>
+          </div>
+          <div class="small" style="color:var(--text-secondary); margin-top:4px">Klicken Sie auf das Bild, um den Fokuspunkt zu setzen</div>
+        ` : `
+          <div style="border:2px dashed var(--border); border-radius:8px; padding:40px; text-align:center; background:var(--bg)">
+            <div style="font-size:48px; margin-bottom:12px">📷</div>
+            <div style="margin-bottom:12px">Kein Bild hochgeladen</div>
+            <button class="btn primary" onclick="uploadHeroImage()">Bild hochladen</button>
+          </div>
+        `}
+        <input type="file" id="heroImageInput" accept="image/*" style="display:none" onchange="handleHeroImageUpload(event)"/>
+      </div>
+      
+      <label class="label">Alt-Text *</label>
+      <input class="input" id="step2Alt" value="${currentUpdate.heroImage?.alt || ''}" placeholder="Beschreibung des Bildes für Barrierefreiheit"/>
+      <div class="small" style="color:var(--text-secondary); margin-top:4px">Pflichtfeld für Barrierefreiheit</div>
+      
+      <label class="label" style="margin-top:16px">Bildunterschrift</label>
+      <input class="input" id="step2Caption" value="${currentUpdate.heroImage?.caption || ''}" placeholder="Optional: Bildunterschrift"/>
+      
+      <label class="label" style="margin-top:16px">Editorial-Text (5-8 Zeilen)</label>
+      <textarea class="textarea" id="step2Editorial" style="min-height:120px" placeholder="Kurze Einleitung zum Monatsupdate...">${currentUpdate.editorialText || ''}</textarea>
+      <div class="small" style="color:var(--text-secondary); margin-top:4px">
+        <span id="editorialCount">${(currentUpdate.editorialText || '').length}</span> / 600 Zeichen
+      </div>
+    </div>
+  `;
+}
+
+// ========== TAB 2: CONTENT ==========
+function renderTabContent() {
+  $("#tabContent").innerHTML = `
+    <div style="max-width:700px">
+      <div style="font-weight:700; font-size:20px; margin-bottom:24px">Content</div>
+      
+      <div style="margin-bottom:32px">
+        <div style="font-weight:600; font-size:16px; margin-bottom:16px; color:var(--text-secondary)">Highlights</div>
+        ${renderStep3Content()}
+      </div>
+      
+      <div style="margin-bottom:32px">
+        <div style="font-weight:600; font-size:16px; margin-bottom:16px; color:var(--text-secondary)">Takeaways</div>
+        ${renderStep5Content()}
+      </div>
+      
+      <div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:16px; color:var(--text-secondary)">Resources</div>
+        ${renderStep6Content()}
+      </div>
+    </div>
+  `;
+}
+
+function renderStep3Content() {
+  const highlights = currentUpdate.highlights || [];
+  return `
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
+        <div class="small" style="color:var(--text-secondary)">${highlights.length} Highlight${highlights.length !== 1 ? 's' : ''}</div>
+        <button class="btn primary" onclick="addNewHighlight()">+ Highlight hinzufügen</button>
+      </div>
+      ${highlights.length === 0 ? `
+        <div style="text-align:center; padding:40px 20px; background:var(--bg); border-radius:8px; border:2px dashed var(--border)">
+          <div style="font-size:32px; margin-bottom:8px">✨</div>
+          <div style="font-weight:600; margin-bottom:4px">Noch keine Highlights</div>
+          <button class="btn primary" onclick="addNewHighlight()">Erstes Highlight hinzufügen</button>
+        </div>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:12px">
+          ${highlights.map((hl, idx) => `
+            <div class="card" style="padding:16px; cursor:pointer; ${idx === currentHighlightIndex ? 'border:2px solid var(--primary)' : ''}" onclick="editHighlight(${idx})">
+              <div style="display:flex; justify-content:space-between; align-items:start">
+                <div style="flex:1">
+                  <div style="font-weight:600; margin-bottom:4px">${hl.title || 'Unbenanntes Highlight'}</div>
+                  <div style="font-size:14px; color:var(--text-secondary)">${hl.shortSummary ? hl.shortSummary.substring(0, 100) + '...' : 'Keine Beschreibung'}</div>
+                </div>
+                <button class="btn danger small" onclick="event.stopPropagation(); deleteHighlight(${idx})">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ${currentHighlightIndex >= 0 ? renderHighlightEditor(highlights[currentHighlightIndex], currentHighlightIndex) : ''}
+      `}
+    </div>
+  `;
+}
+
+function renderStep5Content() {
+  // This will be implemented similarly to renderStep3Content
+  return `<div class="p" style="color:var(--text-secondary)">Takeaways werden hier angezeigt...</div>`;
+}
+
+function renderStep6Content() {
+  // This will be implemented similarly to renderStep3Content
+  return `<div class="p" style="color:var(--text-secondary)">Resources werden hier angezeigt...</div>`;
+}
+
+// ========== TAB 3: PARTICIPANTS ==========
+function renderTabParticipants() {
+  $("#tabContent").innerHTML = `
+    <div style="max-width:700px">
+      <div style="font-weight:700; font-size:20px; margin-bottom:24px">Teilnehmer</div>
+      ${renderStep4Content()}
+    </div>
+  `;
+}
+
+function renderStep4Content() {
+  // This will use the existing renderStep4() content
+  return `<div class="p" style="color:var(--text-secondary)">Teilnehmer-Auswahl wird hier angezeigt...</div>`;
+}
+
+// ========== TAB 4: PUBLISH ==========
+function renderTabPublish() {
+  $("#tabContent").innerHTML = `
+    <div style="max-width:700px">
+      <div style="font-weight:700; font-size:20px; margin-bottom:24px">Veröffentlichen</div>
+      ${renderStep7Content()}
+    </div>
+  `;
+}
+
+function renderStep7Content() {
+  // This will use the existing renderStep7() content
+  return `<div class="p" style="color:var(--text-secondary)">SEO & Veröffentlichung wird hier angezeigt...</div>`;
 }
 
 // ========== STEP 1: BASICS ==========
@@ -417,7 +691,7 @@ window.handleHeroImageUpload = function(event) {
     currentUpdate.heroImage = currentUpdate.heroImage || {};
     currentUpdate.heroImage.url = e.target.result;
     currentUpdate.heroImage.focalPoint = { x: 0.5, y: 0.5 };
-    renderStep(2);
+    renderTab('basics');
     updatePreview();
     
     // Add focal point indicator after image loads
@@ -478,7 +752,7 @@ window.removeHeroImage = function() {
     caption: '',
     focalPoint: { x: 0.5, y: 0.5 }
   };
-  renderStep(2);
+  renderTab('basics');
   updatePreview();
 };
 
@@ -690,19 +964,19 @@ window.addNewHighlight = function() {
   currentUpdate.highlights = currentUpdate.highlights || [];
   currentUpdate.highlights.push(highlight);
   currentHighlightIndex = currentUpdate.highlights.length - 1;
-  renderStep(3);
+  renderTab('content');
   updatePreview();
 };
 
 window.editHighlight = function(index) {
   currentHighlightIndex = index;
-  renderStep(3);
+  renderTab('content');
 };
 
 window.closeHighlightEditor = function() {
   saveHighlightData(currentHighlightIndex);
   currentHighlightIndex = -1;
-  renderStep(3);
+  renderTab('content');
   updatePreview();
 };
 
@@ -759,14 +1033,14 @@ window.addKeyPoint = function(highlightIndex) {
   currentUpdate.highlights[highlightIndex].keyPoints = currentUpdate.highlights[highlightIndex].keyPoints || [];
   if (currentUpdate.highlights[highlightIndex].keyPoints.length < 5) {
     currentUpdate.highlights[highlightIndex].keyPoints.push('');
-    renderStep(3);
+    renderTab('content');
   }
 };
 
 window.removeKeyPoint = function(highlightIndex, keyPointIndex) {
   if (!currentUpdate.highlights[highlightIndex]) return;
   currentUpdate.highlights[highlightIndex].keyPoints.splice(keyPointIndex, 1);
-  renderStep(3);
+  renderTab('content');
 };
 
 window.moveHighlight = function(index, direction) {
@@ -789,7 +1063,7 @@ window.deleteHighlight = function(index) {
     } else if (currentHighlightIndex > index) {
       currentHighlightIndex--;
     }
-    renderStep(3);
+    renderTab('content');
     updatePreview();
   }
 };
@@ -815,7 +1089,7 @@ window.handleHighlightImageUpload = function(index, event) {
     currentUpdate.highlights[index].media.image = currentUpdate.highlights[index].media.image || {};
     currentUpdate.highlights[index].media.image.url = e.target.result;
     currentUpdate.highlights[index].media.image.focalPoint = { x: 0.5, y: 0.5 };
-    renderStep(3);
+    renderTab('content');
     updatePreview();
     
     // Initialize Rich Text Editor for deep dive if enabled
@@ -865,7 +1139,7 @@ window.handleHighlightAttachmentUpload = function(index, event) {
     };
     
     currentUpdate.highlights[index].deepDive.attachments.push(attachment);
-    renderStep(3);
+    renderTab('content');
     toast.success("Datei hinzugefügt");
   };
   reader.readAsDataURL(file);
@@ -878,7 +1152,7 @@ window.removeHighlightAttachment = function(highlightIndex, attachmentIndex) {
   if (!currentUpdate.highlights[highlightIndex]?.deepDive?.attachments) return;
   
   currentUpdate.highlights[highlightIndex].deepDive.attachments.splice(attachmentIndex, 1);
-  renderStep(3);
+  renderTab('content');
   toast.success("Datei entfernt");
 };
 
@@ -893,7 +1167,7 @@ function formatFileSize(bytes) {
 window.removeHighlightImage = function(index) {
   if (!currentUpdate.highlights[index]) return;
   currentUpdate.highlights[index].media = { type: null, image: {}, embedUrl: null };
-  renderStep(3);
+  renderTab('content');
   updatePreview();
 };
 
@@ -990,7 +1264,7 @@ window.toggleDeepDive = function(index) {
   currentUpdate.highlights[index].deepDive = currentUpdate.highlights[index].deepDive || { enabled: false, contentRichText: '', attachments: [] };
   currentUpdate.highlights[index].deepDive.enabled = enabled;
   
-  renderStep(3);
+  renderTab('content');
   
   // Initialize Rich Text Editor if enabled
   if (enabled) {
@@ -1410,21 +1684,18 @@ function saveStep7SEO() {
 }
 
 // ========== RENDER STEP ==========
+// Legacy function for compatibility - redirects to tabs
 function renderStep(step) {
-  currentStep = step;
-  updateStepNavigation();
-  
-  switch (step) {
-    case 1: renderStep1(); break;
-    case 2: renderStep2(); break;
-    case 3: renderStep3(); break;
-    case 4: renderStep4(); break;
-    case 5: renderStep5(); break;
-    case 6: renderStep6(); break;
-    case 7: renderStep7(); break;
+  // Map old steps to new tabs
+  if (step <= 2) {
+    switchTab('basics');
+  } else if (step <= 6) {
+    switchTab('content');
+  } else if (step === 4) {
+    switchTab('participants');
+  } else {
+    switchTab('publish');
   }
-  
-  updatePreview();
 }
 
 // ========== LIVE PREVIEW ==========

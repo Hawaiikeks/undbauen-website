@@ -8,9 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="../assets/css/base.css?v=3.0.0"/>
-  <link rel="stylesheet" href="../assets/css/app.css?v=3.0.0"/>
-  <link rel="stylesheet" href="../assets/css/sidebar.css?v=3.0.0"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=4.1.1"/>
+  <link rel="stylesheet" href="../assets/css/app.css?v=4.1.1"/>
+  <link rel="stylesheet" href="../assets/css/sidebar.css?v=4.1.1"/>
+  <link rel="stylesheet" href="../assets/css/resources-toolbox.css?v=4.1.1"/>
 </head>
 <body data-page="resources">
   <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
@@ -35,22 +36,15 @@
       </div>
     </header>
 
-    <main id="main-content" id="resourcesContainer" class="pageWrap">
-    <!-- Content will be rendered by resources.js -->
+    <main id="main-content" class="pageWrap">
+      <div id="resourcesContainer">
+        <!-- Content will be rendered by resourcesToolbox.js -->
+      </div>
     </main>
   </div>
 
-  <script type="module">
-    import { renderResources } from '../assets/js/pages/resources.js';
-    import { api } from '../assets/js/services/apiClient.js';
-    
-    if (!api.isLoggedIn()) {
-      window.location.href = '../index.html';
-    } else {
-      renderResources();
-    }
-  </script>
-  <script type="module" src="../assets/js/app.js?v=3.0.0"></script>
+  <script type="module" src="../assets/js/pages/resourcesToolbox.js?v=4.1.1"></script>
+  <script type="module" src="../assets/js/app.js?v=4.1.1"></script>
 </body>
 </html>
 
