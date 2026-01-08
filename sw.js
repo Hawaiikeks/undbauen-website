@@ -7,7 +7,7 @@
  */
 
 // Cache-Version für Development: Timestamp-basiert für automatisches Cache-Busting
-const CACHE_VERSION = 'v6'; // Updated version - force cache refresh (removed storageAdapter)
+const CACHE_VERSION = 'v7'; // Updated version - force cache refresh (Knowledge Base + Resources Toolbox)
 const CACHE_NAME = `undbauen-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `undbauen-runtime-${CACHE_VERSION}`;
 const OFFLINE_PAGE = '/index.html';
