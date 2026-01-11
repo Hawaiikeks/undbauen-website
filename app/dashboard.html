@@ -118,19 +118,16 @@
   </script>
   
   <script type="module">
-    (async () => {
-      console.log('🔵 Module script started');
-      
-      try {
-        console.log('🔵 Attempting to import app.js...');
-        await import('../assets/js/app.js?v=3.0.1');
-        console.log('✅ app.js imported successfully');
-      } catch (error) {
-        console.error('❌ Failed to import app.js:', error.message);
-        console.error('Stack:', error.stack);
-      }
-    })();
+    console.log('🔵 Module script started');
+    
+    try {
+      console.log('🔵 Attempting to import app.js...');
+      await import('../assets/js/app.js?v=3.0.1');
+      console.log('✅ app.js imported successfully');
+    } catch (error) {
+      console.error('❌ Failed to import app.js:', error.message);
+      console.error('Stack:', error.stack);
+    }
   </script>
 </body>
 </html>
-

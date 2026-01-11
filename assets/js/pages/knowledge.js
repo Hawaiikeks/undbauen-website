@@ -337,4 +337,3 @@ function showKnowledgeDetailModal(item) {
   };
   document.addEventListener('keydown', escHandler);
 }
-

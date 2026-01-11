@@ -601,8 +601,8 @@
     right: 0;
   }
   
-  .navLinks a,
-  .navLinks button{
+  .navLinks > a,
+  .navLinks > button{
     width: 100%;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
@@ -612,8 +612,8 @@
     min-height: 44px;
   }
   
-  .navLinks a:last-child,
-  .navLinks button:last-child{
+  .navLinks > a:last-child,
+  .navLinks > button:last-child{
     border-bottom: none;
   }
   

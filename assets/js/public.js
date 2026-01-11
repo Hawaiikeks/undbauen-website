@@ -1403,5 +1403,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   if($("#doForgot")) $("#doForgot").addEventListener("click", ()=>{
     if($("#fpOk")) $("#fpOk").textContent = "Wenn ein Konto existiert, senden wir einen Link (MVP: kein Versand).";
   });
+
 });
 
