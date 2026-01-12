@@ -1,0 +1,97 @@
+<!doctype html><html lang="de"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Monatsupdate erstellen – …undbauen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<link rel="stylesheet" href="../assets/css/base.css?v=3.0.0"/><link rel="stylesheet" href="../assets/css/app.css?v=3.0.0"/>
+  <link rel="stylesheet" href="../assets/css/sidebar.css?v=3.0.0"/>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+</head><body data-page="admin-update-wizard">
+  <!-- Sidebar Container -->
+  <div id="sidebarContainer"></div>
+  
+  <!-- Main Layout -->
+  <div id="mainLayout" class="main-layout">
+<header class="appHeader"><div class="appHeaderInner">
+        <button class="btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menü öffnen" style="display: none;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+        </button>
+        <a class="brand" href="dashboard.html">…undbauen</a>
+
+<div class="appRight">        <button class="btn" id="themeToggle" title="Theme wechseln">🌓</button>        <div class="userPill"><span class="dot"></span><span id="userLabel">Admin</span></div>
+  <button class="btn" id="logoutBtn">⎋ Logout</button>
+</div>
+</div></header>
+
+    <main class="pageWrap" style="max-width:1400px; margin:24px auto">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px">
+    <div>
+      <div class="h2" style="margin:0">Monatsupdate erstellen</div>
+      <div class="p" style="margin:4px 0 0 0; color:var(--text-secondary)">
+        <span id="autoSaveStatus" style="display:inline-flex; align-items:center; gap:6px; font-size:13px">
+          <span id="autoSaveIcon">💾</span>
+          <span id="autoSaveText">Gespeichert</span>
+        </span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px">
+      <button class="btn" id="saveDraft" style="position:relative">
+        <span id="saveDraftText">💾 Entwurf speichern</span>
+        <span id="saveDraftBadge" style="display:none; position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:20px; height:20px; font-size:11px; display:flex; align-items:center; justify-content:center">!</span>
+      </button>
+      <button class="btn primary" id="publishBtn">📢 Veröffentlichen</button>
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns: 1fr 400px; gap:24px; min-height:600px">
+    <!-- Main Form Area with Tabs -->
+    <div class="card pane" style="overflow-y:auto; max-height:calc(100vh - 150px)">
+      <!-- Tab Navigation -->
+      <div style="display:flex; gap:4px; border-bottom:2px solid var(--border); margin-bottom:24px; padding-bottom:0">
+        <button class="tab-btn active" data-tab="basics" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-primary); transition:all 0.2s">
+          Basics
+        </button>
+        <button class="tab-btn" data-tab="content" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Content
+        </button>
+        <button class="tab-btn" data-tab="participants" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Teilnehmer
+        </button>
+        <button class="tab-btn" data-tab="publish" style="padding:12px 20px; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-weight:600; color:var(--text-secondary); transition:all 0.2s">
+          Veröffentlichen
+        </button>
+      </div>
+      
+      <div id="tabContent"></div>
+    </div>
+    
+    <!-- Live Preview -->
+    <div class="card pane" style="position:sticky; top:100px; max-height:calc(100vh - 150px); overflow-y:auto; background:var(--bg-secondary)">
+      <div style="font-weight:700; margin-bottom:16px; font-size:14px; display:flex; justify-content:space-between; align-items:center">
+        <span>📄 Live Vorschau</span>
+        <div style="display:flex; gap:4px">
+          <button class="btn small" data-device="mobile" title="Mobile">📱</button>
+          <button class="btn small" data-device="tablet" title="Tablet">📱</button>
+          <button class="btn small active" data-device="desktop" title="Desktop">💻</button>
+        </div>
+      </div>
+      <div id="livePreview" style="background:white; border-radius:8px; padding:24px; min-height:500px">
+        <div class="p" style="color:var(--text-secondary)">Vorschau wird hier angezeigt...</div>
+      </div>
+    </div>
+  </div>
+    </main>
+  </div>
+
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+<script type="module" src="../assets/js/admin-update-wizard.js?v=3.0.0"></script>
+<script type="module" src="../assets/js/app.js?v=3.0.0"></script>
+</body></html>
+
+
+
+
+

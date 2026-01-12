@@ -4,28 +4,67 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>…undbauen – Innovationsnetzwerk</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta name="keywords" content="Innovation, Bauen, Nachhaltigkeit, Community, Netzwerk" />
+  <meta name="author" content="…undbauen" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://undbauen.de/" />
+  <meta property="og:title" content="…undbauen – Innovationsnetzwerk" />
+  <meta property="og:description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta property="og:image" content="https://undbauen.de/assets/images/og-image.jpg" />
+  <meta property="og:site_name" content="…undbauen" />
+  <meta property="og:locale" content="de_DE" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://undbauen.de/" />
+  <meta name="twitter:title" content="…undbauen – Innovationsnetzwerk" />
+  <meta name="twitter:description" content="Innovationsnetzwerk für nachhaltiges Bauen und Innovation. Community-Plattform für Ideen, Events und Zusammenarbeit." />
+  <meta name="twitter:image" content="https://undbauen.de/assets/images/og-image.jpg" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://undbauen.de/" />
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/base.css" />
-  <link rel="stylesheet" href="assets/css/public.css" />
+  <link rel="stylesheet" href="assets/css/base.css?v=4.2.0" />
+  <link rel="stylesheet" href="assets/css/public.css?v=4.2.0" />
+  <link rel="stylesheet" href="assets/css/components.css?v=4.2.0" />
 </head>
 <body>
-  <header class="publicNav">
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+  <header class="publicNav" role="banner">
     <div class="container publicNavInner">
       <a class="brand" href="#home" title="…undbauen">
         <svg class="logo-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2L2 22H22L12 2Z" fill="var(--primary)"/>
         </svg>
       </a>
-      <nav class="navLinks">
-        <a href="#updates">Innovationsabend</a>
+
+      <button class="btn ghost search-trigger" id="searchTrigger" aria-label="Globale Suche öffnen (Strg+K)" title="Suche (Strg+K)">
+        <svg class="icon icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+      </button>
+
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navLinks">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="navLinks" id="navLinks">
+        <a href="innovationsabend.html">Innovationsabend</a>
         <a href="#ueber">Über uns</a>
         
         <div class="dropdown">
           <a href="javascript:void(0)" class="dropbtn">& und</a>
           <div class="dropdown-content">
-            <a href="#updates">Innovationsabend</a>
+            <a href="innovationsabend.html">Innovationsabend</a>
             <a href="#ueber">Über uns</a>
             <a href="#publikationen">Themen</a>
             <a href="#kontakt">Kontakt</a>
@@ -44,7 +83,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero Section -->
     <section id="home" class="hero">
       <!-- 3D Animation via Iframe -->
@@ -70,20 +109,20 @@
     </section>
 
     <!-- Mission Section -->
-    <section class="mission">
+    <section class="mission" aria-labelledby="mission-heading" role="region">
       <div class="container">
+        <h2 id="mission-heading" class="sr-only">Unsere Mission</h2>
         <div class="mission-text">
           <p>Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Querdenkern der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.</p>
-          <p style="font-weight: 500; margin: 1rem 0; color: var(--primary);">für ein nachhaltiges Arbeiten im Baugewerbe</p>
+          <p style="font-weight: 500; margin: 1rem 0; color: var(--primary);">[für ein nachhaltiges Arbeiten im Baugewerbe]</p>
           <p>…undbauen ist mehr als ein Netzwerk. Es ist eine Haltung.</p>
         </div>
       </div>
     </section>
 
-
     <section id="updates" class="section publicCards">
       <div class="container">
-        <h2 class="section-title">Aktive Formate</h2>
+        <h2 class="section-title">Innovationsabend</h2>
         <p class="section-subtitle">Ein Mix aus kommenden Innovationsabenden und aktuellen Entwicklungen im Netzwerk.</p>
         
         <div class="grid grid-3" id="publicMixedFeed" style="margin-top:2rem"></div>
@@ -92,7 +131,7 @@
 
     <section id="publikationen" class="section publicCards">
       <div class="container">
-        <h2 class="section-title">Themen </h2>
+        <h2 class="section-title">Themen</h2>
         <p class="section-subtitle">Wir setzen uns mit den Fragen auseinander, die unsere Branche bewegen. Zugang zum Teil nur durch persönliche Verifikation</p>
         
         <div class="grid grid-3" id="publicPubs" style="margin-top:2rem"></div>
@@ -119,6 +158,36 @@
               <li>🔒 <strong>Vertrauensraum:</strong> Ein Teil unserer Arbeit findet in einem geschützten Rahmen statt, um offene Fehlerkultur und echten Austausch zu ermöglichen.</li>
             </ul>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section testimonials-section" aria-labelledby="testimonials-heading" role="region">
+      <div class="container">
+        <h2 id="testimonials-heading" class="section-title">Was unsere Mitglieder sagen</h2>
+        <div class="testimonials-grid" id="testimonialsGrid">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section id="partners" class="section partners-section" aria-labelledby="partners-heading" role="region">
+      <div class="container">
+        <h2 id="partners-heading" class="section-title">Partner & Unterstützer</h2>
+        <div class="partners-grid" id="partnersGrid">
+          <!-- Wird per JavaScript befüllt -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section faq-section" aria-labelledby="faq-heading" role="region">
+      <div class="container">
+        <h2 id="faq-heading" class="section-title">Häufige Fragen</h2>
+        <div class="faq-container" id="faqContainer">
+          <!-- Wird per JavaScript befüllt -->
         </div>
       </div>
     </section>
@@ -162,7 +231,7 @@
           </div>
           <div class="card">
             <h3>Datenschutz</h3>
-            <p>https://datenschutz-generator.de/ <- LS "Das gibts wirklich" Wir verarbeiten Daten zur Bereitstellung der Plattform (MVP). Details werden ergänzt (Platzhalter).</p>
+            <p>Der Schutz Ihrer Daten ist uns wichtig. Wir verarbeiten Daten zur Bereitstellung der Plattform (MVP). Details werden ergänzt.</p>
             <p>Public-Bereich zeigt nur Teaser. Member-Bereich ist zugriffsgeschützt.</p>
           </div>
         </div>
@@ -187,59 +256,62 @@
   </footer>
 
   <!-- AUTH MODAL -->
-  <div class="modalOverlay" id="authOverlay">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modalOverlay" id="authOverlay" style="display: none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" style="max-width: 500px;">
       <div class="modalHeader">
         <div class="modalTitle" id="authTitle">Login</div>
-        <button class="btn" id="closeAuth">✕</button>
+        <button class="btn" id="closeAuth" aria-label="Modal schließen">✕</button>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" data-tab="login">Login</div>
-        <div class="tab" data-tab="register">Registrieren</div>
-        <div class="tab" data-tab="forgot">Passwort</div>
+      <div class="tabs" role="tablist" aria-label="Authentifizierungs-Tabs">
+        <button class="tab active" data-tab="login" role="tab" aria-selected="true" aria-controls="panel-login" id="tab-login">Login</button>
+        <button class="tab" data-tab="register" role="tab" aria-selected="false" aria-controls="panel-register" id="tab-register">Registrieren</button>
+        <button class="tab" data-tab="forgot" role="tab" aria-selected="false" aria-controls="panel-forgot" id="tab-forgot">Passwort</button>
       </div>
 
       <div class="modalBody">
-        <div id="panel-login">
-          <label class="label">E-Mail</label>
-          <input class="input" id="loginEmail" type="email" placeholder="name@domain.de" />
-          <label class="label" style="margin-top:10px">Passwort</label>
-          <input class="input" id="loginPass" type="password" placeholder="••••••••" />
-          <div class="err" id="authErr"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doLogin">Einloggen</button>
+        <div id="panel-login" role="tabpanel" aria-labelledby="tab-login" aria-hidden="false">
+          <label class="label" for="loginEmail">E-Mail</label>
+          <input class="input" id="loginEmail" type="email" placeholder="name@domain.de" aria-required="true" aria-describedby="authErr" />
+          <label class="label mt-sm" for="loginPass">Passwort</label>
+          <input class="input" id="loginPass" type="password" placeholder="••••••••" aria-required="true" aria-describedby="authErr" />
+          <div class="err" id="authErr" role="alert" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doLogin" aria-label="Mit den eingegebenen Daten einloggen">Einloggen</button>
           </div>
-          <p class="small" style="margin-top:10px">Admin Seed: admin@undbauen.local / adminadmin</p>
+          <p class="small mt-sm">Admin Seed: admin@undbauen.local / adminadmin</p>
         </div>
 
-        <div id="panel-register" style="display:none">
-          <label class="label">Name</label>
-          <input class="input" id="regName" placeholder="Vorname Nachname" />
-          <label class="label" style="margin-top:10px">E-Mail</label>
-          <input class="input" id="regEmail" type="email" />
-          <label class="label" style="margin-top:10px">Passwort (min 8)</label>
-          <input class="input" id="regPass" type="password" />
-          <div class="err" id="regErr"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doRegister">Konto erstellen</button>
+        <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" aria-hidden="true" class="tab-panel-hidden">
+          <label class="label" for="regName">Name</label>
+          <input class="input" id="regName" placeholder="Vorname Nachname" aria-required="true" aria-describedby="regErr" />
+          <label class="label mt-sm" for="regEmail">E-Mail</label>
+          <input class="input" id="regEmail" type="email" aria-required="true" aria-describedby="regErr" />
+          <label class="label mt-sm" for="regPass">Passwort (min 8)</label>
+          <input class="input" id="regPass" type="password" aria-required="true" aria-describedby="regErr" />
+          <div class="err" id="regErr" role="alert" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doRegister" aria-label="Neues Konto mit den eingegebenen Daten erstellen">Konto erstellen</button>
           </div>
         </div>
 
-        <div id="panel-forgot" style="display:none">
-          <label class="label">E-Mail</label>
-          <input class="input" id="fpEmail" type="email" />
-          <div class="okmsg" id="fpOk"></div>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="doForgot">Link anfordern</button>
+        <div id="panel-forgot" role="tabpanel" aria-labelledby="tab-forgot" aria-hidden="true" class="tab-panel-hidden">
+          <label class="label" for="fpEmail">E-Mail</label>
+          <input class="input" id="fpEmail" type="email" aria-required="true" aria-describedby="fpOk" />
+          <div class="okmsg" id="fpOk" role="status" aria-live="polite"></div>
+          <div class="mt-md">
+            <button class="btn primary" id="doForgot" aria-label="Passwort-Reset-Link anfordern">Link anfordern</button>
           </div>
-          <p class="small" style="margin-top:10px">MVP: kein Mailversand – nur UX.</p>
+          <p class="small mt-sm">MVP: kein Mailversand – nur UX.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <script type="module" src="assets/js/public.js"></script>
+  <script>
+    // Set API base URL for development
+    window.API_BASE_URL = 'http://localhost:3000/api';
+  </script>
+  <script type="module" src="assets/js/public.js?v=4.2.0"></script>
 </body>
 </html>
-

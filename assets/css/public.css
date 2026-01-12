@@ -1,27 +1,44 @@
 /* Public Navigation */
 .publicNav{
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1200;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+
 .publicNavInner{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  min-height: 60px;
 }
+
+.navLinks{
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 @media(max-width: 768px){
   .publicNavInner{
-    padding:1rem 0;
+    padding: 1rem 0;
   }
   .navLinks{
-    gap:8px;
+    gap: 8px;
+    display: none; /* Mobile menu handles this */
   }
-  .navLinks a{
-    font-size:0.85rem;
+  .navLinks.active {
+    display: flex;
   }
 }
+
 .brand{ 
   font-weight: 600; 
   letter-spacing: -0.01em; 
@@ -51,6 +68,7 @@
   font-weight: 400;
   font-size: 16px;
   cursor: pointer;
+  padding: 8px 12px;
 }
 
 .dropdown-content {
@@ -149,104 +167,87 @@
   }
 }
 
-
-.navLinks{ 
-  display: flex; 
-  gap: 24px; 
-  align-items: center; 
-  flex-wrap: wrap; 
-}
-
 .navLinks a{ 
   color: var(--text-secondary); 
   font-weight: 400; 
   font-size: 16px; 
   transition: color 0.2s ease; 
-  text-transform: none;
-  position: relative;
+  padding: 8px 12px;
 }
 
 .navLinks a:hover{ 
   color: var(--text-primary); 
 }
 
-.navLinks a.active,
-.navLinks a[aria-current="page"]{
-  color: var(--primary);
+/* Sections */
+.section-title {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.navLinks a.active::after,
-.navLinks a[aria-current="page"]::after{
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--primary);
-  border-radius: 2px;
-}
-
-/* Hero styles moved to base.css */
-
-.publicCards .card{ padding:2rem; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); }
-[data-theme="light"] .publicCards .card{ background:var(--white); border:1px solid rgba(0,0,0,0.12); }
-
-/* Highlighted Card */
-.highlighted-card {
-  border: 2px solid var(--primary) !important;
-  background: rgba(37, 99, 235, 0.05) !important;
-  box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
-}
-
-[data-theme="dark"] .highlighted-card {
-  background: rgba(59, 130, 246, 0.08) !important;
-}
-
-.metaLine{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:#ffffff; font-size:.92rem; }
-[data-theme="light"] .metaLine{ color:#000000; }
-
-.about-card {
-  padding: 2.5rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  height: 100%;
-}
-
-.about-card h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.about-card p {
+.section-subtitle {
+  text-align: center;
+  margin-bottom: 3rem;
   color: var(--text-secondary);
 }
 
-.about-card strong {
-  color: var(--text-primary);
+/* Cards */
+.publicCards .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.legalGrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-@media(max-width:900px){ .legalGrid{ grid-template-columns:1fr; } }
-.legalGrid .card{ 
-  padding: 24px; 
-  background: var(--surface); 
-  border: 1px solid var(--border); 
+.highlighted-card {
+  border: 2px solid var(--primary) !important;
+  background: rgba(245, 158, 11, 0.05) !important;
 }
 
-.legalGrid h3{ 
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 16px;
-  color: var(--text-primary); 
+/* Testimonials */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-.legalGrid p{ 
-  margin: 0 0 12px; 
-  color: var(--text-secondary); 
-  line-height: 1.6; 
-  font-size: 16px; 
+.testimonial-card {
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
+/* Partners */
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+  align-items: center;
+}
 
+/* FAQ */
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Mobile Menu */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+  width: 25px;
+  height: 3px;
+  background: var(--text-primary);
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+}

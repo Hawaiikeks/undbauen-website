@@ -3,23 +3,35 @@
   "version": "1.0.0",
   "description": "Professionelle Netzwerk-/Community-Plattform im AEC-Umfeld.",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint assets/js/**/*.js",
+    "lint:fix": "eslint assets/js/**/*.js --fix",
+    "format": "prettier --write \"**/*.{js,json,html,css}\"",
+    "format:check": "prettier --check \"**/*.{js,json,html,css}\"",
+    "test": "node test_modules.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Hawaiikeks/undbauen-website.git"
   },
-  "keywords": [],
+  "keywords": [
+    "community",
+    "platform",
+    "aec"
+  ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Hawaiikeks/undbauen-website/issues"
   },
   "homepage": "https://github.com/Hawaiikeks/undbauen-website#readme",
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
   }
 }

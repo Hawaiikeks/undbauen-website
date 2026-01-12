@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Flow Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .test-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .test-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .test-description {
+            color: #4a5568;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .test-steps {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .test-steps li {
+            margin-left: 20px;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        .expected {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .expected-title {
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 8px;
+        }
+        .expected li {
+            margin-left: 20px;
+            color: #155724;
+            margin-bottom: 5px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-pending {
+            background: #ffc107;
+        }
+        .status-testing {
+            background: #17a2b8;
+            animation: pulse 1.5s infinite;
+        }
+        .status-success {
+            background: #28a745;
+        }
+        .status-error {
+            background: #dc3545;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .test-credentials {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .test-credentials strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .test-credentials code {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .console-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .console-log .error {
+            color: #f48771;
+        }
+        .console-log .success {
+            color: #89d185;
+        }
+        .console-log .info {
+            color: #6796e6;
+        }
+        .console-log .warning {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 User Flow Test - …undbauen</h1>
+            <p class="subtitle">Systematischer Test aller Funktionen als eingeloggter Benutzer</p>
+        </div>
+
+        <!-- Test 1: Login -->
+        <div class="test-section" id="test-1">
+            <div class="test-title">
+                <span class="test-number">1</span>
+                Login-Prozess
+            </div>
+            <div class="test-description">
+                Teste den kompletten Login-Flow von der Hauptseite bis zum Dashboard.
+            </div>
+            <div class="test-credentials">
+                <strong>🔑 Test-Credentials:</strong>
+                Email: <code>admin@undbauen.local</code><br>
+                Passwort: <code>adminadmin</code>
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Öffne <a href="http://localhost:8000/" target="_blank">http://localhost:8000/</a></li>
+                    <li>Klicke auf "Login" Button im Header</li>
+                    <li>Gib Email und Passwort ein</li>
+                    <li>Klicke auf "Einloggen"</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Modal schließt sich</li>
+                    <li>Toast-Nachricht "Erfolgreich eingeloggt!"</li>
+                    <li>Redirect zu /app/dashboard.html</li>
+                    <li>Dashboard lädt vollständig</li>
+                    <li>Sidebar wird angezeigt</li>
+                </ul>
+            </div>
+            <div class="button-group">
+                <button onclick="openLoginPage()">1. Hauptseite öffnen</button>
+                <button onclick="openDashboard()">2. Dashboard direkt öffnen (nach Login)</button>
+            </div>
+        </div>
+
+        <!-- Test 2: Dashboard -->
+        <div class="test-section" id="test-2">
+            <div class="test-title">
+                <span class="test-number">2</span>
+                Dashboard-Funktionalität
+            </div>
+            <div class="test-description">
+                Prüfe alle Dashboard-Widgets und Schnellzugriffe.
+            </div>
+            <div class="test-steps">
+                <strong>Zu prüfen:</strong>
+                <ol>
+                    <li>Quick Metrics werden angezeigt</li>
+                    <li>Nächste Termine Widget</li>
+                    <li>Empfohlene Kontakte Widget</li>
+                    <li>Favoriten Widget</li>
+                    <li>Aktivitäten-Feed</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Alle Widgets laden ohne Fehler</li>
+                    <li>Daten werden aus localStorage gelesen</li>
+                    <li>Keine Console-Errors</li>
+                </ul>
+            </div>
+            <button onclick="openDashboard()">Dashboard öffnen</button>
+        </div>
+
+        <!-- Test 3: Forum -->
+        <div class="test-section" id="test-3">
+            <div class="test-title">
+                <span class="test-number">3</span>
+                Forum-Navigation & Thread-Erstellung
+            </div>
+            <div class="test-description">
+                Teste Forum-Kategorien, Thread-Ansicht und Erstellung neuer Diskussionen.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Forum" in der Sidebar</li>
+                    <li>Prüfe ob Kategorien angezeigt werden</li>
+                    <li>Klicke auf eine Kategorie</li>
+                    <li>Prüfe ob Threads angezeigt werden</li>
+                    <li>Erstelle einen neuen Thread (Button "Neuer Thread")</li>
+                    <li>Fülle Titel und Text aus</li>
+                    <li>Sende ab</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Forum-Seite lädt</li>
+                    <li>Kategorien werden angezeigt</li>
+                    <li>Thread-Erstellung funktioniert</li>
+                    <li>Neuer Thread erscheint in der Liste</li>
+                    <li>Redirect zur Thread-Detail-Seite</li>
+                </ul>
+            </div>
+            <button onclick="openForum()">Forum öffnen</button>
+        </div>
+
+        <!-- Test 4: Nachrichten -->
+        <div class="test-section" id="test-4">
+            <div class="test-title">
+                <span class="test-number">4</span>
+                Nachrichten-System
+            </div>
+            <div class="test-description">
+                Teste das interne Nachrichtensystem zwischen Mitgliedern.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Nachrichten" in der Sidebar</li>
+                    <li>Prüfe ob vorhandene Threads angezeigt werden</li>
+                    <li>Klicke auf "Neue Nachricht"</li>
+                    <li>Wähle einen Empfänger</li>
+                    <li>Schreibe eine Nachricht</li>
+                    <li>Sende ab</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Nachrichten-Seite lädt</li>
+                    <li>Threads werden angezeigt</li>
+                    <li>Neue Nachricht kann erstellt werden</li>
+                    <li>Nachricht wird in localStorage gespeichert</li>
+                </ul>
+            </div>
+            <button onclick="openMessages()">Nachrichten öffnen</button>
+        </div>
+
+        <!-- Test 5: Termine/Events -->
+        <div class="test-section" id="test-5">
+            <div class="test-title">
+                <span class="test-number">5</span>
+                Termine & Event-Buchungen
+            </div>
+            <div class="test-description">
+                Teste Event-Ansicht und Buchungsfunktion.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Termine" in der Sidebar</li>
+                    <li>Prüfe ob Events angezeigt werden</li>
+                    <li>Klicke auf ein Event</li>
+                    <li>Buche das Event</li>
+                    <li>Prüfe ob Buchung gespeichert wird</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Termine-Seite lädt</li>
+                    <li>Events werden angezeigt</li>
+                    <li>Event-Details können geöffnet werden</li>
+                    <li>Buchung funktioniert</li>
+                    <li>Gebuchte Events sind markiert</li>
+                </ul>
+            </div>
+            <button onclick="openEvents()">Termine öffnen</button>
+        </div>
+
+        <!-- Test 6: Mitglieder -->
+        <div class="test-section" id="test-6">
+            <div class="test-title">
+                <span class="test-number">6</span>
+                Mitglieder-Verzeichnis
+            </div>
+            <div class="test-description">
+                Teste Mitglieder-Suche und Profil-Ansicht.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Navigiere zu Mitglieder (über Sidebar oder Dashboard)</li>
+                    <li>Prüfe ob Mitglieder angezeigt werden</li>
+                    <li>Nutze Suchfunktion</li>
+                    <li>Klicke auf ein Mitglieder-Profil</li>
+                    <li>Prüfe Profil-Details</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Mitglieder-Seite lädt</li>
+                    <li>Liste der Mitglieder wird angezeigt</li>
+                    <li>Suche funktioniert</li>
+                    <li>Profil-Ansicht funktioniert</li>
+                </ul>
+            </div>
+            <button onclick="openMembers()">Mitglieder öffnen</button>
+        </div>
+
+        <!-- Test 7: Monatsupdates -->
+        <div class="test-section" id="test-7">
+            <div class="test-title">
+                <span class="test-number">7</span>
+                Monatsupdates
+            </div>
+            <div class="test-description">
+                Teste die Ansicht der monatlichen Updates.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Monatsupdates" in der Sidebar</li>
+                    <li>Prüfe ob Updates angezeigt werden</li>
+                    <li>Klicke auf ein Update</li>
+                    <li>Prüfe Detail-Ansicht</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Updates-Seite lädt</li>
+                    <li>Monatliche Updates werden angezeigt</li>
+                    <li>Detail-Ansicht funktioniert</li>
+                </ul>
+            </div>
+            <button onclick="openUpdates()">Monatsupdates öffnen</button>
+        </div>
+
+        <!-- Test 8: Profil/Einstellungen -->
+        <div class="test-section" id="test-8">
+            <div class="test-title">
+                <span class="test-number">8</span>
+                Profil & Einstellungen
+            </div>
+            <div class="test-description">
+                Teste Profil-Bearbeitung und Account-Einstellungen.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Profil" in der Sidebar</li>
+                    <li>Prüfe ob Profil-Daten angezeigt werden</li>
+                    <li>Bearbeite Profil-Informationen</li>
+                    <li>Speichere Änderungen</li>
+                    <li>Prüfe ob Änderungen in localStorage gespeichert werden</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Profil-Seite lädt</li>
+                    <li>Aktuelle Daten werden angezeigt</li>
+                    <li>Bearbeitung funktioniert</li>
+                    <li>Änderungen werden gespeichert</li>
+                </ul>
+            </div>
+            <button onclick="openProfile()">Profil öffnen</button>
+        </div>
+
+        <!-- Test 9: Sidebar-Navigation -->
+        <div class="test-section" id="test-9">
+            <div class="test-title">
+                <span class="test-number">9</span>
+                Sidebar-Navigation & Aktiver Zustand
+            </div>
+            <div class="test-description">
+                Teste ob die Sidebar korrekt funktioniert und der aktive Zustand stimmt.
+            </div>
+            <div class="test-steps">
+                <strong>Zu prüfen:</strong>
+                <ol>
+                    <li>Sidebar wird auf allen Seiten angezeigt</li>
+                    <li>Aktive Seite ist in Sidebar hervorgehoben</li>
+                    <li>Alle Links funktionieren</li>
+                    <li>Mobile-Ansicht funktioniert</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Sidebar immer sichtbar</li>
+                    <li>Nur EIN Item ist aktiv markiert</li>
+                    <li>Aktiver Zustand wechselt bei Navigation</li>
+                    <li>Keine Fehler in Console</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test 10: Logout -->
+        <div class="test-section" id="test-10">
+            <div class="test-title">
+                <span class="test-number">10</span>
+                Logout-Prozess
+            </div>
+            <div class="test-description">
+                Teste den Logout und Redirect zur Hauptseite.
+            </div>
+            <div class="test-steps">
+                <strong>Schritte:</strong>
+                <ol>
+                    <li>Klicke auf "Logout" Button im Header</li>
+                    <li>Prüfe ob Session gelöscht wird</li>
+                    <li>Prüfe Redirect zur Hauptseite</li>
+                </ol>
+            </div>
+            <div class="expected">
+                <div class="expected-title">✅ Erwartetes Ergebnis:</div>
+                <ul>
+                    <li>Session wird aus localStorage entfernt</li>
+                    <li>Redirect zu /index.html</li>
+                    <li>Hauptseite wird angezeigt</li>
+                    <li>User ist ausgeloggt</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="console-log" id="consoleLog">
+            <div class="info">💡 Console Log - Öffne Browser DevTools (F12) für echte Fehler</div>
+        </div>
+    </div>
+
+    <script>
+        function openLoginPage() {
+            window.open('http://localhost:8000/', '_blank');
+            logConsole('Hauptseite geöffnet: http://localhost:8000/', 'info');
+        }
+
+        function openDashboard() {
+            window.open('http://localhost:8000/app/dashboard.html', '_blank');
+            logConsole('Dashboard geöffnet: http://localhost:8000/app/dashboard.html', 'info');
+        }
+
+        function openForum() {
+            window.open('http://localhost:8000/app/forum.html', '_blank');
+            logConsole('Forum geöffnet: http://localhost:8000/app/forum.html', 'info');
+        }
+
+        function openMessages() {
+            window.open('http://localhost:8000/app/nachrichten.html', '_blank');
+            logConsole('Nachrichten geöffnet: http://localhost:8000/app/nachrichten.html', 'info');
+        }
+
+        function openEvents() {
+            window.open('http://localhost:8000/app/termine.html', '_blank');
+            logConsole('Termine geöffnet: http://localhost:8000/app/termine.html', 'info');
+        }
+
+        function openMembers() {
+            window.open('http://localhost:8000/app/mitglieder.html', '_blank');
+            logConsole('Mitglieder geöffnet: http://localhost:8000/app/mitglieder.html', 'info');
+        }
+
+        function openUpdates() {
+            window.open('http://localhost:8000/app/monatsupdates.html', '_blank');
+            logConsole('Monatsupdates geöffnet: http://localhost:8000/app/monatsupdates.html', 'info');
+        }
+
+        function openProfile() {
+            window.open('http://localhost:8000/app/einstellungen.html', '_blank');
+            logConsole('Profil/Einstellungen geöffnet: http://localhost:8000/app/einstellungen.html', 'info');
+        }
+
+        function logConsole(message, type = 'info') {
+            const log = document.getElementById('consoleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = `[${timestamp}] ${message}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Initial Log
+        logConsole('Test-Suite geladen und bereit', 'success');
+        logConsole('Server läuft auf: http://localhost:8000', 'info');
+        logConsole('Test-Credentials: admin@undbauen.local / adminadmin', 'warning');
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

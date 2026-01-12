@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cache & Storage löschen - …undbauen</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    .section {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    .section h2 {
+      color: #667eea;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    .step {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #e0e0e0;
+    }
+    .step strong {
+      color: #667eea;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-success {
+      background: #4CAF50;
+    }
+    .btn-success:hover {
+      background: #45a049;
+    }
+    .btn-danger {
+      background: #f44336;
+    }
+    .btn-danger:hover {
+      background: #da190b;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: bold;
+      text-align: center;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .code {
+      background: #2d2d2d;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      font-size: 0.9em;
+    }
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .info-box strong {
+      color: #1976D2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Cache & Storage löschen</h1>
+    <p class="subtitle">Behebe Login-Probleme durch Löschen alter Daten</p>
+
+    <div id="statusMessage"></div>
+
+    <!-- Auto-Clear Section -->
+    <div class="section">
+      <h2>✨ Automatisch löschen (Empfohlen)</h2>
+      <p style="margin-bottom: 15px;">Klicke auf den Button unten, um alle gecachten Daten automatisch zu löschen:</p>
+      <button class="btn btn-danger" onclick="clearEverything()">🗑️ Alles löschen & Neu starten</button>
+      <div class="info-box" style="margin-top: 15px;">
+        <strong>Was wird gelöscht?</strong><br>
+        • localStorage (Benutzerdaten, Session)<br>
+        • sessionStorage (Temporäre Daten)<br>
+        • Service Worker Cache<br>
+        • Die Seite wird automatisch neu geladen
+      </div>
+    </div>
+
+    <!-- Manual Instructions -->
+    <div class="section">
+      <h2>📋 Manuelle Anleitung</h2>
+      <p style="margin-bottom: 15px;">Falls der automatische Button nicht funktioniert:</p>
+      
+      <div class="step">
+        <strong>Schritt 1: Browser-Cache löschen</strong>
+        Drücke: <code class="code">Strg + Shift + Delete</code><br>
+        Oder: <code class="code">Strg + Shift + Entf</code>
+      </div>
+
+      <div class="step">
+        <strong>Schritt 2: Im Dialog</strong>
+        • Wähle "Gecachte Bilder und Dateien"<br>
+        • Wähle "Cookies und andere Website-Daten"<br>
+        • Klicke auf "Daten löschen"
+      </div>
+
+      <div class="step">
+        <strong>Schritt 3: Seite neu laden</strong>
+        Drücke: <code class="code">Strg + F5</code><br>
+        Oder: <code class="code">Strg + Shift + R</code>
+      </div>
+    </div>
+
+    <!-- Storage Info -->
+    <div class="section">
+      <h2>📊 Aktueller Speicher-Status</h2>
+      <button class="btn" onclick="showStorageInfo()">🔍 Speicher analysieren</button>
+      <div id="storageInfo" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section">
+      <h2>🚀 Schnellaktionen</h2>
+      <button class="btn btn-success" onclick="goToLogin()">➡️ Zur Login-Seite</button>
+      <button class="btn" onclick="testLogin()">🧪 Login-Funktion testen</button>
+    </div>
+  </div>
+
+  <script type="module">
+    let statusDiv = document.getElementById('statusMessage');
+
+    function showStatus(message, type = 'info') {
+      statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    window.clearEverything = async function() {
+      showStatus('🧹 Lösche alle Daten...', 'info');
+      
+      try {
+        // Clear localStorage
+        localStorage.clear();
+        console.log('✅ localStorage cleared');
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        console.log('✅ sessionStorage cleared');
+        
+        // Clear Service Worker caches
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          for (const name of cacheNames) {
+            await caches.delete(name);
+            console.log('✅ Cache deleted:', name);
+          }
+        }
+        
+        // Unregister Service Workers
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log('✅ Service Worker unregistered');
+          }
+        }
+        
+        showStatus('✅ Alle Daten gelöscht! Seite wird neu geladen...', 'success');
+        
+        // Reload after 1 second
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+        
+      } catch (error) {
+        showStatus('❌ Fehler beim Löschen: ' + error.message, 'warning');
+        console.error('Error clearing data:', error);
+      }
+    };
+
+    window.showStorageInfo = function() {
+      const infoDiv = document.getElementById('storageInfo');
+      let html = '<div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">';
+      
+      // localStorage
+      html += '<strong>localStorage:</strong><br>';
+      if (localStorage.length === 0) {
+        html += '<span style="color: #4CAF50;">✅ Leer (gut!)</span><br><br>';
+      } else {
+        html += `<span style="color: #f44336;">⚠️ ${localStorage.length} Einträge gefunden</span><br>`;
+        html += '<div style="font-size: 0.9em; margin: 5px 0;">';
+        for (let i = 0; i < Math.min(localStorage.length, 5); i++) {
+          const key = localStorage.key(i);
+          html += `• ${key}<br>`;
+        }
+        if (localStorage.length > 5) {
+          html += `• ... und ${localStorage.length - 5} weitere<br>`;
+        }
+        html += '</div><br>';
+      }
+      
+      // sessionStorage
+      html += '<strong>sessionStorage:</strong><br>';
+      if (sessionStorage.length === 0) {
+        html += '<span style="color: #4CAF50;">✅ Leer</span><br><br>';
+      } else {
+        html += `<span style="color: #FFC107;">⚠️ ${sessionStorage.length} Einträge</span><br><br>`;
+      }
+      
+      // Cookies
+      html += '<strong>Cookies:</strong><br>';
+      const cookies = document.cookie.split(';').filter(c => c.trim());
+      if (cookies.length === 0) {
+        html += '<span style="color: #4CAF50;">✅ Keine Cookies</span><br>';
+      } else {
+        html += `<span style="color: #FFC107;">⚠️ ${cookies.length} Cookie(s)</span><br>`;
+      }
+      
+      html += '</div>';
+      infoDiv.innerHTML = html;
+    };
+
+    window.goToLogin = function() {
+      window.location.href = 'index.html';
+    };
+
+    window.testLogin = async function() {
+      showStatus('🧪 Teste Login-Funktion...', 'info');
+      
+      try {
+        const { api } = await import('./assets/js/services/apiClient.js');
+        
+        // Check if seeds exist
+        const users = localStorage.getItem('users');
+        if (!users) {
+          showStatus('⚠️ Keine Benutzer gefunden. Seeds werden erstellt...', 'warning');
+          // Trigger seed creation
+          api.isLoggedIn();
+        }
+        
+        // Try login
+        const result = api.login('admin@undbauen.local', 'adminadmin');
+        
+        if (result.success) {
+          showStatus('✅ Login funktioniert! Sie können zur Login-Seite gehen.', 'success');
+          api.logout(); // Clean up
+        } else {
+          showStatus('❌ Login fehlgeschlagen: ' + result.error, 'warning');
+        }
+      } catch (error) {
+        showStatus('❌ Fehler beim Testen: ' + error.message, 'warning');
+        console.error('Test error:', error);
+      }
+    };
+
+    // Auto-show storage info on load
+    setTimeout(showStorageInfo, 500);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
