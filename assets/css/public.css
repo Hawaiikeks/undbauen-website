@@ -202,6 +202,52 @@
   border-color: var(--primary);
 }
 
+/* Blurred Event Cards (ab 3. und 4. Card) */
+.event-card-blurred {
+  position: relative;
+  filter: blur(4px);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.event-card-blurred:hover {
+  transform: none;
+  filter: blur(4px);
+  opacity: 0.6;
+}
+
+.event-card-blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: var(--radius);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="dark"] .event-card-blur-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.event-card-blur-overlay span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .event-card-image-small{
   width: 100%;
   height: 180px;

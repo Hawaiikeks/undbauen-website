@@ -1,28 +1,93 @@
-/* Resources Toolbox: 2-Level Category System with Grid/Table View */
+/* Resources Tool Hub: Professional Tool Launcher */
 
-import { resourceRepository } from '../services/repositories/resourceRepository.js';
-import { categoriesRepository } from '../services/repositories/categoriesRepository.js';
+import { toolRepository } from '../services/repositories/toolRepository.js';
 import { api } from '../services/apiClient.js';
 import { toast } from '../components/toast.js';
-import { renderCategoryCard, renderResourceCard, renderResourceTable } from '../components/resourceCards.js';
 import { getIcon } from '../components/icons.js';
 
-let state = {
-  view: 'landing', // 'landing' | 'category'
-  currentCategoryId: null,
-  currentCategory: null,
-  categories: [],
-  resources: [],
-  filteredResources: [],
-  filters: {
-    type: 'all',
-    tags: [],
-    search: ''
-  },
-  viewMode: 'grid', // 'grid' | 'table'
-  featuredResources: []
+let tools = [];
+
+/**
+ * Tool icons mapping - Simple colored squares with initials
+ */
+const TOOL_ICONS = {
+  onedrive: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0078D4 0%, #005A9E 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);">OD</div>`,
+  miro: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #FFD02F 0%, #FFC107 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #050038; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(255, 208, 47, 0.3);">M</div>`,
+  notion: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">N</div>`,
+  canva: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #00C4CC 0%, #00A8B0 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(0, 196, 204, 0.3);">C</div>`,
+  github: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #181717 0%, #24292e 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(24, 23, 23, 0.3);">GH</div>`,
+  linkedin: `<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0077B5 0%, #005885 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(0, 119, 181, 0.3);">in</div>`
 };
 
+/**
+ * Get tool icon by key
+ */
+function getToolIcon(toolKey) {
+  const key = toolKey.toLowerCase();
+  return TOOL_ICONS[key] || `<div style="width: 48px; height: 48px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">${toolKey[0]?.toUpperCase() || '?'}</div>`;
+}
+
+/**
+ * Render tool card
+ */
+function renderToolCard(tool) {
+  const icon = getToolIcon(tool.key);
+  const description = tool.description || '';
+  
+  return `
+    <div class="tool-card" 
+         data-tool-id="${tool.id}"
+         role="button"
+         tabindex="0"
+         aria-label="${tool.name} öffnen"
+         onclick="window.openTool('${tool.id}')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openTool('${tool.id}')}">
+      <div class="tool-card-header">
+        <div class="tool-icon">
+          ${icon}
+        </div>
+        <span class="tool-badge">Externes Tool</span>
+      </div>
+      <div class="tool-card-content">
+        <h3 class="tool-name">${escapeHtml(tool.name)}</h3>
+        <p class="tool-description">${escapeHtml(description)}</p>
+      </div>
+      <div class="tool-card-footer">
+        <button class="btn primary tool-open-btn" 
+                onclick="event.stopPropagation(); window.openTool('${tool.id}')"
+                aria-label="${tool.name} öffnen">
+          Öffnen
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Open tool in new tab
+ */
+window.openTool = function(toolId) {
+  const tool = tools.find(t => t.id === toolId);
+  if (!tool || !tool.url) {
+    toast.error('Tool-Link nicht verfügbar');
+    return;
+  }
+  window.open(tool.url, '_blank', 'noopener,noreferrer');
+};
+
+/**
+ * Initialize Tool Hub
+ */
 export async function init() {
   const user = api.me();
   if (!user) {
@@ -30,227 +95,50 @@ export async function init() {
     return;
   }
 
-  await loadData();
+  await loadTools();
   render();
 }
 
-async function loadData() {
+/**
+ * Load tools from repository
+ */
+async function loadTools() {
   try {
-    [state.categories, state.featuredResources] = await Promise.all([
-      categoriesRepository.findAllWithCounts(),
-      resourceRepository.findFeatured()
-    ]);
+    tools = await toolRepository.findVisible();
   } catch (error) {
-    console.error('Error loading resources data:', error);
-    toast.error('Fehler beim Laden der Daten');
+    console.error('Error loading tools:', error);
+    toast.error('Fehler beim Laden der Tools');
+    tools = [];
   }
 }
 
+/**
+ * Render Tool Hub page
+ */
 function render() {
   const container = document.querySelector('#resourcesContainer');
   if (!container) return;
 
-  if (state.view === 'landing') {
-    renderLanding(container);
-  } else if (state.view === 'category') {
-    renderCategoryView(container);
-  }
-
-  wireEvents();
-}
-
-function renderLanding(container) {
-  const topLevelCategories = state.categories.filter(c => !c.parentId);
-
   container.innerHTML = `
-    <div class="resources-landing">
-      <div class="resources-header">
-        <h1>Toolbox & Library</h1>
-        <p>Kuratierte Ressourcen für die Community</p>
+    <div class="tool-hub">
+      <div class="tool-hub-header">
+        <h1 class="tool-hub-title">Ressourcen & Tools</h1>
+        <p class="tool-hub-subtitle">Zentrale Arbeitsumgebungen des Netzwerks</p>
       </div>
 
-      ${state.featuredResources.length > 0 ? `
-        <div class="resources-featured">
-          <h2>Featured Resources</h2>
-          <div class="resources-grid">
-            ${state.featuredResources.slice(0, 3).map(res => renderResourceCard(res)).join('')}
-          </div>
+      ${tools.length === 0 ? `
+        <div class="tool-hub-empty">
+          <div class="tool-hub-empty-icon">${getIcon('folder', 64)}</div>
+          <p class="tool-hub-empty-text">Keine Tools verfügbar</p>
         </div>
-      ` : ''}
-
-      <div class="resources-categories">
-        <h2>Kategorien</h2>
-        <div class="categories-grid">
-          ${topLevelCategories.map(cat => 
-            renderCategoryCard(cat, cat.resourceCount, null)
-          ).join('')}
+      ` : `
+        <div class="tool-hub-grid">
+          ${tools.map(tool => renderToolCard(tool)).join('')}
         </div>
-      </div>
+      `}
     </div>
   `;
 }
 
-async function renderCategoryView(container) {
-  container.innerHTML = `
-    <div class="resources-category-view">
-      <div class="category-header">
-        <button class="btn" data-action="back-to-landing">${getIcon('arrow-left')} Zurück</button>
-        <div>
-          <h1>${state.currentCategory?.title || 'Kategorie'}</h1>
-          <p>${state.currentCategory?.description || ''}</p>
-        </div>
-      </div>
-
-      <div class="category-controls">
-        <div class="category-filters">
-          <input class="input" id="resourceSearch" placeholder="Suche..." value="${state.filters.search}" />
-          <select class="input" id="resourceTypeFilter">
-            <option value="all">Alle Typen</option>
-            <option value="file">Dateien</option>
-            <option value="link">Links</option>
-            <option value="tool">Tools</option>
-            <option value="template">Templates</option>
-            <option value="video">Videos</option>
-          </select>
-        </div>
-        <div class="view-toggle">
-          <button class="btn ${state.viewMode === 'grid' ? 'primary' : ''}" data-action="toggle-view" data-view="grid">
-            ${getIcon('grid')}
-          </button>
-          <button class="btn ${state.viewMode === 'table' ? 'primary' : ''}" data-action="toggle-view" data-view="table">
-            ${getIcon('list')}
-          </button>
-        </div>
-      </div>
-
-      <div class="category-content">
-        ${state.filteredResources.length === 0 ? `
-          <div class="resources-empty">
-            <div>${getIcon('folder')}</div>
-            <p>Keine Ressourcen gefunden</p>
-          </div>
-        ` : state.viewMode === 'grid' ? `
-          <div class="resources-grid">
-            ${state.filteredResources.map(res => renderResourceCard(res)).join('')}
-          </div>
-        ` : renderResourceTable(state.filteredResources)}
-      </div>
-    </div>
-  `;
-}
-
-function wireEvents() {
-  document.querySelectorAll('[data-action="open-category"]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const categoryId = btn.dataset.categoryId;
-      await openCategory(categoryId);
-    });
-  });
-
-  const backBtn = document.querySelector('[data-action="back-to-landing"]');
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      state.view = 'landing';
-      state.currentCategoryId = null;
-      state.currentCategory = null;
-      render();
-    });
-  }
-
-  const searchInput = document.querySelector('#resourceSearch');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      state.filters.search = e.target.value;
-      applyFilters();
-      render();
-    });
-  }
-
-  const typeFilter = document.querySelector('#resourceTypeFilter');
-  if (typeFilter) {
-    typeFilter.addEventListener('change', (e) => {
-      state.filters.type = e.target.value;
-      applyFilters();
-      render();
-    });
-  }
-
-  document.querySelectorAll('[data-action="toggle-view"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.viewMode = btn.dataset.view;
-      render();
-    });
-  });
-
-  document.querySelectorAll('[data-action="download-resource"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const resourceId = btn.dataset.resourceId;
-      downloadResource(resourceId);
-    });
-  });
-
-  document.querySelectorAll('[data-action="open-resource"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const resourceId = btn.dataset.resourceId;
-      openResource(resourceId);
-    });
-  });
-}
-
-async function openCategory(categoryId) {
-  state.view = 'category';
-  state.currentCategoryId = categoryId;
-  state.currentCategory = await categoriesRepository.findById(categoryId);
-  state.resources = await resourceRepository.findByCategory(categoryId);
-  applyFilters();
-  render();
-}
-
-function applyFilters() {
-  let filtered = [...state.resources];
-
-  if (state.filters.type !== 'all') {
-    filtered = filtered.filter(r => r.type === state.filters.type);
-  }
-
-  if (state.filters.search) {
-    const query = state.filters.search.toLowerCase();
-    filtered = filtered.filter(r =>
-      r.title?.toLowerCase().includes(query) ||
-      r.description?.toLowerCase().includes(query) ||
-      r.tags?.some(t => t.toLowerCase().includes(query))
-    );
-  }
-
-  state.filteredResources = filtered;
-}
-
-function downloadResource(resourceId) {
-  const resource = state.resources.find(r => r.id === resourceId);
-  if (!resource) return;
-  
-  toast.info(`Download: ${resource.title}`);
-  // In real app: window.open(resource.fileKey, '_blank');
-}
-
-function openResource(resourceId) {
-  const resource = state.resources.find(r => r.id === resourceId);
-  if (!resource) return;
-  
-  const url = resource.url || resource.templateUrl || resource.embedUrl;
-  if (url) {
-    window.open(url, '_blank', 'noopener');
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-
-
-
-
+// Don't auto-initialize - let the HTML page or router handle it
+// This prevents double initialization

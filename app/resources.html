@@ -43,8 +43,20 @@
     </main>
   </div>
 
-  <script type="module" src="../assets/js/pages/resourcesToolbox.js?v=4.2.0"></script>
   <script type="module" src="../assets/js/app.js?v=4.2.0"></script>
+  <script type="module">
+    // Override router for resources page - use Tool Hub directly
+    import { init } from '../assets/js/pages/resourcesToolbox.js';
+    import { api } from '../assets/js/services/apiClient.js';
+    
+    // Wait for app.js to initialize, then load Tool Hub
+    setTimeout(async () => {
+      const user = api.me();
+      if (user) {
+        await init();
+      }
+    }, 100);
+  </script>
 </body>
 </html>
 

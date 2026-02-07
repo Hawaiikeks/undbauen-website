@@ -45,6 +45,102 @@ const closeAuth = () => {
 };
 
 /**
+ * Opens event details modal
+ * @param {string} eventId - Event ID
+ */
+const openEventDetails = (eventId) => {
+  const ev = api.getEvent(eventId);
+  if (!ev) {
+    console.warn('Event not found:', eventId);
+    return;
+  }
+
+  const overlay = $("#eventDetailsOverlay");
+  const titleEl = $("#eventDetailsTitle");
+  const contentEl = $("#eventDetailsContent");
+  
+  if (!overlay || !titleEl || !contentEl) return;
+
+  // Format date
+  const dateParts = ev.date ? ev.date.split('-') : [];
+  const formattedDate = dateParts.length === 3 
+    ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` 
+    : ev.date || '';
+
+  // Calculate end time if duration is available
+  let timeInfo = ev.time || '';
+  if (ev.durationMinutes) {
+    const [hours, minutes] = (ev.time || '18:00').split(':').map(Number);
+    const start = new Date();
+    start.setHours(hours, minutes, 0, 0);
+    const end = new Date(start.getTime() + ev.durationMinutes * 60000);
+    const endTime = `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`;
+    timeInfo = `${ev.time} - ${endTime} (${ev.durationMinutes} Min.)`;
+  }
+
+  titleEl.textContent = sanitizeHTML(ev.title || 'Event Details');
+  
+  contentEl.innerHTML = `
+    <div style="margin-bottom: 1rem;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        ${ev.format ? `<span class="badge blue">${sanitizeHTML(ev.format)}</span>` : ''}
+        ${formattedDate ? `<span class="badge">📅 ${formattedDate}</span>` : ''}
+        ${timeInfo ? `<span class="badge">⏰ ${timeInfo}</span>` : ''}
+        ${ev.location ? `<span class="badge">📍 ${sanitizeHTML(ev.location)}</span>` : ''}
+      </div>
+      ${ev.capacity ? `<div style="margin-bottom: 0.5rem; font-size: 14px; color: var(--text-secondary);">Kapazität: ${ev.capacity} Teilnehmer</div>` : ''}
+    </div>
+    <div class="hr"></div>
+    <div style="margin-bottom: 1rem;">
+      <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Beschreibung</h3>
+      <div class="p" style="white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;">
+        ${sanitizeHTML(ev.descriptionPublic || ev.description || 'Keine Beschreibung verfügbar.')}
+      </div>
+    </div>
+    ${ev.tags && ev.tags.length > 0 ? `
+      <div class="hr"></div>
+      <div style="margin-bottom: 1rem;">
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Tags</h3>
+        <div class="chips">
+          ${ev.tags.map(tag => `<span class="chip">${sanitizeHTML(tag)}</span>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+    <div class="hr"></div>
+    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button class="btn primary" data-open-auth aria-label="Einloggen zum Buchen">Einloggen zum Buchen</button>
+      <button class="btn secondary" onclick="navigator.clipboard.writeText(window.location.href + '#termine')">Link kopieren</button>
+    </div>
+    <div style="margin-top: 1rem; padding: 0.75rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+        💡 <strong>Hinweis:</strong> Für weitere Details, Buchung und Teilnahme am Event-Thread müssen Sie sich einloggen.
+      </p>
+    </div>
+  `;
+
+  // Add event listener for login button in modal
+  contentEl.querySelectorAll("[data-open-auth]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      closeEventDetails();
+      setTimeout(() => openAuth(), 100);
+    });
+  });
+
+  overlay.style.display = "flex";
+  document.body.style.overflow = "hidden";
+};
+
+/**
+ * Closes event details modal
+ */
+const closeEventDetails = () => {
+  const overlay = $("#eventDetailsOverlay");
+  if (!overlay) return;
+  overlay.style.display = "none";
+  document.body.style.overflow = "";
+};
+
+/**
  * Sets the active tab in the authentication modal
  * @param {string} t - Tab name ('login', 'register', 'forgot')
  * @returns {void}
@@ -189,9 +285,10 @@ const renderPublicEvents = () => {
       const format = sanitizeHTML(ev.format || '');
       const date = sanitizeHTML(ev.date || '');
       const time = sanitizeHTML(ev.time || '');
+      const isBlurred = index >= 2; // Ab Index 2 (3. und 4. Card) blurred
       
       return `
-      <div class="event-card-compact-small">
+      <div class="event-card-compact-small ${isBlurred ? 'event-card-blurred' : ''}">
         <div class="event-card-image-small">
           <img src="${imageUrl}" alt="${title}" loading="lazy" class="event-image" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';" />
           <span class="event-badge">${format}</span>
@@ -202,16 +299,27 @@ const renderPublicEvents = () => {
             <span class="event-meta-item">${getIcon('calendar', 14)} ${date}</span>
             <span class="event-meta-item">${getIcon('clock', 14)} ${time}</span>
           </div>
-          <div class="event-card-footer-small">
+          <div class="event-card-footer-small" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn secondary small" data-open-event-details="${ev.id}" aria-label="Details anzeigen">Details</button>
             <button class="btn primary small" data-open-auth aria-label="Einloggen zum Buchen">Einloggen</button>
           </div>
         </div>
+        ${isBlurred ? '<div class="event-card-blur-overlay"><span>Nur für Mitglieder sichtbar</span></div>' : ''}
       </div>
     `;
     }).join("");
 
     wrap.querySelectorAll("[data-open-auth]").forEach(b => {
       b.addEventListener("click", openAuth);
+    });
+
+    wrap.querySelectorAll("[data-open-event-details]").forEach(b => {
+      b.addEventListener("click", (e) => {
+        const eventId = e.currentTarget.getAttribute("data-open-event-details");
+        if (eventId) {
+          openEventDetails(eventId);
+        }
+      });
     });
   } catch (error) {
     console.error("Error rendering public events:", error);
@@ -666,7 +774,7 @@ function updateNetworkSlider(){
     const linkedin = p.links?.linkedin || "";
     const website = p.links?.website || "";
     const location = p.location || "";
-    // Standard-Personenbilder (Unsplash Portraits)
+    // Erweiterte Liste von professionellen Portraits (Unsplash) - diverse Gesichter
     const defaultPortraits = [
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
@@ -675,7 +783,23 @@ function updateNetworkSlider(){
       'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
       'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces'
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces'
     ];
     
     // Verwende Hash des Namens/E-Mails für konsistente Bildzuordnung
@@ -688,8 +812,8 @@ function updateNetworkSlider(){
     return `
       <div class="person-card" data-email="${p.email}" role="listitem" tabindex="0" aria-label="Profil von ${p.name}, ${p.headline || 'Mitglied'}">
         <div class="person-image-container">
-          <img src="${avatarUrl}" alt="Profilbild von ${p.name}, ${p.headline || 'Mitglied'}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="person-image-placeholder hidden" aria-hidden="true">${initials}</div>
+          <img src="${avatarUrl}" alt="Profilbild von ${p.name}, ${p.headline || 'Mitglied'}" class="person-image" loading="lazy" style="display: block; opacity: 1 !important;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name || p.email)}&size=400&background=random&color=fff&bold=true&format=png'; this.style.opacity='1';" />
+          <div class="person-image-placeholder" style="display: none;" aria-hidden="true">${initials}</div>
         </div>
         <div class="person-card-content">
           <div class="person-name">${p.name}</div>
@@ -705,6 +829,23 @@ function updateNetworkSlider(){
   slider.querySelectorAll(".person-card").forEach(card => {
     const email = card.dataset.email;
     const person = members.find(p => p.email === email);
+    
+    // Stelle sicher, dass Bilder sichtbar sind
+    const img = card.querySelector(".person-image");
+    if(img) {
+      img.style.opacity = "1";
+      img.classList.add("loaded");
+      img.addEventListener("load", () => {
+        img.style.opacity = "1";
+        img.classList.add("loaded");
+      });
+      img.addEventListener("error", () => {
+        // Fallback zu ui-avatars wenn Unsplash nicht lädt
+        const name = person?.name || email;
+        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=400&background=random&color=fff&bold=true&format=png`;
+        img.style.opacity = "1";
+      });
+    }
     
     // Hover-Card on hover
     let hoverTimeout;
@@ -759,7 +900,7 @@ function updateNetworkSlider(){
       const location = sanitizeHTML(p.location || "");
       const email = sanitizeHTML(p.email || "");
       
-      // Standard-Personenbilder (Unsplash Portraits)
+      // Erweiterte Liste von professionellen Portraits (Unsplash) - diverse Gesichter
       const defaultPortraits = [
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
@@ -768,7 +909,23 @@ function updateNetworkSlider(){
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
         'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
         'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces'
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces'
       ];
       
       // Verwende Hash des Namens/E-Mails für konsistente Bildzuordnung
@@ -781,8 +938,8 @@ function updateNetworkSlider(){
       return `
         <div class="person-card" data-email="${email}" role="listitem" tabindex="0" aria-label="Profil von ${name}, ${headline}">
           <div class="person-image-container">
-            <img src="${avatarUrl}" alt="Profilbild von ${name}, ${headline}" class="person-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-            <div class="person-image-placeholder hidden" aria-hidden="true">${initials}</div>
+            <img src="${avatarUrl}" alt="Profilbild von ${name}, ${headline}" class="person-image" loading="lazy" style="display: block; opacity: 1 !important;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name || email)}&size=400&background=random&color=fff&bold=true&format=png'; this.style.opacity='1';" />
+            <div class="person-image-placeholder" style="display: none;" aria-hidden="true">${initials}</div>
           </div>
           <div class="person-card-content">
             <div class="person-name">${name}</div>
@@ -804,6 +961,20 @@ function updateNetworkSlider(){
           memberModal.show(person);
         }
       });
+      
+      // Stelle sicher, dass Bilder sichtbar sind, sobald sie geladen sind
+      const img = card.querySelector(".person-image");
+      if(img) {
+        img.addEventListener("load", () => {
+          img.style.opacity = "1";
+          img.classList.add("loaded");
+        });
+        img.addEventListener("error", () => {
+          // Fallback zu ui-avatars wenn Unsplash nicht lädt
+          const name = person?.name || email;
+          img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=400&background=random&color=fff&bold=true&format=png`;
+        });
+      }
     });
     
     // Buttons immer aktiv (unendliches Karussell)
@@ -1288,7 +1459,14 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     if($("#openAuth2")) $("#openAuth2").addEventListener("click", openAuth);
     if($("#closeAuth")) $("#closeAuth").addEventListener("click", closeAuth);
     if($("#authOverlay")) $("#authOverlay").addEventListener("click", (e)=>{ if(e.target.id==="authOverlay") closeAuth(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeAuth(); });
+    if($("#closeEventDetails")) $("#closeEventDetails").addEventListener("click", closeEventDetails);
+    if($("#eventDetailsOverlay")) $("#eventDetailsOverlay").addEventListener("click", (e)=>{ if(e.target.id==="eventDetailsOverlay") closeEventDetails(); });
+    document.addEventListener("keydown",(e)=>{ 
+      if(e.key==="Escape") {
+        closeAuth();
+        closeEventDetails();
+      }
+    });
   } catch (error) {
     console.error('Error setting up auth handlers:', error);
   }

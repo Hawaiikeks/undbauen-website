@@ -399,6 +399,19 @@
     </section>
   </main>
 
+  <!-- EVENT DETAILS MODAL -->
+  <div class="modalOverlay" id="eventDetailsOverlay" style="display: none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle" style="max-width: 600px;">
+      <div class="modalHeader">
+        <div class="modalTitle" id="eventDetailsTitle">Event Details</div>
+        <button class="btn" id="closeEventDetails" aria-label="Modal schließen">✕</button>
+      </div>
+      <div class="modalBody">
+        <div id="eventDetailsContent"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- AUTH MODAL -->
   <div class="modalOverlay" id="authOverlay" style="display: none;">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" style="max-width: 500px;">

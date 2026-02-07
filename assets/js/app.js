@@ -606,6 +606,7 @@ async function renderDashboard(){
       // 3. Neue Beiträge in favorisierten/beobachteten Threads
       try {
         const allThreads = api.getForumThreads() || [];
+        const favs = api.getFavorites() || [];
         const favoriteThreads = favs.filter(f => f.targetType === 'thread');
         const watchedThreads = allThreads.filter(t => t.watchedBy && t.watchedBy.includes(u.email));
         

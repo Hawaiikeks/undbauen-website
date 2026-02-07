@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../assets/css/base.css?v=4.2.0"/>
   <link rel="stylesheet" href="../assets/css/app.css?v=4.2.0"/>
   <link rel="stylesheet" href="../assets/css/sidebar.css?v=4.2.0"/>
-  <link rel="stylesheet" href="../assets/css/knowledge-panels.css?v=4.2.0"/>
+  <link rel="stylesheet" href="../assets/css/knowledge-panels.css?v=4.3.0"/>
 </head>
 <body data-page="knowledge">
   <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
@@ -36,13 +36,27 @@
       </div>
     </header>
 
-    <main id="main-content" id="knowledgeContainer" class="pageWrap">
-    <!-- Content will be rendered by knowledge.js -->
+    <main id="main-content">
+      <div id="knowledgeContainer">
+        <!-- Content will be rendered by knowledgeObsidian.js -->
+      </div>
     </main>
   </div>
 
-  <script type="module" src="../assets/js/pages/knowledgeObsidian.js?v=4.2.0"></script>
   <script type="module" src="../assets/js/app.js?v=4.2.0"></script>
+  <script type="module">
+    // Override router for knowledge page - use Obsidian implementation directly
+    import { init } from '../assets/js/pages/knowledgeObsidian.js';
+    import { api } from '../assets/js/services/apiClient.js';
+    
+    // Wait for app.js to initialize, then load Obsidian Knowledge System
+    setTimeout(async () => {
+      const user = api.me();
+      if (user) {
+        await init();
+      }
+    }, 200);
+  </script>
 </body>
 </html>
 

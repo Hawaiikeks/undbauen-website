@@ -25,6 +25,7 @@ const K = {
   knowledgeTopics: "knowledge:topics",
   knowledgeRelations: "knowledge:relations",
   resourceCategories: "resource:categories",
+  tools: "tools",
   auditLog: "auditLog"
 };
 
@@ -887,6 +888,7 @@ function seedKnowledgeIfEmpty(){
       title: "Was ist BIM?",
       summary: "Building Information Modeling (BIM) ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden und Infrastruktur.",
       body: "BIM ist mehr als nur 3D-Modellierung. Es ist eine Methode der vernetzten Planung, Ausführung und Bewirtschaftung von Gebäuden mit Hilfe von Software.\n\nDie 7 BIM-Dimensionen:\n- 3D: Geometrie\n- 4D: Zeit/Ablauf\n- 5D: Kosten\n- 6D: Nachhaltigkeit\n- 7D: Facility Management\n\nBIM ermöglicht eine durchgängige Datenhaltung über den gesamten Lebenszyklus eines Bauwerks.",
+      oberkategorie: "bim-digital",
       type: "method",
       topics: ["topic_bim", "topic_prozesse"],
       tags: ["BIM", "Grundlagen", "Methodik"],
@@ -901,6 +903,7 @@ function seedKnowledgeIfEmpty(){
       title: "IFC - Industry Foundation Classes",
       summary: "IFC ist ein offener Standard für den Austausch von BIM-Daten zwischen verschiedenen Softwareplattformen.",
       body: "Industry Foundation Classes (IFC) ist ein offener, internationaler Standard (ISO 16739) für den Austausch von BIM-Daten. Er ermöglicht die Interoperabilität zwischen verschiedenen Softwareplattformen.\n\nVorteile:\n- Herstellerunabhängigkeit\n- Langzeitarchivierung\n- Durchgängiger Datenaustausch\n- Transparenz\n\nIFC-Versionen: Aktuell sind IFC 2x3 und IFC4 die am häufigsten verwendeten Versionen. IFC4.3 erweitert den Standard um Infrastruktur-Elemente.",
+      oberkategorie: "standards",
       type: "standard",
       topics: ["topic_bim", "topic_standards"],
       tags: ["IFC", "OpenBIM", "Standards", "Interoperabilität"],
@@ -915,6 +918,7 @@ function seedKnowledgeIfEmpty(){
       title: "Dynamo für Revit",
       summary: "Dynamo ist eine visuelle Programmierumgebung für die Automatisierung von Workflows in Revit.",
       body: "Dynamo ist eine Open-Source-Plattform für visuelle Programmierung, die eng mit Revit integriert ist.\n\nAnwendungsfälle:\n- Parametrisches Design\n- Datenextraktion und -analyse\n- Automatisierung wiederkehrender Aufgaben\n- BIM-Modellprüfung\n- Generatives Design\n\nGetting Started: Dynamo ist in Revit bereits enthalten. Öffnen Sie es über die Registerkarte \"Verwalten\" → \"Dynamo\".",
+      oberkategorie: "tools-methoden",
       type: "tool",
       topics: ["topic_tools", "topic_bim", "topic_ai"],
       tags: ["Dynamo", "Revit", "Automation", "Visual Programming"],
@@ -929,6 +933,7 @@ function seedKnowledgeIfEmpty(){
       title: "Circular Economy im Bauwesen",
       summary: "Kreislaufwirtschaft im Bauwesen bedeutet, Gebäude und Materialien so zu gestalten, dass sie wiederverwendet, repariert oder recycelt werden können.",
       body: "Die Kreislaufwirtschaft ist ein regeneratives System, in dem Ressourcenverbrauch und Abfälle, Emissionen und Energieverschwendung minimiert werden.\n\nPrinzipien:\n1. Design for Disassembly: Gebäude für Rückbau konzipieren\n2. Materialpass: Dokumentation verbauter Materialien\n3. Urban Mining: Gebäude als Materialbank\n4. Lifecycle Thinking: Gesamter Lebenszyklus im Fokus\n\nVorteile:\n- Ressourcenschonung\n- CO2-Reduktion\n- Wirtschaftlichkeit\n- Innovationspotenzial",
+      oberkategorie: "prozesse",
       type: "concept",
       topics: ["topic_nachhaltigkeit"],
       tags: ["Nachhaltigkeit", "Circular Economy", "Kreislaufwirtschaft", "Ressourcen"],
@@ -943,6 +948,7 @@ function seedKnowledgeIfEmpty(){
       title: "KI im Bauwesen",
       summary: "Künstliche Intelligenz revolutioniert die Baubranche durch Automatisierung, Optimierung und neue Möglichkeiten der Datenanalyse.",
       body: "KI-Technologien finden zunehmend Anwendung im Bauwesen:\n\nAnwendungsbereiche:\n- Predictive Maintenance\n- Baufortschrittskontrolle\n- Energieoptimierung\n- Kostenprognosen\n- Automatisierte Planung\n- Sicherheitsüberwachung\n\nTechnologien:\n- Computer Vision für Baustellenüberwachung\n- Machine Learning für Vorhersagemodelle\n- Natural Language Processing für Dokumentenanalyse",
+      oberkategorie: "ki",
       type: "concept",
       topics: ["topic_ai", "topic_digital"],
       tags: ["KI", "Artificial Intelligence", "Machine Learning", "Innovation"],
@@ -957,6 +963,7 @@ function seedKnowledgeIfEmpty(){
       title: "OpenBIM Workflow",
       summary: "OpenBIM ist ein universeller Ansatz für die kollaborative Planung, Realisierung und den Betrieb von Gebäuden auf Basis offener Standards.",
       body: "OpenBIM basiert auf dem Prinzip offener Standards und Interoperabilität.\n\nKernmerkmale:\n- Nutzung offener Datenformate (IFC, BCF)\n- Herstellerunabhängigkeit\n- Transparente Datenaustauschprozesse\n- Neutrale Koordination\n\nVorteile:\n- Reduzierte Abhängigkeit von einzelnen Software-Anbietern\n- Bessere Zusammenarbeit über Disziplinen hinweg\n- Langfristige Datensicherheit\n- Internationale Standardisierung",
+      oberkategorie: "bim-digital",
       type: "method",
       topics: ["topic_bim", "topic_prozesse", "topic_standards"],
       tags: ["OpenBIM", "IFC", "Interoperabilität", "Standards"],
@@ -971,6 +978,7 @@ function seedKnowledgeIfEmpty(){
       title: "Autodesk Revit",
       summary: "Revit ist eine führende BIM-Software für Architekten, Ingenieure und Bauunternehmer.",
       body: "Autodesk Revit ist eine der am weitesten verbreiteten BIM-Authoring-Tools.\n\nFunktionen:\n- 3D-Modellierung mit intelligenten Objekten\n- Automatische 2D-Planableitung\n- Parametrische Komponenten (Families)\n- Kollaborationsfunktionen\n- Worksharing für Teams\n\nErweiterbarkeit:\n- Revit API (C#/.NET)\n- Dynamo für visuelle Programmierung\n- Add-Ins und Plugins\n- Python Scripting (pyRevit)",
+      oberkategorie: "tools-methoden",
       type: "tool",
       topics: ["topic_tools", "topic_bim"],
       tags: ["Revit", "Autodesk", "BIM Software", "3D Modellierung"],
@@ -985,6 +993,7 @@ function seedKnowledgeIfEmpty(){
       title: "Life Cycle Assessment (LCA)",
       summary: "Lebenszyklusanalyse ist eine Methode zur Bewertung der Umweltauswirkungen von Gebäuden über ihren gesamten Lebenszyklus.",
       body: "LCA (Ökobilanzierung) erfasst und bewertet die Umweltauswirkungen eines Gebäudes von der Rohstoffgewinnung bis zum Rückbau.\n\nPhasen:\n- A1-A3: Herstellung (Rohstoffe, Transport, Produktion)\n- A4-A5: Errichtung (Transport, Einbau)\n- B1-B7: Nutzung (Instandhaltung, Reparatur, Ersatz)\n- C1-C4: End of Life (Rückbau, Transport, Entsorgung)\n- D: Recycling-Potenzial\n\nRelevanz:\n- Gesetzliche Anforderungen (z.B. GEG, QNG)\n- ESG-Kriterien\n- Zertifizierungssysteme (DGNB, LEED, BREEAM)",
+      oberkategorie: "standards",
       type: "method",
       topics: ["topic_nachhaltigkeit", "topic_standards"],
       tags: ["LCA", "Ökobilanz", "Nachhaltigkeit", "Lebenszyklus"],
@@ -999,6 +1008,7 @@ function seedKnowledgeIfEmpty(){
       title: "BIM Collaboration Format (BCF)",
       summary: "BCF ist ein offenes Dateiformat für den Austausch von Kommentaren, Problemen und Koordinationspunkten in BIM-Projekten.",
       body: "BCF wurde von buildingSMART entwickelt und ist ein XML-basiertes Format für Issue-Management in BIM-Projekten.\n\nFunktionen:\n- Verknüpfung von Issues mit 3D-Positionen\n- Screenshots und Markups\n- Workflow-Status (Offen, In Bearbeitung, Geschlossen)\n- Verantwortlichkeiten und Prioritäten\n- Software-übergreifender Austausch\n\nSupport:\n- Revit, ArchiCAD, Solibri, BIMcollab, Navisworks und viele mehr\n- BCF 2.1 und BCF 3.0 sind aktuelle Standards",
+      oberkategorie: "standards",
       type: "standard",
       topics: ["topic_bim", "topic_standards", "topic_prozesse"],
       tags: ["BCF", "Issue Management", "Kollaboration", "buildingSMART"],
@@ -1013,6 +1023,7 @@ function seedKnowledgeIfEmpty(){
       title: "Grasshopper für Rhino",
       summary: "Grasshopper ist ein visueller Algorithmus-Editor für parametrisches Design in Rhinoceros 3D.",
       body: "Grasshopper ermöglicht parametrisches und generatives Design ohne Programmierkenntnisse.\n\nAnwendungsbereiche:\n- Parametrische Architektur\n- Komplexe Geometrien\n- Optimierungsalgorithmen\n- Generatives Design\n- Strukturanalyse (mit Plugins)\n\nEcosystem:\n- Hunderte von Plugins verfügbar\n- Integration mit Galapagos (Optimierung)\n- Kangaroo (Physics Engine)\n- Ladybug/Honeybee (Umweltsimulation)",
+      oberkategorie: "tools-methoden",
       type: "tool",
       topics: ["topic_tools", "topic_ai"],
       tags: ["Grasshopper", "Rhino", "Parametric Design", "Generative Design"],
@@ -1027,6 +1038,7 @@ function seedKnowledgeIfEmpty(){
       title: "Agile Methoden im Bauwesen",
       summary: "Agile Ansätze aus der Softwareentwicklung finden zunehmend Anwendung in Bauprojekten.",
       body: "Agile Methoden betonen Flexibilität, iterative Entwicklung und enge Zusammenarbeit.\n\nPrinzipien:\n- Iterative Planung (Sprints)\n- Cross-funktionale Teams\n- Regelmäßiges Feedback\n- Anpassungsfähigkeit\n- Transparenz\n\nMethoden:\n- Scrum für Bauprojekte\n- Last Planner System\n- Lean Construction\n- Integrated Project Delivery (IPD)\n\nVorteile:\n- Frühe Problemerkennung\n- Bessere Stakeholder-Einbindung\n- Reduzierte Verschwendung\n- Höhere Projektqualität",
+      oberkategorie: "prozesse",
       type: "method",
       topics: ["topic_prozesse"],
       tags: ["Agile", "Lean Construction", "Projektmanagement", "Scrum"],
@@ -1178,6 +1190,81 @@ function seedAuditLogIfEmpty(){
   ]);
 }
 
+function seedToolsIfEmpty(){
+  const tools = getJSON(K.tools, []);
+  if(tools.length) return;
+  
+  const seeded = [
+    {
+      id: uid("tool"),
+      key: "onedrive",
+      name: "OneDrive",
+      description: "Zentrale Ablage für Slides, Vorlagen & Workshop-Material.",
+      url: "https://onedrive.live.com",
+      visibility: "member",
+      order: 1,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: uid("tool"),
+      key: "miro",
+      name: "Miro",
+      description: "Whiteboards für Sessions, Prozessskizzen & Ideensammlungen.",
+      url: "https://miro.com",
+      visibility: "member",
+      order: 2,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: uid("tool"),
+      key: "notion",
+      name: "Notion",
+      description: "Wissenssammlungen, Protokolle & strukturierte Learnings.",
+      url: "https://notion.so",
+      visibility: "member",
+      order: 3,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: uid("tool"),
+      key: "canva",
+      name: "Canva",
+      description: "Design-Templates & Präsentationen für Netzwerk-Output.",
+      url: "https://canva.com",
+      visibility: "member",
+      order: 4,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: uid("tool"),
+      key: "github",
+      name: "GitHub",
+      description: "Code, Automationen, Snippets & kleine Tools aus der Community.",
+      url: "https://github.com",
+      visibility: "member",
+      order: 5,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: uid("tool"),
+      key: "linkedin",
+      name: "LinkedIn",
+      description: "Publikationen, und Austausch nach außen.",
+      url: "https://linkedin.com/company/undbauen",
+      visibility: "member",
+      order: 6,
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    }
+  ];
+  setJSON(K.tools, seeded);
+}
+
 function ensureSeeds(){
   seedUsersIfEmpty();
   seedExampleMembers(); // Beispiel-Mitglieder hinzufügen
@@ -1189,6 +1276,7 @@ function ensureSeeds(){
   seedTopicsIfEmpty(); // NEW: Topics for Knowledge
   seedKnowledgeIfEmpty();
   seedRelationsIfEmpty(); // NEW: Relations between Knowledge Items
+  seedToolsIfEmpty(); // NEW: Tools for Tool Hub
   seedAuditLogIfEmpty();
 }
 
@@ -2027,6 +2115,64 @@ function listChildCategories(parentId){
   return listResourceCategories().filter(c => c.parentId === parentId);
 }
 
+/* ========== TOOLS ========== */
+function listTools(){
+  ensureSeeds();
+  return getJSON(K.tools, []);
+}
+
+function getTool(id){
+  const tools = listTools();
+  return tools.find(t => t.id === id) || null;
+}
+
+function saveTools(tools){
+  setJSON(K.tools, tools);
+}
+
+function adminCreateTool(payload){
+  if(!isAdmin()) return { success:false, error:"Not admin" };
+  const tools = listTools();
+  const tool = {
+    id: uid("tool"),
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    order: tools.length,
+    ...payload
+  };
+  tools.push(tool);
+  saveTools(tools);
+  return { success:true, id: tool.id };
+}
+
+function adminUpdateTool(toolId, payload){
+  if(!isAdmin()) return { success:false, error:"Not admin" };
+  const tools = listTools().map(t => t.id === toolId ? ({...t, ...payload, updatedAt: nowISO()}) : t);
+  saveTools(tools);
+  return { success:true };
+}
+
+function adminDeleteTool(toolId){
+  if(!isAdmin()) return { success:false, error:"Not admin" };
+  const tools = listTools().filter(t => t.id !== toolId);
+  saveTools(tools);
+  return { success:true };
+}
+
+function adminUpdateToolOrder(orderUpdates){
+  if(!isAdmin()) return { success:false, error:"Not admin" };
+  const tools = listTools();
+  const updated = tools.map(tool => {
+    const update = orderUpdates.find(u => u.id === tool.id);
+    if(update) {
+      return { ...tool, order: update.order, updatedAt: nowISO() };
+    }
+    return tool;
+  });
+  saveTools(updated);
+  return { success:true };
+}
+
 /* ========== KNOWLEDGE TOPICS ========== */
 function listTopics(){
   ensureSeeds();
@@ -2118,7 +2264,10 @@ export const storageAdapter = {
 
   // resource categories
   listResourceCategories, getResourceCategory,
-  listTopLevelCategories, listChildCategories
+  listTopLevelCategories, listChildCategories,
+
+  // tools
+  listTools, getTool, saveTools, adminCreateTool, adminUpdateTool, adminDeleteTool, adminUpdateToolOrder
 };
 
 // Ensure seeds are created immediately on module load

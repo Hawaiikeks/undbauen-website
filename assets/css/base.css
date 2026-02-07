@@ -1437,8 +1437,13 @@ img[loading="lazy"].loaded{
   opacity: 1;
 }
 
+/* Person images sollten immer sichtbar sein */
+.person-image[loading="lazy"]{
+  opacity: 1;
+}
+
 /* Intersection Observer für Lazy Loading - Skeleton während Loading */
-img[loading="lazy"]:not(.loaded){
+img[loading="lazy"]:not(.loaded):not(.person-image){
   background: linear-gradient(90deg, var(--border) 25%, transparent 37%, var(--border) 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;

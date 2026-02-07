@@ -44,7 +44,7 @@
 
   <script type="module" src="../assets/js/app.js?v=4.1.1"></script>
   <script type="module">
-    import { renderResourcesAdmin } from '../assets/js/pages/resourcesAdmin.js';
+    import { renderToolsAdmin } from '../assets/js/pages/toolsAdmin.js';
     import { api } from '../assets/js/services/apiClient.js';
     import { hasAnyRole } from '../assets/js/services/authGuard.js';
     
@@ -55,7 +55,7 @@
       } else if (!hasAnyRole(['editor', 'moderator', 'admin'])) {
         window.location.href = '../app/dashboard.html';
       } else {
-        renderResourcesAdmin();
+        renderToolsAdmin();
       }
     }, 100);
   </script>
