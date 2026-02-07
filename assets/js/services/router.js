@@ -91,6 +91,35 @@ export function getCurrentRoute() {
 }
 
 /**
+ * Get page name from route path
+ * @param {string} path - Route path (optional, defaults to current path)
+ * @returns {string|null} Page name or null if not found
+ */
+export function getPageFromPath(path = null) {
+  const routePath = path || getCurrentPath();
+  const route = getCurrentRoute();
+  
+  if (route) {
+    return route.page;
+  }
+  
+  // Fallback: try to extract from path
+  if (routePath.includes('/app/')) {
+    const pageMatch = routePath.match(/\/app\/([^/]+)\.html/);
+    if (pageMatch) {
+      return pageMatch[1];
+    }
+  } else if (routePath.includes('/backoffice/')) {
+    const pageMatch = routePath.match(/\/backoffice\/([^/]+)\.html/);
+    if (pageMatch) {
+      return pageMatch[1];
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Check if route exists
  * @param {string} path - Route path
  * @returns {boolean}

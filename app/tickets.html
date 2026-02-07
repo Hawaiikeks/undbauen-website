@@ -39,17 +39,6 @@
     </main>
   </div>
 
-  <script type="module">
-    import { renderTickets } from '../assets/js/pages/tickets.js';
-    import { api } from '../assets/js/services/apiClient.js';
-    
-    // Check auth
-    if (!api.isLoggedIn()) {
-      window.location.href = '../index.html';
-    } else {
-      renderTickets();
-    }
-  </script>
   <script type="module" src="../assets/js/app.js?v=3.0.0"></script>
 </body>
 </html>

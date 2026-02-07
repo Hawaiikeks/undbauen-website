@@ -41,31 +41,6 @@
   </div>
 
   <script type="module" src="../assets/js/app.js?v=3.0.0"></script>
-  <script type="module">
-    import { renderAudit } from '../assets/js/pages/audit.js';
-    import { api } from '../assets/js/services/apiClient.js';
-    import { hasRole } from '../assets/js/services/authGuard.js';
-    
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initAudit);
-    } else {
-      initAudit();
-    }
-    
-    function initAudit() {
-      // Check auth and role (admin only)
-      if (!api.isLoggedIn()) {
-        window.location.href = '../index.html';
-      } else if (!hasRole('admin')) {
-        window.location.href = '../app/dashboard.html';
-      } else {
-        setTimeout(() => {
-          renderAudit();
-        }, 100);
-      }
-    }
-  </script>
 </body>
 </html>
 

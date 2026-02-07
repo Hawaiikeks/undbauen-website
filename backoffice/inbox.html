@@ -41,32 +41,6 @@
   </div>
 
   <script type="module" src="../assets/js/app.js?v=3.0.0"></script>
-  <script type="module">
-    import { renderInbox } from '../assets/js/pages/inbox.js';
-    import { api } from '../assets/js/services/apiClient.js';
-    import { hasAnyRole } from '../assets/js/services/authGuard.js';
-    
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initInbox);
-    } else {
-      initInbox();
-    }
-    
-    function initInbox() {
-      // Check auth and role
-      if (!api.isLoggedIn()) {
-        window.location.href = '../index.html';
-      } else if (!hasAnyRole(['moderator', 'admin'])) {
-        window.location.href = '../app/dashboard.html';
-      } else {
-        // Wait a bit for app.js to initialize sidebar
-        setTimeout(() => {
-          renderInbox();
-        }, 100);
-      }
-    }
-  </script>
 </body>
 </html>
 
