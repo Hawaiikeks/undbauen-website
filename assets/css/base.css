@@ -1093,9 +1093,27 @@ p, .p{
   color: var(--text-secondary);
 }
 
+.hero-cta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  opacity: 0;
+  animation: fadeInUp 1.2s ease-out 1s forwards;
+}
+
+.hero-cta .btn{
+  min-width: 160px;
+}
+
 @media (max-width: 768px){
   .hero-content p{
     font-size: 1.1rem;
+  }
+  .hero-cta{
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -1748,6 +1766,12 @@ img[loading="lazy"]:not(.loaded):not(.person-image){
   color: var(--text-secondary);
   font-weight: 400;
   text-align: left;
+}
+
+.community-cta-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 @media(max-width: 768px){

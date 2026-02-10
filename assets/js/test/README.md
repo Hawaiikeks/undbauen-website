@@ -15,10 +15,9 @@ Unit Test Suite für die undbauen Website.
 
 ### Im Browser
 
-1. Server starten:
+1. Server starten (aus Projektroot):
    ```bash
-   cd src
-   python -m http.server 8000
+   npm start
    ```
 
 2. Browser öffnen:

@@ -4,6 +4,8 @@
   "description": "Community Platform für AEC-Profis",
   "type": "module",
   "scripts": {
+    "start": "serve . -l 8000",
+    "dev": "serve . -l 8000",
     "lint": "eslint src/assets/js/**/*.js",
     "lint:fix": "eslint src/assets/js/**/*.js --fix",
     "format": "prettier --write \"src/**/*.{js,json,html,css}\"",
@@ -12,19 +14,13 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "serve": "^14.2.4"
   },
-  "keywords": [
-    "community",
-    "platform",
-    "aec"
-  ],
+  "keywords": ["community", "platform", "aec"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
 }
-
-
-
-
-
-

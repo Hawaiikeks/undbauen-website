@@ -8,7 +8,8 @@ Eine vollständige Community-Plattform mit Tickets, Resources, Knowledge Base, u
 
 1. **Server starten:**
 ```bash
-python -m http.server 8000
+npm install
+npm start
 ```
 
 2. **Browser öffnen:**
@@ -91,7 +92,7 @@ await seedDemoData();
 - **Frontend**: Vanilla HTML/CSS/JavaScript
 - **Storage**: localStorage (Development), S3-ready (Production)
 - **Editor**: Quill.js
-- **Development**: Python http.server
+- **Development**: Node.js (serve) – `npm start`
 
 ## 📚 Dokumentation
 

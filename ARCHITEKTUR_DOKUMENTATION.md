@@ -31,7 +31,7 @@ Die **…undbauen** Website ist eine Community-Plattform für AEC-Profis (Archit
 - **Storage**: localStorage (Development), vorbereitet für Backend-Integration
 - **Editor**: Quill.js für Rich Text Editing
 - **Charts**: Chart.js für Datenvisualisierung
-- **Server**: Python HTTP Server (Development)
+- **Server**: Node.js (serve) für statische Dateien (Development)
 
 ---
 
@@ -1004,11 +1004,9 @@ Die Architektur ist vorbereitet für Backend-Integration:
 ### 1. Server starten
 
 ```bash
-# PowerShell
-python -m http.server 8000
-
-# Oder mit Script
-.\scripts\START_SERVER.ps1
+npm install
+npm start
+# Oder mit Script (Windows): .\scripts\START_SERVER.ps1
 ```
 
 ### 2. Browser öffnen
@@ -1154,7 +1152,7 @@ HTML → app.js/public.js → Pages → Components → API Client → Storage Ad
 
 ### 6. **Entwicklung**
 
-- Python HTTP Server für lokale Entwicklung
+- Node.js (serve) für lokale Entwicklung – `npm start`
 - ES6 Modules für modularen Code
 - Komponenten-basierte Architektur
 - Service-Layer für Business Logic

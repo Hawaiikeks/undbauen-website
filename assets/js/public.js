@@ -29,7 +29,6 @@ const openAuth = () => {
   const overlay = $("#authOverlay");
   const authErr = $("#authErr");
   const regErr = $("#regErr");
-  
   if (overlay) overlay.style.display = "flex";
   if (authErr) authErr.textContent = "";
   if (regErr) regErr.textContent = "";
@@ -42,6 +41,43 @@ const openAuth = () => {
 const closeAuth = () => {
   const overlay = $("#authOverlay");
   if (overlay) overlay.style.display = "none";
+};
+
+/**
+ * Sets the active tab in the authentication modal
+ * @param {string} t - Tab name ('login', 'register', 'forgot')
+ * @returns {void}
+ */
+const setTab = (t) => {
+  if (!t) return;
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach(x => {
+    const isActive = x.dataset.tab === t;
+    x.classList.toggle("active", isActive);
+    if (x.hasAttribute("role") && x.getAttribute("role") === "tab") {
+      x.setAttribute("aria-selected", isActive ? "true" : "false");
+    }
+  });
+  const loginPanel = $("#panel-login");
+  const registerPanel = $("#panel-register");
+  const forgotPanel = $("#panel-forgot");
+  const authTitle = $("#authTitle");
+  if (loginPanel) {
+    if (t === "login") { loginPanel.classList.remove("tab-panel-hidden"); loginPanel.setAttribute("aria-hidden", "false"); }
+    else { loginPanel.classList.add("tab-panel-hidden"); loginPanel.setAttribute("aria-hidden", "true"); }
+  }
+  if (registerPanel) {
+    if (t === "register") { registerPanel.classList.remove("tab-panel-hidden"); registerPanel.setAttribute("aria-hidden", "false"); }
+    else { registerPanel.classList.add("tab-panel-hidden"); registerPanel.setAttribute("aria-hidden", "true"); }
+  }
+  if (forgotPanel) {
+    if (t === "forgot") { forgotPanel.classList.remove("tab-panel-hidden"); forgotPanel.setAttribute("aria-hidden", "false"); }
+    else { forgotPanel.classList.add("tab-panel-hidden"); forgotPanel.setAttribute("aria-hidden", "true"); }
+  }
+  if (authTitle) {
+    const titles = { login: "Login", register: "Registrieren", forgot: "Passwort vergessen" };
+    authTitle.textContent = titles[t] || "Login";
+  }
 };
 
 /**
@@ -107,24 +143,10 @@ const openEventDetails = (eventId) => {
       </div>
     ` : ''}
     <div class="hr"></div>
-    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-      <button class="btn primary" data-open-auth aria-label="Einloggen zum Buchen">Einloggen zum Buchen</button>
-      <button class="btn secondary" onclick="navigator.clipboard.writeText(window.location.href + '#termine')">Link kopieren</button>
-    </div>
-    <div style="margin-top: 1rem; padding: 0.75rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);">
-      <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">
-        💡 <strong>Hinweis:</strong> Für weitere Details, Buchung und Teilnahme am Event-Thread müssen Sie sich einloggen.
-      </p>
+    <div style="margin-top: 1rem;">
+      <button class="btn secondary" type="button" onclick="navigator.clipboard.writeText(window.location.href + '#termine')">Link kopieren</button>
     </div>
   `;
-
-  // Add event listener for login button in modal
-  contentEl.querySelectorAll("[data-open-auth]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      closeEventDetails();
-      setTimeout(() => openAuth(), 100);
-    });
-  });
 
   overlay.style.display = "flex";
   document.body.style.overflow = "hidden";
@@ -138,72 +160,6 @@ const closeEventDetails = () => {
   if (!overlay) return;
   overlay.style.display = "none";
   document.body.style.overflow = "";
-};
-
-/**
- * Sets the active tab in the authentication modal
- * @param {string} t - Tab name ('login', 'register', 'forgot')
- * @returns {void}
- */
-const setTab = (t) => {
-  if (!t) return;
-
-  const tabs = document.querySelectorAll(".tab");
-  tabs.forEach(x => {
-    const isActive = x.dataset.tab === t;
-    x.classList.toggle("active", isActive);
-    if (x.hasAttribute("role") && x.getAttribute("role") === "tab") {
-      x.setAttribute("aria-selected", isActive ? "true" : "false");
-    }
-  });
-
-  const loginPanel = $("#panel-login");
-  const registerPanel = $("#panel-register");
-  const forgotPanel = $("#panel-forgot");
-  const authTitle = $("#authTitle");
-
-  // Update login panel
-  if (loginPanel) {
-    if (t === "login") {
-      loginPanel.classList.remove("tab-panel-hidden");
-      loginPanel.setAttribute("aria-hidden", "false");
-    } else {
-      loginPanel.classList.add("tab-panel-hidden");
-      loginPanel.setAttribute("aria-hidden", "true");
-    }
-  }
-
-  // Update register panel
-  if (registerPanel) {
-    if (t === "register") {
-      registerPanel.classList.remove("tab-panel-hidden");
-      registerPanel.setAttribute("aria-hidden", "false");
-    } else {
-      registerPanel.classList.add("tab-panel-hidden");
-      registerPanel.setAttribute("aria-hidden", "true");
-    }
-  }
-
-  // Update forgot panel
-  if (forgotPanel) {
-    if (t === "forgot") {
-      forgotPanel.classList.remove("tab-panel-hidden");
-      forgotPanel.setAttribute("aria-hidden", "false");
-    } else {
-      forgotPanel.classList.add("tab-panel-hidden");
-      forgotPanel.setAttribute("aria-hidden", "true");
-    }
-  }
-
-  // Update title
-  if (authTitle) {
-    const titles = {
-      login: "Login",
-      register: "Registrieren",
-      forgot: "Passwort vergessen"
-    };
-    authTitle.textContent = titles[t] || "Login";
-  }
 };
 
 /**
@@ -301,17 +257,12 @@ const renderPublicEvents = () => {
           </div>
           <div class="event-card-footer-small" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <button class="btn secondary small" data-open-event-details="${ev.id}" aria-label="Details anzeigen">Details</button>
-            <button class="btn primary small" data-open-auth aria-label="Einloggen zum Buchen">Einloggen</button>
           </div>
         </div>
         ${isBlurred ? '<div class="event-card-blur-overlay"><span>Nur für Mitglieder sichtbar</span></div>' : ''}
       </div>
     `;
     }).join("");
-
-    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
-      b.addEventListener("click", openAuth);
-    });
 
     wrap.querySelectorAll("[data-open-event-details]").forEach(b => {
       b.addEventListener("click", (e) => {
@@ -376,15 +327,10 @@ const renderPublicUpdates = () => {
           <h3 class="timeline-title">${title}</h3>
           <p class="timeline-intro">${intro}</p>
           ${highlights.length > 0 ? `<div class="timeline-highlights">${highlights.map(h => `<span class="chip">${h}</span>`).join("")}</div>` : ''}
-          <button class="btn secondary small" data-open-auth aria-label="Als Mitglied lesen">Als Mitglied lesen</button>
         </div>
       </div>
     `;
     }).join("");
-
-    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
-      b.addEventListener("click", openAuth);
-    });
   } catch (error) {
     console.error("Error rendering public updates:", error);
     wrap.innerHTML = '<div class="p-xl text-center text-muted">Fehler beim Laden der Updates.</div>';
@@ -464,9 +410,6 @@ const renderPublicPubs = () => {
     `;
     }).join("");
 
-    wrap.querySelectorAll("[data-open-auth]").forEach(b => {
-      b.addEventListener("click", openAuth);
-    });
   } catch (error) {
     console.error("Error rendering public publications:", error);
     wrap.innerHTML = '<div class="p-xl text-center text-muted">Fehler beim Laden der Publikationen.</div>';
@@ -1456,83 +1399,54 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   try {
     if($("#themeToggle")) $("#themeToggle").addEventListener("click", toggleTheme);
     if($("#openAuth")) $("#openAuth").addEventListener("click", openAuth);
-    if($("#openAuth2")) $("#openAuth2").addEventListener("click", openAuth);
     if($("#closeAuth")) $("#closeAuth").addEventListener("click", closeAuth);
     if($("#authOverlay")) $("#authOverlay").addEventListener("click", (e)=>{ if(e.target.id==="authOverlay") closeAuth(); });
     if($("#closeEventDetails")) $("#closeEventDetails").addEventListener("click", closeEventDetails);
     if($("#eventDetailsOverlay")) $("#eventDetailsOverlay").addEventListener("click", (e)=>{ if(e.target.id==="eventDetailsOverlay") closeEventDetails(); });
     document.addEventListener("keydown",(e)=>{ 
-      if(e.key==="Escape") {
-        closeAuth();
-        closeEventDetails();
-      }
+      if(e.key==="Escape") { closeAuth(); closeEventDetails(); }
     });
   } catch (error) {
-    console.error('Error setting up auth handlers:', error);
+    console.error('Error setting up modal handlers:', error);
   }
 
   document.querySelectorAll(".tab").forEach(t=>{
     t.addEventListener("click", ()=>setTab(t.dataset.tab));
-    // Keyboard-Navigation für Tabs
     t.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        setTab(t.dataset.tab);
-      }
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); setTab(t.dataset.tab); }
     });
   });
-  
-  // Modal-Trap für Keyboard-Navigation
+
   const authModal = $("#authOverlay");
   if(authModal){
     const trapFocus = (e) => {
       if(e.key !== "Tab") return;
-      const focusableElements = authModal.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if(focusableElements.length === 0) return;
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      
-      if(e.shiftKey && document.activeElement === firstElement){
-        e.preventDefault();
-        lastElement.focus();
-      } else if(!e.shiftKey && document.activeElement === lastElement){
-        e.preventDefault();
-        firstElement.focus();
-      }
+      const focusable = authModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if(focusable.length === 0) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
     };
-    
     authModal.addEventListener("keydown", trapFocus);
   }
 
   if($("#doLogin")) $("#doLogin").addEventListener("click", async ()=>{
     const btn = $("#doLogin");
-    const originalText = btn.textContent;
     btn.classList.add("loading");
     btn.disabled = true;
-    
     try {
-      console.log('🔵 Login button clicked');
       const email = $("#loginEmail").value;
       const password = $("#loginPass").value;
-      console.log('🔵 Email:', email);
       const res = api.login(email, password);
-      console.log('🔵 Login result:', res);
       if($("#authErr")) $("#authErr").textContent = res.success ? "" : res.error;
       if(res.success) {
-        console.log('✅ Login successful, redirecting to dashboard...');
         toast.success("Erfolgreich eingeloggt!");
-        closeAuth(); // Modal schließen
+        closeAuth();
         setTimeout(() => {
-          // Absoluter Pfad für korrekten Redirect
           const basePath = window.location.pathname.includes('/app/') ? '../' : '';
-          const redirectUrl = basePath + 'app/dashboard.html';
-          console.log('🔵 Redirecting to:', redirectUrl);
-          window.location.href = redirectUrl;
+          window.location.href = basePath + 'app/dashboard.html';
         }, 500);
       } else {
-        console.error('❌ Login failed:', res.error);
         toast.error(res.error || "Login fehlgeschlagen");
         btn.classList.remove("loading");
         btn.disabled = false;
@@ -1549,7 +1463,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     const btn = $("#doRegister");
     btn.classList.add("loading");
     btn.disabled = true;
-    
     try {
       const res = await api.register($("#regName").value, $("#regEmail").value, $("#regPass").value);
       if($("#regErr")) $("#regErr").textContent = res.success ? "" : res.error;
@@ -1557,15 +1470,9 @@ document.addEventListener("DOMContentLoaded", async ()=>{
         toast.success("Konto erfolgreich erstellt!");
         setTimeout(() => window.location.href = "app/dashboard.html", 500);
       } else {
-        // Spezifische Fehlermeldungen
-        let errorMsg = "Registrierung fehlgeschlagen.";
-        if(res.error){
-          if(res.error.includes("bereits") || res.error.includes("existiert")){
-            errorMsg = "Diese E-Mail-Adresse ist bereits registriert. Bitte loggen Sie sich ein oder nutzen Sie 'Passwort vergessen'.";
-          } else {
-            errorMsg = res.error;
-          }
-        }
+        let errorMsg = res.error || "Registrierung fehlgeschlagen.";
+        if(res.error && (res.error.includes("bereits") || res.error.includes("existiert")))
+          errorMsg = "Diese E-Mail-Adresse ist bereits registriert.";
         toast.error(errorMsg);
         btn.classList.remove("loading");
         btn.disabled = false;
@@ -1581,6 +1488,5 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   if($("#doForgot")) $("#doForgot").addEventListener("click", ()=>{
     if($("#fpOk")) $("#fpOk").textContent = "Wenn ein Konto existiert, senden wir einen Link (MVP: kein Versand).";
   });
-
 });
 

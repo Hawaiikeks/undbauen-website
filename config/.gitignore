@@ -37,10 +37,6 @@ build/
 *.temp
 .cache/
 
-# Local server files (if any)
-.python-version
-venv/
-
 # Cursor / Plans (optional - remove if you want to track plans)
 .cursor/plans/
 

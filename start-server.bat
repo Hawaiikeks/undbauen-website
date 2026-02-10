@@ -1,8 +1,8 @@
 @echo off
-cd /d "c:\Users\LukeG\test"
+cd /d "%~dp0"
 echo.
 echo ========================================
-echo    undbauen Website - HTTP Server
+echo    undbauen Website - Node.js Server
 echo ========================================
 echo.
 echo Server URL: http://localhost:8000
@@ -10,11 +10,5 @@ echo Server Directory: %CD%
 echo.
 echo Press Ctrl+C to stop the server
 echo.
-python -m http.server 8000
+npm run start
 pause
-
-
-
-
-
-

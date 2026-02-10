@@ -30,7 +30,7 @@ Die **…undbauen** Website ist eine Community-Plattform mit drei Hauptbereichen
 - **Storage**: localStorage (Development), vorbereitet für Backend-Integration
 - **Editor**: Quill.js für Rich Text Editing
 - **Charts**: Chart.js für Datenvisualisierung
-- **Server**: Python HTTP Server (Development)
+- **Server**: Node.js (serve) für statische Dateien (Development)
 
 ---
 
@@ -38,7 +38,7 @@ Die **…undbauen** Website ist eine Community-Plattform mit drei Hauptbereichen
 
 ### Voraussetzungen
 
-- Python 3.x (für lokalen Server)
+- **Node.js** 18 oder höher (für lokalen Server)
 - Moderner Browser (Chrome, Firefox, Safari, Edge)
 
 ### Lokale Entwicklung
@@ -49,16 +49,19 @@ git clone <repository-url>
 cd undbauen-website
 ```
 
-2. **Server starten:**
+2. **Abhängigkeiten installieren:**
 ```bash
-# Windows (PowerShell)
-python -m http.server 8000
-
-# Oder mit Script
-.\start-server.ps1
+npm install
 ```
 
-3. **Browser öffnen:**
+3. **Server starten:**
+```bash
+npm start
+# oder: npm run dev
+# Windows: .\start-server.ps1 oder .\scripts\START_SERVER.ps1
+```
+
+4. **Browser öffnen:**
 ```
 http://localhost:8000
 ```
@@ -367,8 +370,10 @@ import('./tests/services.test.js');
 ### Development
 
 ```bash
-python -m http.server 8000
+npm install
+npm start
 ```
+Server läuft auf http://localhost:8000
 
 ### Production (vorbereitet)
 

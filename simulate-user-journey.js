@@ -161,7 +161,7 @@ console.log('');
 console.log('✨ Simulation abgeschlossen!');
 console.log('');
 console.log('Nächster Schritt: Manueller Test im Browser');
-console.log('1. Server starten: python -m http.server 8000');
+console.log('1. Server starten: npm start');
 console.log('2. Browser öffnen: http://localhost:8000/');
 console.log('3. User Journey durchspielen wie oben beschrieben');
 
