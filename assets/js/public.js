@@ -371,10 +371,9 @@ function renderFAQ() {
 // --- Theme ---
 
 const initTheme = () => {
-  const saved = localStorage.getItem('theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', saved);
-  updateThemeIcon(saved);
+  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
 };
 
 const updateThemeIcon = (theme) => {
@@ -401,7 +400,6 @@ const updateThemeIcon = (theme) => {
 const toggleTheme = () => {
   const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
   updateThemeIcon(next);
 };
 

@@ -1,13 +1,12 @@
-// Global Search Component
+import { members, events } from "../data.js";
+
 class GlobalSearch {
   constructor() {
-    this.results = [];
     this.isOpen = false;
     this.init();
   }
 
   init() {
-    // Create search overlay
     this.overlay = document.createElement('div');
     this.overlay.className = 'search-overlay';
     this.overlay.setAttribute('role', 'dialog');
@@ -16,14 +15,9 @@ class GlobalSearch {
     this.overlay.innerHTML = `
       <div class="search-modal">
         <div class="search-header">
-          <input 
-            type="text" 
-            class="search-input" 
-            id="globalSearchInput"
-            placeholder="Suche nach Mitgliedern, Events, Forum, Knowledge, Resources..."
-            aria-label="Suchfeld"
-            autocomplete="off"
-          />
+          <input type="text" class="search-input" id="globalSearchInput"
+            placeholder="Suche nach Mitgliedern oder Events …"
+            aria-label="Suchfeld" autocomplete="off" />
           <button class="search-close" aria-label="Suche schließen">×</button>
         </div>
         <div class="search-results" id="searchResults" role="listbox"></div>
@@ -31,22 +25,15 @@ class GlobalSearch {
     `;
     document.body.appendChild(this.overlay);
 
-    // Event listeners
     this.input = this.overlay.querySelector('#globalSearchInput');
     this.resultsContainer = this.overlay.querySelector('#searchResults');
-    this.closeBtn = this.overlay.querySelector('.search-close');
 
     this.input.addEventListener('input', (e) => this.handleSearch(e.target.value));
-    this.closeBtn.addEventListener('click', () => this.close());
-    this.overlay.addEventListener('click', (e) => {
-      if (e.target === this.overlay) this.close();
-    });
+    this.overlay.querySelector('.search-close').addEventListener('click', () => this.close());
+    this.overlay.addEventListener('click', (e) => { if (e.target === this.overlay) this.close(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isOpen) this.close();
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        this.open();
-      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); this.open(); }
     });
   }
 
@@ -65,65 +52,27 @@ class GlobalSearch {
     document.body.style.overflow = '';
   }
 
-  async handleSearch(query) {
+  handleSearch(query) {
     const q = query.trim().toLowerCase();
-    if (q.length < 2) {
-      this.resultsContainer.innerHTML = '';
-      return;
-    }
+    if (q.length < 2) { this.resultsContainer.innerHTML = ''; return; }
 
-    // Search members, events, forum, knowledge, resources
-    const results = {
-      members: [],
-      events: [],
-      forum: [],
-      knowledge: [],
-      resources: []
-    };
+    const matchedMembers = members.filter(m =>
+      m.name?.toLowerCase().includes(q) ||
+      m.taetigkeit?.toLowerCase().includes(q) ||
+      m.stichwoerter?.some(s => s.toLowerCase().includes(q))
+    ).slice(0, 5);
 
-    try {
-      // Search members (use listMembersPublic for public search)
-      if (window.api) {
-        if (window.api.listMembersPublic) {
-          const members = window.api.listMembersPublic(q);
-          results.members = members.slice(0, 5);
-        } else if (window.api.listMembers) {
-          const members = window.api.listMembers(q);
-          results.members = members.slice(0, 5);
-        }
-      }
+    const matchedEvents = events.filter(e =>
+      e.title?.toLowerCase().includes(q) ||
+      e.descriptionPublic?.toLowerCase().includes(q) ||
+      e.tags?.some(t => t.toLowerCase().includes(q))
+    ).slice(0, 5);
 
-      // Search events
-      if (window.api && window.api.listEvents) {
-        const events = window.api.listEvents().filter(e => 
-          e.title.toLowerCase().includes(q) ||
-          e.descriptionPublic?.toLowerCase().includes(q) ||
-          e.tags?.some(t => t.toLowerCase().includes(q))
-        );
-        results.events = events.slice(0, 5);
-      }
-
-      // Search forum
-      if (window.api && window.api.getForumThreads) {
-        const threads = window.api.getForumThreads().filter(t =>
-          t.title.toLowerCase().includes(q)
-        );
-        results.forum = threads.slice(0, 5);
-      }
-
-    } catch (e) {
-      console.error('Search error:', e);
-    }
-
-    this.renderResults(results);
+    this.renderResults(matchedMembers, matchedEvents);
   }
 
-  renderResults(results) {
-    const hasResults = results.members.length > 0 || results.events.length > 0 || 
-                      results.forum.length > 0 || results.knowledge.length > 0 || 
-                      results.resources.length > 0;
-    
-    if (!hasResults) {
+  renderResults(matchedMembers, matchedEvents) {
+    if (matchedMembers.length === 0 && matchedEvents.length === 0) {
       this.resultsContainer.innerHTML = `
         <div class="search-empty">
           <div class="empty-state-icon">🔍</div>
@@ -136,16 +85,16 @@ class GlobalSearch {
 
     let html = '';
 
-    if (results.members.length > 0) {
+    if (matchedMembers.length > 0) {
       html += `
         <div class="search-section">
           <div class="search-section-title">Mitglieder</div>
-          ${results.members.map(m => `
-            <a href="#kontakt" class="search-result-item">
+          ${matchedMembers.map(m => `
+            <a href="#netzwerk" class="search-result-item">
               <div class="search-result-avatar">${m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</div>
               <div class="search-result-content">
                 <div class="search-result-title">${m.name}</div>
-                <div class="search-result-subtitle">${m.headline || 'Mitglied'}</div>
+                <div class="search-result-subtitle">${m.taetigkeit || 'Mitglied'}</div>
               </div>
             </a>
           `).join('')}
@@ -153,11 +102,11 @@ class GlobalSearch {
       `;
     }
 
-    if (results.events.length > 0) {
+    if (matchedEvents.length > 0) {
       html += `
         <div class="search-section">
           <div class="search-section-title">Termine</div>
-          ${results.events.map(e => `
+          ${matchedEvents.map(e => `
             <a href="#termine" class="search-result-item">
               <div class="search-result-icon">📅</div>
               <div class="search-result-content">
@@ -170,60 +119,8 @@ class GlobalSearch {
       `;
     }
 
-    if (results.forum.length > 0) {
-      html += `
-        <div class="search-section">
-          <div class="search-section-title">Forum</div>
-          ${results.forum.map(t => `
-            <a href="#themen" class="search-result-item">
-              <div class="search-result-icon">💬</div>
-              <div class="search-result-content">
-                <div class="search-result-title">${t.title}</div>
-                <div class="search-result-subtitle">${t.replyCount || 0} Antworten</div>
-              </div>
-            </a>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    if (results.knowledge.length > 0) {
-      html += `
-        <div class="search-section">
-          <div class="search-section-title">Knowledge Base</div>
-          ${results.knowledge.map(item => `
-            <a href="#themen" class="search-result-item">
-              <div class="search-result-icon">📖</div>
-              <div class="search-result-content">
-                <div class="search-result-title">${item.title}</div>
-                <div class="search-result-subtitle">${item.summary || item.type || 'Artikel'}</div>
-              </div>
-            </a>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    if (results.resources.length > 0) {
-      html += `
-        <div class="search-section">
-          <div class="search-section-title">Resources</div>
-          ${results.resources.map(r => `
-            <a href="#themen" class="search-result-item">
-              <div class="search-result-icon">📚</div>
-              <div class="search-result-content">
-                <div class="search-result-title">${r.title}</div>
-                <div class="search-result-subtitle">${r.description || 'Ressource'}</div>
-              </div>
-            </a>
-          `).join('')}
-        </div>
-      `;
-    }
-
     this.resultsContainer.innerHTML = html;
   }
 }
 
 export const globalSearch = new GlobalSearch();
-

@@ -20,10 +20,10 @@ class HoverCard {
     this.card.setAttribute('role', 'tooltip');
     this.card.setAttribute('aria-live', 'polite');
 
-    const skills = [...(person.skills || []), ...(person.interests || [])].slice(0, 6);
-    const linkedin = person.links?.linkedin || '';
-    const website = person.links?.website || '';
+    const chips    = (person.stichwoerter || []).slice(0, 6);
+    const links    = (person.links || []).filter(l => l.url);
     const location = person.location || '';
+    const catchphrase = person.catchphrase || '';
 
     this.card.innerHTML = `
       <div class="hover-card-header">
@@ -32,21 +32,21 @@ class HoverCard {
         </div>
         <div class="hover-card-info">
           <div class="hover-card-name">${person.name}</div>
-          <div class="hover-card-role">${person.headline || 'Mitglied'}</div>
+          <div class="hover-card-role">${person.taetigkeit || 'Mitglied'}</div>
           ${location ? `<div class="hover-card-location">📍 ${location}</div>` : ''}
         </div>
       </div>
-      ${person.bio ? `<div class="hover-card-bio">${(person.bio || '').slice(0, 120)}${person.bio.length > 120 ? '...' : ''}</div>` : ''}
-      ${skills.length > 0 ? `
+      ${catchphrase ? `<div class="hover-card-bio">${catchphrase.slice(0, 120)}${catchphrase.length > 120 ? '...' : ''}</div>` : ''}
+      ${chips.length > 0 ? `
         <div class="hover-card-skills">
-          ${skills.map(s => `<span class="chip">${s}</span>`).join('')}
+          ${chips.map(s => `<span class="chip">${s}</span>`).join('')}
         </div>
       ` : ''}
-      <div class="hover-card-actions">
-        ${linkedin ? `<a href="${linkedin}" target="_blank" rel="noopener noreferrer" class="btn ghost" aria-label="LinkedIn Profil von ${person.name}">LinkedIn</a>` : ''}
-        ${website ? `<a href="${website}" target="_blank" rel="noopener noreferrer" class="btn ghost" aria-label="Website von ${person.name}">Website</a>` : ''}
-        <button class="btn primary" onclick="window.location.href='app/member.html?email=${encodeURIComponent(person.email)}'" aria-label="Profil von ${person.name} ansehen">Profil ansehen</button>
-      </div>
+      ${links.length > 0 ? `
+        <div class="hover-card-actions">
+          ${links.map(l => `<a href="${l.url}" target="_blank" rel="noopener noreferrer" class="btn ghost">${l.label}</a>`).join('')}
+        </div>
+      ` : ''}
     `;
 
     document.body.appendChild(this.card);
