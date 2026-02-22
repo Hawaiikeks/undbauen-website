@@ -48,12 +48,12 @@
         <span></span>
       </button>
       <nav class="navLinks" id="navLinks" aria-label="Hauptnavigation" role="navigation">
-        <a href="#innovationsabend" class="nav-two-lines"><span>Innovations</span><span>Abend</span></a>
+        <a href="#innovationsabend">Innovationsabend</a>
         <a href="#netzwerk">Netzwerk</a>
         <a href="#themen">Themen</a>
         <a href="#termine">Termine</a>
         <a href="#kontakt">Kontakt</a>
-        <button class="btn primary" id="openAuth" aria-label="Login oder Registrierung öffnen">Login</button>
+        <button class="btn primary" id="openAuth" type="button">Registrieren</button>
       </nav>
     </div>
   </header>
@@ -121,18 +121,18 @@
         </h1>
         <p class="hero-subtitle">Ein kuratiertes Innovations- und Netzwerkformat für Architektur, Ingenieurwesen, Bau & Digitalisierung</p>
         <div class="hero-cta">
+          <a href="#kontakt" class="btn primary">Mitglied werden</a>
           <a href="#netzwerk" class="btn ghost">mehr über das Netzwerk</a>
         </div>
       </div>
     </section>
 
     <!-- Mission Section -->
-    <section class="mission" aria-labelledby="mission-heading" role="region">
+    <section class="mission section-with-divider" aria-labelledby="mission-heading" role="region">
       <div class="container">
         <h2 id="mission-heading" class="sr-only">Unsere Mission</h2>
         <div class="mission-text">
           <p>Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Innovatoren der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.</p>
-          <p><strong>…undbauen</strong> entstand aus der Frage, <em>warum Vernetzung trotz moderner Tools oft nicht wirklich funktioniert</em>. <span class="highlight">Digitale Kommunikation schafft Effizienz, aber selten nachhaltige Verbindung</span>. …undbauen setzt genau hier an und schafft einen offenen Raum für Dialog, Perspektivwechsel und gemeinsames Weiterdenken.</p>
           <p>…undbauen ist mehr ein Netzwerk. Es ist eine Haltung.</p>
         </div>
         <div class="mission-images" style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
@@ -144,7 +144,7 @@
     </section>
 
     <!-- Innovationsabend Section -->
-    <section id="innovationsabend" class="innovationsabend" aria-labelledby="innovationsabend-heading" role="region">
+    <section id="innovationsabend" class="innovationsabend section-with-divider" aria-labelledby="innovationsabend-heading" role="region">
       <div class="container">
         <h2 id="innovationsabend-heading" class="section-title">Der monatliche Innovationsabend</h2>
         <p class="section-subtitle">Jeden Monat laden wir zu einem kuratierten Abend ein, der Raum für Austausch, Inspiration und echte Begegnungen schafft. Kein Marketing, keine Produktpräsentationen – nur Menschen, Ideen und Dialog.</p>
@@ -170,7 +170,7 @@
     </section>
 
     <!-- Network Section -->
-    <section id="netzwerk" class="network" aria-labelledby="netzwerk-heading" role="region">
+    <section id="netzwerk" class="network section-with-divider" aria-labelledby="netzwerk-heading" role="region">
       <div class="container">
         <h2 id="netzwerk-heading" class="section-title">Netzwerk</h2>
         <div class="social-proof-stats" id="socialProofStats">
@@ -190,7 +190,7 @@
         </div>
         
         <div class="max-w-900 mb-lg">
-          <p class="p">Das Netzwerk von …undbauen besteht aus Fachleuten unterschiedlicher Disziplinen, Erfahrungsstufen und Perspektiven. <span class="highlight-name">Lukas Gilbert</span> und <span class="highlight-name">Philip Deeg</span> haben in ihrer Praxis erlebt, dass Wissen vorhanden ist, der echte Austausch jedoch oft zwischen Meetings und Zuständigkeiten verloren geht. Menschen aus unterschiedlichen Disziplinen kommen hier zusammen, um Erfahrungen zu teilen und Fragestellungen gemeinsam zu entwickeln – <em>nicht als fertiges System, sondern als wachsendes Netzwerk</em>. Mitglieder können Profile anlegen, Schwerpunkte sichtbar machen und gezielt Kontakt aufnehmen.</p>
+          <p class="p">Das Netzwerk von …undbauen besteht aus Fachleuten unterschiedlicher Disziplinen, Erfahrungsstufen und Perspektiven. Mitglieder können Profile anlegen, Schwerpunkte sichtbar machen und gezielt Kontakt aufnehmen.</p>
         </div>
         
         <div class="network-slider-container" role="region" aria-label="Mitglieder-Netzwerk">
@@ -205,7 +205,7 @@
     </section>
 
     <!-- Topics Section -->
-    <section id="themen" class="topics" aria-labelledby="topics-heading" role="region">
+    <section id="themen" class="topics section section-with-divider" aria-labelledby="topics-heading" role="region">
       <div class="container">
         <div class="topics-header">
           <h2 id="topics-heading" class="section-title">Themen & Inhalte</h2>
@@ -284,8 +284,25 @@
     </section>
     -->
 
+    <!-- Über uns -->
+    <section id="kontakt" class="section section-with-divider" aria-labelledby="ueber-heading" role="region">
+      <div class="container">
+        <h2 id="ueber-heading" class="section-title">Über uns</h2>
+        <div class="about-content">
+          <div class="about-image">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop" alt="Team im Austausch" loading="lazy" />
+          </div>
+          <div class="about-text">
+            <p class="p mb-md"><strong>…undbauen</strong> entstand aus der Frage, <em>warum Vernetzung trotz moderner Tools oft nicht wirklich funktioniert</em>. <span class="highlight-name">Lukas Gilbert</span> und <span class="highlight-name">Philip Deeg</span> haben in ihrer Praxis erlebt, dass Wissen vorhanden ist, der echte Austausch jedoch zwischen Meetings, Chats und Zuständigkeiten verloren geht.</p>
+            <p class="p mb-md"><span class="highlight">Digitale Kommunikation schafft Effizienz, aber selten nachhaltige Verbindung.</span> …undbauen setzt genau hier an und schafft einen offenen Raum für Dialog, Perspektivwechsel und gemeinsames Weiterdenken. Menschen aus unterschiedlichen Disziplinen kommen zusammen, um Erfahrungen zu teilen und Fragestellungen gemeinsam zu entwickeln – <em>nicht als fertiges System, sondern als wachsendes Netzwerk</em>.</p>
+           
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ Section -->
-    <section id="faq" class="section faq-section" aria-labelledby="faq-heading" role="region">
+    <section id="faq" class="section faq-section section-with-divider" aria-labelledby="faq-heading" role="region">
       <div class="container">
         <h2 id="faq-heading" class="section-title">Häufige Fragen</h2>
         <div class="faq-container" id="faqContainer">
@@ -294,58 +311,83 @@
       </div>
     </section>
 
-    <section id="kontakt" class="section" aria-labelledby="kontakt-heading" role="region">
+    <!-- CTA -->
+    <section class="section section-with-divider" aria-labelledby="cta-heading">
       <div class="container">
-        <h2 id="kontakt-heading" class="section-title">Kontakt</h2>
-        <div class="max-w-700">
-          <p class="p mb-lg">Für allgemeine Anfragen erreichen Sie uns unter:</p>
-          <p class="p mb-lg contact-email">kontakt@undbauen.de</p>
-          <p class="p">Der fachliche Austausch zwischen Mitgliedern sowie der direkte Dialog erfolgen primär innerhalb des geschützten Memberbereichs.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Werde Teil unserer Community (Weiterleitungen: Login, Mitglied werden) -->
-    <section id="community-cta" class="section community-cta-section" aria-labelledby="community-cta-heading" role="region">
-      <div class="container">
-        <div class="network-community-section">
-          <div class="community-image">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" alt="Community" loading="lazy" />
+        <h2 id="cta-heading" class="section-title">Werde Teil unserer Community</h2>
+        <div class="about-content">
+          <div class="about-image">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=340&fit=crop" alt="Menschen im gemeinsamen Austausch" loading="lazy" />
           </div>
-          <div class="network-community-text">
-            <h2 id="community-cta-heading" class="community-title">Werde Teil unserer Community</h2>
-            <p class="community-description">Tausche dich mit Gleichgesinnten aus, erweitere dein Wissen und gestalte die Zukunft der gebauten Umwelt mit.</p>
+          <div class="about-text">
+            <p class="p">Tausche dich mit Gleichgesinnten aus, erweitere dein Wissen und gestalte die Zukunft der gebauten Umwelt mit.</p>
+            <a href="mailto:kontakt@undbauen.de?subject=Interesse%20an%20Mitgliedschaft&body=Hallo%20%E2%80%A6undbauen-Team%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20eine%20Mitgliedschaft%20und%20m%C3%B6chte%20mehr%20erfahren.%0A%0AName%3A%20%0ABeruf%2FT%C3%A4tigkeit%3A%20%0AKurze%20Vorstellung%3A%20%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen" class="btn primary">Kontakt aufnehmen</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="legal" class="section legal-section" aria-labelledby="legal-heading" role="region">
+    <section id="legal" class="section legal-section section-with-divider" aria-labelledby="legal-heading" role="region">
       <div class="container">
-        <h2 id="legal-heading" class="section-title">Impressum & Datenschutz</h2>
-        <div class="legal-content">
-          <div class="legal-item">
-            <h3 class="legal-item-title">Impressum</h3>
-            <div class="legal-item-content">
-              <p>…undbauen</p>
-              <p>Kontakt: kontakt@undbauen.de</p>
-              <p>Verantwortlich für den Inhalt gemäß § 55 Abs. 2 RStV:</p>
-              <p>Lukas Gilbert</p>
-              <p class="legal-theme-toggle">
-                <button class="btn icon-btn" id="themeToggle" aria-label="Theme wechseln (Hell/Dunkel)" aria-pressed="false" title="Theme wechseln">
-                  <svg class="icon icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
-                </button>
-              </p>
-            </div>
+
+        <div class="legal-grid">
+
+          <!-- Impressum -->
+          <div class="legal-block" id="impressum">
+            <h2 class="legal-block-title">Impressum</h2>
+
+            <h3 class="legal-sub-title">Betreiber</h3>
+            <p>Angaben gemäß § 5 Telemediengesetz (TMG)</p>
+            <p><strong>Lukas Gilbert</strong><br>
+            Betreiber der Plattform „…undbauen"<br>
+            Hausenstraße 23<br>
+            50968 Köln<br>
+            Deutschland</p>
+            <p>E-Mail: <a href="mailto:kontakt@undbauen.de" class="legal-link">kontakt@undbauen.de</a><br>
+            Website: <a href="https://undbauen.de" class="legal-link">undbauen.de</a></p>
+
+            <h3 class="legal-sub-title">Verantwortlicher</h3>
+            <p>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV):<br>
+            <strong>Lukas Gilbert</strong><br>
+            Hausenstraße 23<br>
+            50968 Köln<br>
+            Deutschland</p>
+
+            <h3 class="legal-sub-title">Hinweis zur Plattform</h3>
+            <p>„…undbauen" ist eine unabhängige Austausch- und Netzwerkplattform für Innovation, BIM und digitale Prozesse im Bauwesen. Es handelt sich nicht um einen eingetragenen Verein oder eine offizielle Organisation.</p>
+
+            <h3 class="legal-sub-title">Haftung für Inhalte</h3>
+            <p>Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+
+            <h3 class="legal-sub-title">Urheberrecht</h3>
+            <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+
+            <p class="legal-theme-toggle">
+              <button class="btn icon-btn" id="themeToggle" aria-label="Theme wechseln (Hell/Dunkel)" aria-pressed="false" title="Theme wechseln">
+                <svg class="icon icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+              </button>
+            </p>
           </div>
-          <div class="legal-item">
-            <h3 class="legal-item-title">Datenschutz</h3>
-            <div class="legal-item-content">
-              <p>Der Schutz Ihrer personenbezogenen Daten hat für …undbauen einen hohen Stellenwert. Im öffentlichen Bereich dieser Website werden ausschließlich technisch notwendige Zugriffsdaten verarbeitet, die für den Betrieb der Plattform erforderlich sind.</p>
-              <p>Der Memberbereich ist zugriffsgeschützt. Personenbezogene Daten werden ausschließlich zur Bereitstellung der Netzwerk-, Kommunikations- und Veranstaltungsfunktionen verwendet. Eine Weitergabe an Dritte zu Werbezwecken erfolgt nicht.</p>
-              <p>Weitere Informationen zum Datenschutz werden im Zuge des Ausbaus ergänzt.</p>
-            </div>
+
+          <!-- Datenschutz & Cookies -->
+          <div class="legal-block" id="datenschutz">
+            <h2 class="legal-block-title">Datenschutz & Cookies</h2>
+
+            <h3 class="legal-sub-title">1. Allgemeine Informationen</h3>
+            <p>Diese Website verwendet Cookies. Cookies sind kleine Textdateien, die auf Ihrem Endgerät gespeichert werden, wenn Sie unsere Website besuchen. Sie enthalten Informationen, die eine Wiedererkennung Ihres Browsers ermöglichen und bestimmte Funktionen der Website sicherstellen.</p>
+            <p>Cookies dienen dazu, unsere Website nutzerfreundlicher, effektiver und sicherer zu machen.</p>
+
+            <h3 class="legal-sub-title">2. Arten von Cookies</h3>
+            <p><strong>Technisch notwendige Cookies</strong></p>
+            <p>Technisch notwendige Cookies sind erforderlich, damit die Website ordnungsgemäß funktioniert. Sie ermöglichen grundlegende Funktionen wie Navigation, Sicherheit und Speicherung von Einstellungen.</p>
+            <p>Ohne diese Cookies kann die Website nicht korrekt betrieben werden.</p>
+            <p>Rechtsgrundlage für die Verarbeitung ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der technisch fehlerfreien Bereitstellung der Website). Diese Cookies können nicht deaktiviert werden.</p>
+
+            <h3 class="legal-sub-title">3. Datenschutz</h3>
+            <p>Der Schutz Ihrer personenbezogenen Daten hat für …undbauen einen hohen Stellenwert. Im öffentlichen Bereich dieser Website werden ausschließlich technisch notwendige Daten verarbeitet, die für den Betrieb der Plattform erforderlich sind. Eine Weitergabe an Dritte zu Werbezwecken erfolgt nicht.</p>
+            <p>Für Fragen zum Datenschutz wenden Sie sich an: <a href="mailto:kontakt@undbauen.de" class="legal-link">kontakt@undbauen.de</a></p>
           </div>
+
         </div>
       </div>
     </section>
@@ -360,54 +402,6 @@
       </div>
       <div class="modalBody">
         <div id="eventDetailsContent"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AUTH MODAL -->
-  <div class="modalOverlay" id="authOverlay" style="display: none;">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" style="max-width: 500px;">
-      <div class="modalHeader">
-        <div class="modalTitle" id="authTitle">Login</div>
-        <button class="btn" id="closeAuth" aria-label="Modal schließen">✕</button>
-      </div>
-      <div class="tabs" role="tablist" aria-label="Authentifizierungs-Tabs">
-        <button class="tab active" data-tab="login" role="tab" aria-selected="true" aria-controls="panel-login" id="tab-login">Login</button>
-        <button class="tab" data-tab="register" role="tab" aria-selected="false" aria-controls="panel-register" id="tab-register">Registrieren</button>
-        <button class="tab" data-tab="forgot" role="tab" aria-selected="false" aria-controls="panel-forgot" id="tab-forgot">Passwort</button>
-      </div>
-      <div class="modalBody">
-        <div id="panel-login" role="tabpanel" aria-labelledby="tab-login" aria-hidden="false">
-          <label class="label" for="loginEmail">E-Mail</label>
-          <input class="input" id="loginEmail" type="email" placeholder="name@domain.de" aria-required="true" aria-describedby="authErr" />
-          <label class="label mt-sm" for="loginPass">Passwort</label>
-          <input class="input" id="loginPass" type="password" placeholder="••••••••" aria-required="true" aria-describedby="authErr" />
-          <div class="err" id="authErr" role="alert" aria-live="polite"></div>
-          <div class="mt-md">
-            <button class="btn primary" id="doLogin" aria-label="Mit den eingegebenen Daten einloggen">Einloggen</button>
-          </div>
-        </div>
-        <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" aria-hidden="true" class="tab-panel-hidden">
-          <label class="label" for="regName">Name</label>
-          <input class="input" id="regName" placeholder="Vorname Nachname" aria-required="true" aria-describedby="regErr" />
-          <label class="label mt-sm" for="regEmail">E-Mail</label>
-          <input class="input" id="regEmail" type="email" aria-required="true" aria-describedby="regErr" />
-          <label class="label mt-sm" for="regPass">Passwort (min 8)</label>
-          <input class="input" id="regPass" type="password" aria-required="true" aria-describedby="regErr" />
-          <div class="err" id="regErr" role="alert" aria-live="polite"></div>
-          <div class="mt-md">
-            <button class="btn primary" id="doRegister" aria-label="Neues Konto mit den eingegebenen Daten erstellen">Konto erstellen</button>
-          </div>
-        </div>
-        <div id="panel-forgot" role="tabpanel" aria-labelledby="tab-forgot" aria-hidden="true" class="tab-panel-hidden">
-          <label class="label" for="fpEmail">E-Mail</label>
-          <input class="input" id="fpEmail" type="email" aria-required="true" aria-describedby="fpOk" />
-          <div class="okmsg" id="fpOk" role="status" aria-live="polite"></div>
-          <div class="mt-md">
-            <button class="btn primary" id="doForgot" aria-label="Passwort-Reset-Link anfordern">Link anfordern</button>
-          </div>
-          <p class="small mt-sm">MVP: kein Mailversand – nur UX.</p>
-        </div>
       </div>
     </div>
   </div>

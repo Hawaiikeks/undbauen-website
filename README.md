@@ -11,18 +11,13 @@ Eine vollständige Community-Plattform für Fachleute aus Architektur, Ingenieur
 5. [Architektur](#architektur)
 6. [Entwicklung](#entwicklung)
 7. [Dokumentation](#dokumentation)
-8. [Testing](#testing)
-9. [Deployment](#deployment)
+8. [Deployment](#deployment)
 
 ---
 
 ## Überblick
 
-Die **…undbauen** Website ist eine Community-Plattform mit drei Hauptbereichen:
-
-- **Öffentliche Website** (`index.html`) - Landing Page für Besucher
-- **Member Area** (`/app/`) - Geschützter Bereich für eingeloggte Mitglieder
-- **Backoffice** (`/backoffice/`) - Admin-Bereich für Content-Management
+Die **…undbauen** Website ist eine **reine Landing Page** (öffentliche Startseite). Login, Member-Bereich und Backoffice wurden entfernt.
 
 ### Technologie-Stack
 
@@ -58,19 +53,12 @@ npm install
 ```bash
 npm start
 # oder: npm run dev
-# Windows: .\start-server.ps1 oder .\scripts\START_SERVER.ps1
+# Windows: .\scripts\START_SERVER.ps1 oder .\scripts\START_SERVER.bat
 ```
 
 4. **Browser öffnen:**
 ```
 http://localhost:8000
-```
-
-4. **Demo-Daten laden (optional):**
-```javascript
-// In Browser Console
-import { seedDemoData } from './assets/js/seed/demoData.js';
-await seedDemoData();
 ```
 
 ---
@@ -82,72 +70,17 @@ undbauen-website/
 │
 ├── index.html                    # Öffentliche Landing Page
 │
-├── app/                          # Member Area (geschützter Bereich)
-│   ├── dashboard.html            # Dashboard
-│   ├── tickets.html              # Tickets/Ideenbox
-│   ├── resources.html            # Ressourcen
-│   ├── knowledge.html            # Wissensdatenbank
-│   ├── termine.html              # Termine/Events
-│   ├── forum.html                # Forum
-│   ├── nachrichten.html          # Nachrichten
-│   ├── mitglieder.html           # Mitglieder
-│   ├── profil.html               # Profil
-│   ├── einstellungen.html        # Einstellungen
-│   └── monatsupdates.html        # Monatsupdates
-│
-├── backoffice/                   # Admin-Bereich
-│   ├── index.html                # Backoffice Dashboard
-│   ├── inbox.html                # Ticket Inbox
-│   ├── reports.html              # Reports Queue
-│   ├── content.html              # Content Management
-│   ├── public-pages.html         # Public Pages CMS
-│   ├── resources.html             # Resources Management
-│   ├── knowledge.html             # Knowledge Management
-│   ├── users.html                # User Management
-│   ├── roles.html                 # Role Management
-│   ├── settings.html              # Backoffice Settings
-│   └── audit.html                 # Audit Log
-│
 ├── assets/
 │   ├── css/                      # Stylesheets
 │   │   ├── base.css              # Basis-Styles
-│   │   ├── public.css            # Public Styles
-│   │   ├── app.css               # App Styles
+│   │   ├── public.css            # Public/Landing Styles
 │   │   ├── components.css        # Component Styles
-│   │   └── sidebar.css           # Sidebar Styles
+│   │   └── ...
 │   │
-│   └── js/                       # JavaScript Code
-│       ├── app.js                # Haupt-App (Member Area)
-│       ├── public.js             # Haupt-App (Public)
-│       │
-│       ├── pages/                # Page-spezifische Logik
-│       │   ├── index.js          # Barrel Export
-│       │   ├── dashboard.js      # Dashboard-Rendering
-│       │   ├── tickets.js        # Tickets-Rendering
-│       │   └── ...               # Weitere Seiten
-│       │
-│       ├── components/           # Wiederverwendbare UI-Komponenten
-│       │   ├── sidebar.js        # Sidebar-Navigation
-│       │   ├── toast.js          # Toast-Benachrichtigungen
-│       │   ├── modal.js          # Modal-Dialoge
-│       │   └── ...               # Weitere Komponenten
-│       │
-│       ├── services/            # Business Logic & Services
-│       │   ├── apiClient.js     # Zentrale API-Schnittstelle
-│       │   ├── router.js        # Routing-Logik
-│       │   ├── authGuard.js     # Berechtigungsprüfung
-│       │   ├── errorHandler.js  # Fehlerbehandlung
-│       │   └── repositories/    # Datenzugriff
-│       │
-│       └── seed/                # Demo-Daten
-│           └── demoData.js      # Seed-Funktionen
-│
-├── tests/                        # Tests
-│   ├── test-framework.js        # Test-Framework
-│   ├── router.test.js           # Router-Tests
-│   ├── pages.test.js            # Page-Tests
-│   ├── components.test.js       # Component-Tests
-│   └── services.test.js        # Service-Tests
+│   └── js/                       # JavaScript
+│       ├── public.js            # Landing Page (Navigation, Hero, Termine, Kontakt)
+│       ├── components/           # UI-Komponenten (Toast, HoverCard, Search, …)
+│       ├── services/             # API-Client, Storage, Meta-Tags, …
 │
 ├── docs/                         # Dokumentation
 │   └── ...                      # Weitere Dokumentation
@@ -158,42 +91,14 @@ undbauen-website/
 
 ---
 
-## Features
+## Features (Landing Page)
 
-### Member Area
-
-- ✅ **Dashboard** - Übersicht mit Metriken, Events, Empfehlungen
-- ✅ **Tickets** - Ideenbox für Vorschläge und Feedback
-- ✅ **Resources** - Dateien & Links verwalten
-- ✅ **Knowledge Base** - Artikel & Guides durchsuchen
-- ✅ **Events** - Termine verwalten und buchen
-- ✅ **Forum** - Diskussionen und Threads
-- ✅ **Messages** - Private Nachrichten
-- ✅ **Members** - Mitglieder-Profile durchsuchen
-- ✅ **Profile** - Eigenes Profil verwalten
-- ✅ **Settings** - Einstellungen anpassen
-
-### Backoffice
-
-- ✅ **Ticket Inbox** (Moderator+) - Tickets verwalten
-- ✅ **Reports Queue** (Moderator+) - Reports bearbeiten
-- ✅ **Content Management** (Editor+) - Inhalte verwalten
-- ✅ **Public Pages CMS** (Editor+) - Website-Inhalte bearbeiten
-- ✅ **Resources Management** (Editor+) - Mediathek verwalten
-- ✅ **Knowledge Management** (Editor+) - Wissensdatenbank verwalten
-- ✅ **User Management** (Admin) - Benutzer verwalten
-- ✅ **Audit Log** (Admin) - Aktivitäten protokollieren
-
-### Core Features
-
-- ✅ **Global Search** (Ctrl+K) - Globale Suche
-- ✅ **Notifications** - Benachrichtigungssystem
-- ✅ **Role-Based Access Control** - Rollenbasierte Berechtigungen
-- ✅ **File Upload & Storage** - Datei-Upload
-- ✅ **Rich Text Editor** - Quill.js Integration
-- ✅ **Responsive Design** - Mobile-first
-- ✅ **Accessibility** - ARIA, Keyboard Navigation
-- ✅ **Dark/Light Mode** - Theme-Unterstützung
+- ✅ **Startseite** – Hero, Mission, Netzwerk, Themen, Termine, FAQ, Kontakt
+- ✅ **Navigation** – Scroll-Navigation, Mobile-Menü
+- ✅ **Suche** (Ctrl+K) – Globale Suche (öffentliche Inhalte)
+- ✅ **Responsive Design** – Mobile-first
+- ✅ **Accessibility** – ARIA, Tastatur, Skip-Link
+- ✅ **Theme** – Dark/Light (z. B. im Impressum)
 
 ---
 
@@ -260,8 +165,6 @@ Seite wird gerendert
 - **Pages** (`assets/js/pages/`) - Page-spezifische Logik
 - **Components** (`assets/js/components/`) - Wiederverwendbare UI-Komponenten
 - **Services** (`assets/js/services/`) - Business Logic & Repositories
-- **Tests** (`tests/`) - Unit-Tests
-
 ### Best Practices
 
 - ✅ ES6 Modules verwenden
@@ -340,28 +243,7 @@ modal.open({
 
 - **[FINAL_ANALYSE_8_10.md](./FINAL_ANALYSE_8_10.md)** - Code-Qualitäts-Analyse
 - **[TYPESCRIPT_MIGRATION_PLAN.md](./TYPESCRIPT_MIGRATION_PLAN.md)** - TypeScript-Migrationsplan
-- **[tests/README.md](./tests/README.md)** - Test-Dokumentation
-
 ---
-
-## Testing
-
-### Tests ausführen
-
-```javascript
-// Im Browser Console
-import('./tests/router.test.js');
-import('./tests/pages.test.js');
-import('./tests/components.test.js');
-import('./tests/services.test.js');
-```
-
-### Test-Kategorien
-
-- **Router Tests** - Route-Definitionen und Navigation
-- **Page Tests** - Page-Module und Rendering
-- **Component Tests** - UI-Komponenten
-- **Service Tests** - Services und Repositories
 
 ---
 

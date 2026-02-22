@@ -9,8 +9,7 @@
     "lint": "eslint src/assets/js/**/*.js",
     "lint:fix": "eslint src/assets/js/**/*.js --fix",
     "format": "prettier --write \"src/**/*.{js,json,html,css}\"",
-    "format:check": "prettier --check \"src/**/*.{js,json,html,css}\"",
-    "test": "node test_modules.js"
+    "format:check": "prettier --check \"src/**/*.{js,json,html,css}\""
   },
   "devDependencies": {
     "eslint": "^8.57.0",
