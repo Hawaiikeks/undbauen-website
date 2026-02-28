@@ -85,7 +85,7 @@ export const members = [
 export const events = [
   {
     id: "evt_2026_03_15",
-    title: "Innovationsabend: Nachhaltiges Bauen & Circular Economy",
+    title: "Nachhaltiges Bauen & Circular Economy",
     date: "2026-03-15",
     time: "18:00",
     durationMinutes: 90,
@@ -96,7 +96,7 @@ export const events = [
   },
   {
     id: "evt_2026_04_20",
-    title: "Panel: Digitalisierung in der Bauausführung",
+    title: "Digitalisierung in der Bauausführung",
     date: "2026-04-20",
     time: "18:00",
     durationMinutes: 90,
@@ -107,7 +107,7 @@ export const events = [
   },
   {
     id: "evt_2026_05_18",
-    title: "Innovationsabend: KI-gestützte Planungsprozesse",
+    title: "KI-gestützte Planungsprozesse",
     date: "2026-05-18",
     time: "18:00",
     durationMinutes: 90,
@@ -118,7 +118,7 @@ export const events = [
   },
   {
     id: "evt_2026_06_22",
-    title: "Panel: Nachhaltigkeit & Klimaneutrales Bauen",
+    title: "Nachhaltigkeit & Klimaneutrales Bauen",
     date: "2026-06-22",
     time: "18:00",
     durationMinutes: 90,

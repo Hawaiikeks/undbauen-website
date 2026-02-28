@@ -31,13 +31,11 @@ export const heroAnimation = {
     wordUnd.className = 'word word-und';
     wordUnd.textContent = 'und';
     wordUnd.style.opacity = '1';
-    wordUnd.style.transition = 'transform 0.3s ease-out';
-    
+
     const wordBauen = document.createElement('span');
     wordBauen.className = 'word word-bauen';
     wordBauen.textContent = 'bauen';
     wordBauen.style.opacity = '1';
-    wordBauen.style.transition = 'transform 0.3s ease-out';
     
     // Leere den Wrapper und füge die Elemente hinzu
     headlineWrapper.innerHTML = '';

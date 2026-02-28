@@ -1,7 +1,4 @@
 import { members, events } from "./data.js";
-import { scrollNavigation } from "./components/scrollNavigation.js";
-import { globalSearch } from "./components/search.js";
-import { lazyLoader } from "./components/lazyLoad.js";
 import { getIcon } from "./components/icons.js";
 import { memberModal } from "./components/memberModal.js";
 import { heroAnimation } from "./components/heroAnimation.js";
@@ -21,62 +18,6 @@ const debounce = (fn, wait) => {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
 };
 
-// --- Event Details ---
-
-const openEventDetails = (eventId) => {
-  const ev = events.find(e => e.id === eventId);
-  if (!ev) return;
-  const overlay = $("#eventDetailsOverlay");
-  const titleEl  = $("#eventDetailsTitle");
-  const contentEl = $("#eventDetailsContent");
-  if (!overlay || !titleEl || !contentEl) return;
-
-  const [y, m, d] = (ev.date || '').split('-');
-  const formattedDate = y ? `${d}.${m}.${y}` : '';
-
-  let timeInfo = ev.time || '';
-  if (ev.durationMinutes) {
-    const [h, min] = (ev.time || '18:00').split(':').map(Number);
-    const end = new Date(0, 0, 0, h, min + ev.durationMinutes);
-    timeInfo = `${ev.time} – ${String(end.getHours()).padStart(2,'0')}:${String(end.getMinutes()).padStart(2,'0')} (${ev.durationMinutes} Min.)`;
-  }
-
-  titleEl.textContent = sanitizeHTML(ev.title || '');
-  contentEl.innerHTML = `
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-      ${ev.format     ? `<span class="badge blue">${sanitizeHTML(ev.format)}</span>` : ''}
-      ${formattedDate ? `<span class="badge">📅 ${formattedDate}</span>` : ''}
-      ${timeInfo      ? `<span class="badge">⏰ ${timeInfo}</span>` : ''}
-      ${ev.location   ? `<span class="badge">📍 ${sanitizeHTML(ev.location)}</span>` : ''}
-    </div>
-    <div class="hr"></div>
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:.5rem;color:var(--text-primary);">Beschreibung</h3>
-    <div class="p" style="white-space:pre-wrap;line-height:1.6;">
-      ${sanitizeHTML(ev.descriptionPublic || 'Keine Beschreibung verfügbar.')}
-    </div>
-    ${ev.tags?.length ? `
-      <div class="hr"></div>
-      <div class="chips" style="margin-top:.5rem;">
-        ${ev.tags.map(t => `<span class="chip">${sanitizeHTML(t)}</span>`).join('')}
-      </div>
-    ` : ''}
-    <div class="hr"></div>
-    <div style="margin-top:1rem;">
-      <button class="btn secondary" type="button"
-        onclick="navigator.clipboard.writeText(window.location.href + '#termine')">Link kopieren</button>
-    </div>
-  `;
-  overlay.style.display = "flex";
-  document.body.style.overflow = "hidden";
-};
-
-const closeEventDetails = () => {
-  const overlay = $("#eventDetailsOverlay");
-  if (!overlay) return;
-  overlay.style.display = "none";
-  document.body.style.overflow = "";
-};
-
 // --- Events ---
 
 const renderPublicEvents = () => {
@@ -92,25 +33,27 @@ const renderPublicEvents = () => {
 
   wrap.innerHTML = evs.map((ev, i) => {
     const isBlurred = i >= 2;
+    const [y, m, d] = (ev.date || '').split('-');
+    const dateObj   = y ? new Date(+y, +m - 1, +d) : null;
+    const dayName   = dateObj ? dateObj.toLocaleDateString('de-DE', { weekday: 'short' }) : '';
+    const dateShort = dateObj ? `${d}.${m}.${y}` : '';
     return `
       <div class="event-card-compact-small${isBlurred ? ' event-card-blurred' : ''}">
+        <div class="event-card-accent"></div>
         <div class="event-card-content-small">
-          <span class="event-badge">${sanitizeHTML(ev.format || '')}</span>
+          <div class="event-card-top">
+            <span class="event-badge">${sanitizeHTML(ev.format || '')}</span>
+          </div>
           <h3 class="event-card-title-small">${sanitizeHTML(ev.title || '')}</h3>
           <div class="event-card-meta-small">
-            <span class="event-meta-item">${getIcon('calendar', 14)} ${sanitizeHTML(ev.date || '')}</span>
-            <span class="event-meta-item">${getIcon('clock', 14)} ${sanitizeHTML(ev.time || '')}</span>
+            ${dayName ? `<span class="event-meta-item">${getIcon('calendar', 13)} ${dayName}, ${dateShort}</span>` : ''}
+            ${ev.time ? `<span class="event-meta-item">${getIcon('clock', 13)} ${sanitizeHTML(ev.time)} Uhr</span>` : ''}
           </div>
-          <button class="btn secondary small" data-open-event-details="${ev.id}">Details</button>
         </div>
         ${isBlurred ? '<div class="event-card-blur-overlay"><span>Nur für Mitglieder sichtbar</span></div>' : ''}
       </div>
     `;
   }).join("");
-
-  wrap.querySelectorAll("[data-open-event-details]").forEach(b =>
-    b.addEventListener("click", (e) => openEventDetails(e.currentTarget.dataset.openEventDetails))
-  );
 };
 
 // --- Social Proof ---
@@ -119,20 +62,13 @@ const renderSocialProof = () => {
   const wrap = $("#socialProofStats");
   if (!wrap) return;
 
-  const total  = members.length;
-  const active = members.filter(m => m.catchphrase?.length > 20 && m.stichwoerter?.length > 0).length;
+  const total = 35;
 
   wrap.innerHTML = `
     <div class="stat-card">
       <div class="stat-number" id="statTotalMembers">0</div>
       <div class="stat-label">Mitglieder</div>
     </div>
-    ${active > 0 ? `
-      <div class="stat-card">
-        <div class="stat-number">${active}</div>
-        <div class="stat-label">Aktive Mitglieder</div>
-      </div>
-    ` : ''}
   `;
 
   const el = $("#statTotalMembers");
@@ -217,7 +153,6 @@ function renderCard(p) {
       <div class="person-card-content">
         <div class="person-name">${name}</div>
         <div class="person-role">${taetigkeit}</div>
-        ${location ? `<div class="person-location">${getIcon('mapPin', 12)} ${location}</div>` : ''}
         ${chips.length ? `<div class="chips mt-sm">${chips.map(s => `<span class="chip">${s}</span>`).join('')}</div>` : ''}
       </div>
     </div>
@@ -258,7 +193,7 @@ function updateNetworkSlider() {
     if (window.innerWidth <= 480)  return 1;
     if (window.innerWidth <= 768)  return 2;
     if (window.innerWidth <= 1024) return 3;
-    return 5;
+    return 4;
   };
 
   let index = 0;
@@ -433,19 +368,49 @@ document.addEventListener("DOMContentLoaded", () => {
   renderNetworkSlider();
   renderFAQ();
 
-  $("#searchTrigger")?.addEventListener("click", () => globalSearch.open());
   $("#mobileMenuToggle")?.addEventListener("click", toggleMobileMenu);
   $("#themeToggle")?.addEventListener("click", toggleTheme);
-  $("#closeEventDetails")?.addEventListener("click", closeEventDetails);
-  $("#eventDetailsOverlay")?.addEventListener("click", (e) => {
-    if (e.target.id === "eventDetailsOverlay") closeEventDetails();
-  });
 
   document.querySelectorAll(".navLinks a").forEach(link =>
     link.addEventListener("click", () => { if (window.innerWidth <= 768) closeMobileMenu(); })
   );
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeMobileMenu(); closeEventDetails(); }
+    if (e.key === "Escape") { closeMobileMenu(); }
   });
+
+  const ctaEmail    = $("#ctaEmail");
+  const ctaTextarea = $("#ctaMessage");
+  const ctaMailto   = $("#ctaMailto");
+  if (ctaEmail && ctaTextarea && ctaMailto) {
+    ctaTextarea.value = [
+      "Hallo \u2026undbauen-Team,",
+      "",
+      "ich w\u00FCrde gerne am n\u00E4chsten Innovationsabend teilnehmen.",
+      "",
+      "Kurz zu mir: [Dein Name], [Dein Hintergrund / Branche].",
+      "Von \u2026undbauen erfahren habe ich durch: [z. B. Social Media / Empfehlung].",
+      "",
+      "Nat\u00FCrlich kannst du auch eine eigene Nachricht oder andere Anliegen an uns schreiben.",
+      "",
+      "Viele Grüße Lukas"
+    ].join("\n");
+
+    const updateMailto = () => {
+      const email = ctaEmail.value.trim();
+      const msg   = ctaTextarea.value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      ctaMailto.classList.toggle("btn-disabled", !valid);
+      ctaMailto.setAttribute("aria-disabled", String(!valid));
+      if (!valid) { ctaMailto.removeAttribute("href"); return; }
+      const body = encodeURIComponent(
+        msg + "\n\n" +
+        "Meine E-Mail: " + email
+      );
+      ctaMailto.href = `mailto:kontakt@undbauen.de?subject=Interesse%20an%20Mitgliedschaft&body=${body}`;
+    };
+    ctaEmail.addEventListener("input", updateMailto);
+    ctaTextarea.addEventListener("input", updateMailto);
+    updateMailto();
+  }
 });

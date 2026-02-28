@@ -313,6 +313,13 @@ p, .p{
   transform: scale(0.98);
 }
 
+.btn-disabled,
+.btn[aria-disabled="true"] {
+  opacity: .45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 /* Micro-interactions: Ripple effect */
 .btn{
   position: relative;
@@ -1014,26 +1021,6 @@ a.chip-link:hover {
   }
 }
 
-/* Subtile Hover-Animation für Wörter */
-.headline-wrapper:hover .word-und{
-  animation: wordHover 0.3s ease forwards;
-}
-
-.headline-wrapper:hover .word-bauen{
-  animation: wordHover 0.3s ease 0.1s forwards;
-}
-
-@keyframes wordHover{
-  0%{
-    transform: translateY(0);
-  }
-  50%{
-    transform: translateY(-4px);
-  }
-  100%{
-    transform: translateY(0);
-  }
-}
 
 .hero-content p,
 .hero-subtitle{
@@ -1219,6 +1206,14 @@ a.chip-link:hover {
   flex-direction: column;
 }
 
+.topic-card-wide{
+  grid-column: 1 / -1;
+}
+
+.topic-card-wide .topic-image{
+  height: 280px;
+}
+
 .topic-image{
   width: 100%;
   height: 200px;
@@ -1233,9 +1228,6 @@ a.chip-link:hover {
   transition: transform 0.3s ease;
 }
 
-.topic-card:hover .topic-image img{
-  transform: scale(1.05);
-}
 
 .topic-content{
   padding: 2rem;
@@ -1256,19 +1248,6 @@ a.chip-link:hover {
   transition: transform 0.3s ease;
 }
 
-.topic-card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary);
-}
-
-.topic-card:hover::before{
-  transform: scaleY(1);
-}
-
-[data-theme="dark"] .topic-card:hover{
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
 
 .topic-number{
   font-size: 3rem;
@@ -1330,7 +1309,7 @@ a.chip-link:hover {
 }
 
 .person-card{
-  flex: 0 0 calc(20% - 0.8rem);
+  flex: 0 0 calc(25% - 0.75rem);
   min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1343,19 +1322,10 @@ a.chip-link:hover {
   align-items: center;
   padding: 24px 16px 16px;
   box-shadow: var(--shadow);
-  width: calc(20% - 0.8rem);
+  width: calc(25% - 0.75rem);
   position: relative;
 }
 
-.person-card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  border-color: var(--primary);
-}
-
-[data-theme="dark"] .person-card:hover{
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
 
 .person-image-container{
   width: 80px;
@@ -1394,26 +1364,6 @@ img {
 }
 
 /* Lazy Loading für Bilder */
-img[loading="lazy"]{
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-img[loading="lazy"].loaded{
-  opacity: 1;
-}
-
-/* Person images sollten immer sichtbar sein */
-.person-image[loading="lazy"]{
-  opacity: 1;
-}
-
-/* Intersection Observer für Lazy Loading - Skeleton während Loading */
-img[loading="lazy"]:not(.loaded):not(.person-image){
-  background: linear-gradient(90deg, var(--border) 25%, transparent 37%, var(--border) 63%);
-  background-size: 400% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
-}
 
 /* Hero Section Parallax */
 .hero{
