@@ -57,15 +57,6 @@
   line-height: 1;
 }
 
-.navLinks a.nav-two-lines{
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  line-height: 1.2;
-}
-.navLinks a.nav-two-lines span{
-  display: block;
-}
 
 .navLinks a:hover{ 
   color: var(--text-primary); 
@@ -90,10 +81,6 @@
 
 /* Hero styles moved to base.css */
 
-.publicCards .card{ padding:2rem; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); }
-[data-theme="light"] .publicCards .card{ background:var(--white); border:1px solid rgba(0,0,0,0.12); }
-.metaLine{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:#ffffff; font-size:.92rem; }
-[data-theme="light"] .metaLine{ color:#000000; }
 
 /* Legal Section */
 .legal-section{
@@ -244,28 +231,6 @@
   gap: .5rem;
 }
 
-.event-card-date-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.1;
-  flex-shrink: 0;
-}
-
-.event-date-day {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--primary);
-  line-height: 1;
-}
-
-.event-date-month {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
 
 /* Blurred Event Cards (ab 3. und 4. Card) */
 .event-card-blurred {
@@ -337,11 +302,6 @@
   margin-top: auto;
   padding-top: .75rem;
   border-top: 1px solid var(--border);
-}
-
-.btn.small{
-  padding: 6px 12px;
-  font-size: 13px;
 }
 
 @media(max-width: 1200px){
@@ -599,16 +559,6 @@
   width: 100%;
 }
 
-.cta-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.cta-label span {
-  color: var(--primary);
-}
-
 .cta-input {
   width: 100%;
   padding: .75rem 1rem;
@@ -678,13 +628,6 @@
   font-style: italic;
 }
 
-.about-text .about-subtitle{
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 1.5rem 0 0.5rem 0;
-}
-
 @media(max-width: 768px){
   .about-content{
     grid-template-columns: 1fr;
@@ -692,31 +635,6 @@
   }
 }
 
-/* Images Gallery Section */
-.images-gallery{
-  padding: 4rem 0;
-}
-
-.images-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.image-card{
-  border-radius: var(--radius);
-  overflow: hidden;
-  aspect-ratio: 4/3;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.image-card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
 
 .image-card img{
   width: 100%;

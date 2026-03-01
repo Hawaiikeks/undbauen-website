@@ -83,58 +83,6 @@ const renderSocialProof = () => {
 
 // --- Network Slider ---
 
-let currentFilter = "all";
-let currentSort   = "newest";
-let allMembers    = [];
-
-function setupNetworkFilters() {
-  const filterChips = $("#filterChips");
-  const sortSelect  = $("#sortSelect");
-  if (!filterChips || !sortSelect) return;
-
-  const skills = new Set();
-  allMembers.forEach(m => (m.stichwoerter || []).forEach(s => skills.add(s)));
-
-  Array.from(skills).sort().slice(0, 10).forEach(skill => {
-    const chip = document.createElement("button");
-    chip.className    = "filter-chip";
-    chip.textContent  = skill;
-    chip.dataset.filter = skill;
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      currentFilter = skill;
-      updateNetworkSlider();
-    });
-    filterChips.appendChild(chip);
-  });
-
-  sortSelect.addEventListener("change", (e) => { currentSort = e.target.value; updateNetworkSlider(); });
-
-  filterChips.querySelector('[data-filter="all"]')?.addEventListener("click", () => {
-    document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
-    filterChips.querySelector('[data-filter="all"]').classList.add("active");
-    currentFilter = "all";
-    updateNetworkSlider();
-  });
-}
-
-function filterAndSortMembers(list) {
-  let result = currentFilter === "all"
-    ? [...list]
-    : list.filter(m => m.stichwoerter?.includes(currentFilter));
-
-  if (currentSort === "alphabetical") {
-    result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  } else if (currentSort === "activity") {
-    result.sort((a, b) =>
-      ((b.catchphrase?.length > 20 ? 1 : 0) + (b.stichwoerter?.length || 0)) -
-      ((a.catchphrase?.length > 20 ? 1 : 0) + (a.stichwoerter?.length || 0))
-    );
-  }
-  return result;
-}
-
 function renderCard(p) {
   const name      = sanitizeHTML(p.name || '');
   const taetigkeit = sanitizeHTML(p.taetigkeit || 'Mitglied');
@@ -166,8 +114,6 @@ function renderNetworkSlider() {
   const notice = $("#networkGuestNotice");
   if (notice) notice.style.display = "none";
 
-  allMembers = members.slice();
-  setupNetworkFilters();
   updateNetworkSlider();
 }
 
@@ -177,7 +123,7 @@ function updateNetworkSlider() {
   const nextBtn = $("#nextBtn");
   if (!slider) return;
 
-  const list = filterAndSortMembers(allMembers);
+  const list = members.slice();
 
   if (list.length === 0) {
     slider.innerHTML = '<div class="p-xl text-center text-muted">Keine Mitglieder gefunden.</div>';

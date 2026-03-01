@@ -6,7 +6,7 @@ Allgemein:
     YAGNI Prinzipt verwenden (You ain't gonna need it)
     If possible reuse existing styling
     Fallbacks are bad code
-
+    Darauf achten keinen Deadcode zurück zu lassen
 
 
 
