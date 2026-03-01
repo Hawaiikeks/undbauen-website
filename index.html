@@ -51,6 +51,7 @@
   }
   </script>
   
+  <script>(function(){document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');})();</script>
   <link rel="stylesheet" href="assets/css/fonts.css" />
   <link rel="stylesheet" href="assets/css/base.css?v=4.3.0" />
   <link rel="stylesheet" href="assets/css/public.css?v=4.3.0" />
@@ -66,13 +67,13 @@
         <span></span>
         <span></span>
       </button>
-      <nav class="navLinks" id="navLinks" aria-label="Hauptnavigation" role="navigation">
+      <nav class="navLinks" id="navLinks" aria-label="Hauptnavigation" role="navigation" aria-hidden="true">
         <a href="#innovationsabend">Innovationsabend</a>
         <a href="#netzwerk">Netzwerk</a>
         <a href="#themen">Themen</a>
         <a href="#termine">Termine</a>
         <a href="#kontakt">Kontakt</a>
-        <button class="btn primary" id="openAuth" type="button">Registrieren</button>
+        <a href="#kontakt" class="btn primary">Registrieren</a>
       </nav>
     </div>
   </header>
@@ -141,7 +142,7 @@
         <p class="hero-subtitle">Ein kuratiertes Innovations- und Netzwerkformat für Architektur, Ingenieurwesen, Bau & Digitalisierung</p>
         <div class="hero-cta">
           <a href="#kontakt" class="btn primary">Mitglied werden</a>
-          <a href="#netzwerk" class="btn ghost">mehr über das Netzwerk</a>
+          <a href="#ueber-uns" class="btn ghost">mehr über das Netzwerk</a>
         </div>
       </div>
     </section>
@@ -154,10 +155,10 @@
           <p>Wir schaffen Räume für den Dialog zwischen Visionären, Machern und Innovatoren der gebauten Umwelt. In einer Zeit tiefgreifender Transformation braucht es Formate, die verbinden statt trennen, die Fragen stellen statt Antworten zu verkaufen.</p>
           <p>…undbauen ist mehr ein Netzwerk. Es ist eine Haltung.</p>
         </div>
-        <div class="mission-images" style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-          <img src="assets/img/hero-1.jpg" alt="Netzwerk & Community" loading="lazy" style="width: 100%; height: auto; border-radius: 12px; object-fit: cover;" />
-          <img src="assets/img/hero-2.jpg" alt="Innovation & Dialog" loading="lazy" style="width: 100%; height: auto; border-radius: 12px; object-fit: cover;" />
-          <img src="assets/img/hero-3.jpg" alt="Zukunft gestalten" loading="lazy" style="width: 100%; height: auto; border-radius: 12px; object-fit: cover;" />
+        <div class="mission-images">
+          <img class="mission-img" src="assets/img/hero-1.jpg" alt="Netzwerk & Community" loading="lazy" />
+          <img class="mission-img" src="assets/img/hero-2.jpg" alt="Innovation & Dialog" loading="lazy" />
+          <img class="mission-img" src="assets/img/hero-3.jpg" alt="Zukunft gestalten" loading="lazy" />
         </div>
       </div>
     </section>
@@ -206,7 +207,6 @@
             <!-- Person cards werden per JavaScript befüllt -->
           </div>
           <button class="slider-nav next" id="nextBtn" aria-label="Zur nächsten Seite im Netzwerk-Slider" aria-controls="peopleSlider">›</button>
-          <div class="slider-pagination" id="pagination" role="tablist" aria-label="Slider-Pagination"></div>
         </div>
       </div>
     </section>
@@ -272,17 +272,9 @@
       </div>
     </section>
 
-    <!-- Abschnitt Publikationen (ausgeblendet)
-    <section id="publikationen" class="section publicCards section-with-divider" aria-labelledby="publikationen-heading" role="region">
-      <div class="container">
-        <h2 id="publikationen-heading" class="section-title">Publikationen</h2>
-        <div class="publications-list-compact mt-lg" id="publicPubs"></div>
-      </div>
-    </section>
-    -->
 
     <!-- Über uns -->
-    <section id="kontakt" class="section section-with-divider" aria-labelledby="ueber-heading" role="region">
+    <section id="ueber-uns" class="section section-with-divider" aria-labelledby="ueber-heading" role="region">
       <div class="container">
         <h2 id="ueber-heading" class="section-title">Über uns</h2>
         <div class="about-content">
@@ -309,7 +301,7 @@
     </section>
 
     <!-- CTA -->
-    <section class="section section-with-divider" aria-labelledby="cta-heading">
+    <section id="kontakt" class="section section-with-divider" aria-labelledby="cta-heading">
       <div class="container">
         <h2 id="cta-heading" class="section-title">Werde Teil unserer Community</h2>
         <div class="about-content">

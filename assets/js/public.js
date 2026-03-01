@@ -86,7 +86,6 @@ const renderSocialProof = () => {
 function renderCard(p) {
   const name      = sanitizeHTML(p.name || '');
   const taetigkeit = sanitizeHTML(p.taetigkeit || 'Mitglied');
-  const location  = sanitizeHTML(p.location || '');
   const chips     = (p.stichwoerter || []).slice(0, 3).map(s => sanitizeHTML(s));
   const initials  = name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
@@ -110,9 +109,6 @@ function renderCard(p) {
 function renderNetworkSlider() {
   const slider = $("#peopleSlider");
   if (!slider) return;
-
-  const notice = $("#networkGuestNotice");
-  if (notice) notice.style.display = "none";
 
   updateNetworkSlider();
 }
@@ -293,13 +289,11 @@ const toggleMobileMenu = () => {
   const isOpen = toggle.getAttribute("aria-expanded") === "true";
   toggle.setAttribute("aria-expanded", String(!isOpen));
   nav.setAttribute("aria-hidden", String(isOpen));
-  document.body.style.overflow = isOpen ? "" : "hidden";
 };
 
 const closeMobileMenu = () => {
   $("#mobileMenuToggle")?.setAttribute("aria-expanded", "false");
   $("#navLinks")?.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
 };
 
 // --- Init ---
@@ -308,6 +302,12 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   heroAnimation?.init?.();
   memberModal?.init?.();
+
+  const missionImgs = document.querySelectorAll(".mission-img");
+  if (missionImgs.length && window.innerWidth <= 768) {
+    const pick = Math.floor(Math.random() * missionImgs.length);
+    missionImgs[pick].classList.add("mobile-visible");
+  }
 
   renderPublicEvents();
   renderSocialProof();
@@ -320,6 +320,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".navLinks a").forEach(link =>
     link.addEventListener("click", () => { if (window.innerWidth <= 768) closeMobileMenu(); })
   );
+
+  document.addEventListener("click", (e) => {
+    const nav = $("#navLinks");
+    const toggle = $("#mobileMenuToggle");
+    if (!nav || !toggle || window.innerWidth > 768) return;
+    if (toggle.getAttribute("aria-expanded") !== "true") return;
+    if (!nav.contains(e.target) && !toggle.contains(e.target)) closeMobileMenu();
+  });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeMobileMenu(); }
