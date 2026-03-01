@@ -7,6 +7,7 @@ Allgemein:
     If possible reuse existing styling
     Fallbacks are bad code
     Darauf achten keinen Deadcode zurück zu lassen
+    Die Readme ist in der Regel veraltet
 
 
 
