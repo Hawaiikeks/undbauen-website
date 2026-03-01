@@ -15,12 +15,6 @@ npm start
 # → http://localhost:8000
 ```
 
-Oder direkt per Skript:
-```
-scripts/START_SERVER.bat
-scripts/START_SERVER.ps1
-```
-
 ## Projektstruktur
 
 ```
@@ -40,9 +34,6 @@ assets/
       memberModal.js        # Mitglieder-Detail-Modal
       icons.js              # SVG-Icon-Helper
   img/                      # Bilder
-scripts/
-  START_SERVER.bat
-  START_SERVER.ps1
 ```
 
 ## Daten pflegen
