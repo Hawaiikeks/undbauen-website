@@ -59,16 +59,9 @@ export const memberModal = {
           <div class="member-modal-info">
             <h3 class="member-modal-name">${person.name || 'Unbekannt'}</h3>
             <p class="member-modal-role">${person.taetigkeit || 'Mitglied'}</p>
-            ${person.location ? `<p class="member-modal-location">${getIcon('mapPin', 16)} ${person.location}</p>` : ''}
+            ${person.catchphrase ? `<p class="member-modal-bio">„${person.catchphrase}"</p>` : ''}
           </div>
         </div>
-
-        ${person.catchphrase ? `
-          <div class="member-modal-section">
-            <h4 class="member-modal-section-title">Catchphrase</h4>
-            <p class="member-modal-bio">${person.catchphrase}</p>
-          </div>
-        ` : ''}
 
         ${skills.length > 0 ? `
           <div class="member-modal-section">

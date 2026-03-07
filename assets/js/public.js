@@ -2,8 +2,6 @@ import { members, events } from "./data.js";
 import { getIcon } from "./components/icons.js";
 import { memberModal } from "./components/memberModal.js";
 import { heroAnimation } from "./components/heroAnimation.js";
-import { hoverCard } from "./components/hoverCard.js";
-
 const $ = (s) => document.querySelector(s);
 
 const sanitizeHTML = (str) => {
@@ -107,7 +105,7 @@ const renderSocialProof = () => {
 function renderCard(p) {
   const name      = sanitizeHTML(p.name || '');
   const taetigkeit = sanitizeHTML(p.taetigkeit || 'Mitglied');
-  const chips     = (p.stichwoerter || []).slice(0, 3).map(s => sanitizeHTML(s));
+  const chips     = (p.stichwoerter || []).map(s => sanitizeHTML(s));
   const initials  = name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
   return `
@@ -174,14 +172,6 @@ function updateNetworkSlider() {
 
       card.addEventListener("click", () => memberModal.show(person));
 
-      let hoverTimeout;
-      card.addEventListener("mouseenter", () => {
-        hoverTimeout = setTimeout(() => hoverCard.show(person, card), 500);
-      });
-      card.addEventListener("mouseleave", () => {
-        clearTimeout(hoverTimeout);
-        hoverCard.hide();
-      });
     });
   }
 
