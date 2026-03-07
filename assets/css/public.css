@@ -309,18 +309,11 @@
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
   .events-image-block{
     max-width: 100%;
     height: 300px;
   }
-  
-  .events-grid-row{
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
-
-
 
 .event-badge{
   display: inline-flex;
@@ -467,7 +460,6 @@
 
 /* Network/Community Visual Separation */
 .network{
-  position: relative;
   padding-bottom: 2rem;
 }
 
@@ -480,7 +472,6 @@
   height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
 }
-
 
 /* Über uns Section */
 .about-content{

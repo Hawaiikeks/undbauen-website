@@ -94,6 +94,23 @@ export const memberModal = {
     this.overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
+    // Badge-Breite nach dem Rendern neu berechnen
+    const chips = body.querySelectorAll('.chip');
+    const adjustments = Array.from(chips).map(chip => {
+      chip.style.width = '';
+      const range = document.createRange();
+      range.selectNodeContents(chip);
+      const rects = Array.from(range.getClientRects());
+      if (rects.length <= 1) return { chip, width: null };
+      const cs = getComputedStyle(chip);
+      const padH = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const maxLineWidth = Math.max(...rects.map(r => r.width));
+      return { chip, width: Math.ceil(maxLineWidth + padH) };
+    });
+    adjustments.forEach(({ chip, width }) => {
+      if (width !== null) chip.style.width = width + 'px';
+    });
+
     const focusable = this.modal.querySelectorAll('button, [href]');
     if (focusable.length > 0) focusable[0].focus();
   },

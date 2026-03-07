@@ -8,6 +8,11 @@ Allgemein:
     Fallbacks are bad code
     Darauf achten keinen Deadcode zurück zu lassen
     Die Readme ist in der Regel veraltet
+    git Commit alle relevanten änderungen lokal
+    
+KI ist manachmal sehr dumm:
+    Wenn CSS ein Layout-Problem nicht lösen kann (z.B. "nach dem Rendern messen"), zu JavaScript wechseln – nicht CSS weiter analysieren. HINWEIS IM CHAT BEI DIESEM FALL
+
 
 
 

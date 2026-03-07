@@ -113,27 +113,3 @@ class HoverCard {
 }
 
 export const hoverCard = new HoverCard();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

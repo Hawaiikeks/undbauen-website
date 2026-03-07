@@ -18,6 +18,27 @@ const debounce = (fn, wait) => {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
 };
 
+// Nach dem Rendern: Badge-Breite auf längste Textzeile setzen
+const fixChipWidths = (container) => {
+  const chips = container.querySelectorAll('.chip');
+  // Erst alle messen (verhindert Layout-Thrashing)
+  const adjustments = Array.from(chips).map(chip => {
+    chip.style.width = '';
+    const range = document.createRange();
+    range.selectNodeContents(chip);
+    const rects = Array.from(range.getClientRects());
+    if (rects.length <= 1) return { chip, width: null };
+    const cs = getComputedStyle(chip);
+    const padH = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    const maxLineWidth = Math.max(...rects.map(r => r.width));
+    return { chip, width: Math.ceil(maxLineWidth + padH) };
+  });
+  // Dann alle setzen
+  adjustments.forEach(({ chip, width }) => {
+    if (width !== null) chip.style.width = width + 'px';
+  });
+};
+
 // --- Events ---
 
 const renderPublicEvents = () => {
@@ -145,6 +166,7 @@ function updateNetworkSlider() {
     const visible = getVisible();
     const page = Array.from({ length: visible }, (_, i) => list[(index + i) % list.length]);
     slider.innerHTML = page.map(renderCard).join("");
+    fixChipWidths(slider);
 
     slider.querySelectorAll(".person-card").forEach(card => {
       const person = list.find(p => sanitizeHTML(p.name || '') === card.dataset.name);

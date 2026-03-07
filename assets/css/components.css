@@ -167,32 +167,6 @@
   font-weight: 500;
 }
 
-
-
-.select{
-  padding: 0.4rem 0.8rem;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  font-family: var(--font);
-  font-size: 0.9rem;
-  cursor: pointer;
-  min-width: 160px;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.select:focus{
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-[data-theme="dark"] .select:focus{
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
-}
-
-
 /* FAQ */
 .faq-section{
   background: var(--bg);
@@ -325,9 +299,9 @@
 }
 
 .member-modal-avatar{
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
+  width: 120px;
+  aspect-ratio: 3/4;
+  border-radius: var(--radius);
   overflow: hidden;
   flex-shrink: 0;
   background: var(--bg);
@@ -340,6 +314,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
 }
 
 .member-avatar-placeholder{
