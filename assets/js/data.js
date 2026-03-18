@@ -5,12 +5,11 @@ export const members = [
   {
     name: "Lukas Gilbert",
     taetigkeit: "BIM Manager & Consultant",
-    catchphrase: "",
+    catchphrase: "Menschen vernetzen, die das Bauen verändern wollen",
     photo: "assets/user_img/LukasGilbert.png",
     stichwoerter: ["BIM Implementierung", "Content-Entwicklung", "Automatisierung"],
     links: [
-      // { label: "LinkedIn", url: "https://linkedin.com/in/..." },
-      // { label: "Website", url: "https://..." },
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/lukas-gilbert-O427a5132/" }
     ]
   },
   {
@@ -38,7 +37,9 @@ export const members = [
     catchphrase: "Digitale Prozesse, die man einfach nutzt.",
     photo: "assets/user_img/JohannesSteidle.png",
     stichwoerter: ["Revit User", "Prozessdesign", "Produktdenken"],
-    links: []
+    links: [
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/johannes-steidle-9799b3280/" }
+    ]
   },
   {
     name: "David Klinkner",
@@ -46,7 +47,10 @@ export const members = [
     catchphrase: "rethink structures in real estate.",
     photo: "assets/user_img/DavidKlinkner.png",
     stichwoerter: ["Nachhaltige Tragwerkslösungen", "Arbeits- & Prozesskultur", "Kollaboration"],
-    links: []
+    links: [
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/klnknr" },
+      { label: "Website", url: "https://www.klinco.de" }
+    ]
   },
   {
     name: "Luk Vermeulen",
@@ -54,7 +58,9 @@ export const members = [
     catchphrase: "Der digitale workspace für dein Planungsprojekt.",
     photo: "assets/user_img/LukVermeulen.png",
     stichwoerter: ["Produktentwicklung", "Softwareentwicklung", "AEC Innovationen"],
-    links: []
+    links: [
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/luk-vermeulen/" }
+    ]
   },
   {
     name: "Tarick Chahade",
@@ -70,7 +76,9 @@ export const members = [
     catchphrase: "BIM ist eine offene, vernetzte Arbeitsmethode und nicht Revit.",
     photo: "assets/user_img/MosesPöhls.png",
     stichwoerter: ["BIM4B", "Drohnen", "Punktwolken", "Robotik", "Digitale Workflows", "Innovation am Bau"],
-    links: []
+    links: [
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/moses-pöhls-738164146/" }
+    ]
   },
   {
     name: "David Bjelland",
@@ -86,7 +94,9 @@ export const members = [
     catchphrase: "Simplifying BIM, Connecting Teams",
     photo: "assets/user_img/MaraRuhland.png",
     stichwoerter: ["Softwareadministration", "Schulung & Training", "Richtlinien", "Digitalisierungsstrategie", "BIM-Implementierung"],
-    links: []
+    links: [
+      { label: "Website", url: "https://mara-bim.de" }
+    ]
   },
   {
     name: "Alex Schlachter",
