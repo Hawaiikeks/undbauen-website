@@ -6,7 +6,7 @@ export const members = [
     name: "Lukas Gilbert",
     taetigkeit: "BIM Manager & Consultant",
     catchphrase: "Menschen vernetzen, die das Bauen verändern wollen",
-    photo: "assets/user_img/LukasGilbert.png",
+    photo: "assets/user_img/LukasGilbert.webp",
     stichwoerter: ["BIM Implementierung", "Content-Entwicklung", "Automatisierung"],
     links: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/lukas-gilbert-O427a5132/" }
@@ -16,7 +16,7 @@ export const members = [
     name: "Phil Deeg",
     taetigkeit: "Ingenieur, Facilitator, Problem Solver",
     catchphrase: "Freude verbreiten durch sinnvolle Projekte, die zu einer positiven Zukunft beitragen",
-    photo: "assets/user_img/PhilippDeeg.png",
+    photo: "assets/user_img/PhilippDeeg.webp",
     stichwoerter: ["Computational Design und Nachhaltigkeit"],
     links: []
   },
@@ -24,7 +24,7 @@ export const members = [
     name: "Lukas Schmölzl",
     taetigkeit: "Super-Duper-Servicekraft",
     catchphrase: "IT & BIM sind für die Baustelle da",
-    photo: "assets/user_img/LukasSchmölzl.png",
+    photo: "assets/user_img/LukasSchmölzl.webp",
     stichwoerter: ["BIM-Entwicklung", "Systemadmininistration", "undBauen"],
     links: [
       { label: "LinkedIn", url: "https://linkedin.com/in/lukas-schmölzl/" },
@@ -35,7 +35,7 @@ export const members = [
     name: "Johannes Steidle",
     taetigkeit: "Product Owner",
     catchphrase: "Digitale Prozesse, die man einfach nutzt.",
-    photo: "assets/user_img/JohannesSteidle.png",
+    photo: "assets/user_img/JohannesSteidle.webp",
     stichwoerter: ["Revit User", "Prozessdesign", "Produktdenken"],
     links: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/johannes-steidle-9799b3280/" }
@@ -45,7 +45,7 @@ export const members = [
     name: "David Klinkner",
     taetigkeit: "Freier Ingenieur & Berater",
     catchphrase: "rethink structures in real estate.",
-    photo: "assets/user_img/DavidKlinkner.png",
+    photo: "assets/user_img/DavidKlinkner.webp",
     stichwoerter: ["Nachhaltige Tragwerkslösungen", "Arbeits- & Prozesskultur", "Kollaboration"],
     links: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/klnknr" },
@@ -56,7 +56,7 @@ export const members = [
     name: "Luk Vermeulen",
     taetigkeit: "Produktdenker für digitale Innovationen",
     catchphrase: "Der digitale workspace für dein Planungsprojekt.",
-    photo: "assets/user_img/LukVermeulen.png",
+    photo: "assets/user_img/LukVermeulen.webp",
     stichwoerter: ["Produktentwicklung", "Softwareentwicklung", "AEC Innovationen"],
     links: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/luk-vermeulen/" }
@@ -66,7 +66,7 @@ export const members = [
     name: "Tarick Chahade",
     taetigkeit: "Ingenieur, Wissenschaftler & Entwickler",
     catchphrase: "Digital Workflows. Real Difference.",
-    photo: "assets/user_img/TarickChahade.png",
+    photo: "assets/user_img/TarickChahade.webp",
     stichwoerter: ["AEC workflows", "automated building design", "product development"],
     links: []
   },
@@ -74,7 +74,7 @@ export const members = [
     name: "Moses Pöhls",
     taetigkeit: "BIM-Koordinator, Architekt, Softwareentwickler",
     catchphrase: "BIM ist eine offene, vernetzte Arbeitsmethode und nicht Revit.",
-    photo: "assets/user_img/MosesPöhls.png",
+    photo: "assets/user_img/MosesPöhls.webp",
     stichwoerter: ["BIM4B", "Drohnen", "Punktwolken", "Robotik", "Digitale Workflows", "Innovation am Bau"],
     links: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/moses-pöhls-738164146/" }
@@ -84,7 +84,7 @@ export const members = [
     name: "David Bjelland",
     taetigkeit: "Ingenieur, BIM-Planung und Bauphysik",
     catchphrase: "",
-    photo: "assets/user_img/DavidBjelland.png",
+    photo: "assets/user_img/DavidBjelland.webp",
     stichwoerter: ["BIM", "BEM", "PED", "Energetische Sanierung", "Bauphysik"],
     links: []
   },
@@ -92,7 +92,7 @@ export const members = [
     name: "Mara Ruhland",
     taetigkeit: "BIM Managerin / Planungskoordinatorin",
     catchphrase: "Simplifying BIM, Connecting Teams",
-    photo: "assets/user_img/MaraRuhland.png",
+    photo: "assets/user_img/MaraRuhland.webp",
     stichwoerter: ["Softwareadministration", "Schulung & Training", "Richtlinien", "Digitalisierungsstrategie", "BIM-Implementierung"],
     links: [
       { label: "Website", url: "https://mara-bim.de" }
@@ -102,7 +102,7 @@ export const members = [
     name: "Alex Schlachter",
     taetigkeit: "BIM Manager",
     catchphrase: "",
-    photo: "assets/user_img/AlexSchlachter.png",
+    photo: "assets/user_img/AlexSchlachter.webp",
     stichwoerter: ["Automatisierung", "BIM für die Baustelle", "Daten-Management/-Visualisierung", "Software-Entwicklung"],
     links: []
   },
@@ -110,7 +110,7 @@ export const members = [
     name: "Carinoa Campos",
     taetigkeit: "BIM Koordinatorin",
     catchphrase: "",
-    photo: "assets/user_img/CarinoaCampos.png",
+    photo: "assets/user_img/CarinoaCampos.webp",
     stichwoerter: ["Workflow-Management", "Modellprüfung", "integrale Projektkoordination"],
     links: []
   },
@@ -118,7 +118,7 @@ export const members = [
     name: "Celina Stiehl",
     taetigkeit: "BIM-Gesamtkoordination",
     catchphrase: "BIM-Prozesse müssen praxisnah und nutzerorientiert sein.",
-    photo: "assets/user_img/CelinaStiehl.png",
+    photo: "assets/user_img/CelinaStiehl.webp",
     stichwoerter: ["Workflow-Management", "Modellprüfung", "integrale Projektkoordination"],
     links: []
   },
@@ -126,7 +126,7 @@ export const members = [
     name: "Nikolai Davydov",
     taetigkeit: "Software Developer (C#)",
     catchphrase: "",
-    photo: "assets/user_img/NikolaiDavydov.png",
+    photo: "assets/user_img/NikolaiDavydov.webp",
     stichwoerter: ["BIM", "Automatisierung", "Revit Addins Developer"],
     links: []
   },
@@ -134,7 +134,7 @@ export const members = [
     name: "Vsevolod Chugreev",
     taetigkeit: "Software Developer",
     catchphrase: "",
-    photo: "assets/user_img/VsevolodChugreev.png",
+    photo: "assets/user_img/VsevolodChugreev.webp",
     stichwoerter: ["Design automation"],
     links: []
   },
@@ -142,7 +142,7 @@ export const members = [
     name: "Felix Quecke",
     taetigkeit: "BIM Koordination",
     catchphrase: "Do the small things well",
-    photo: "assets/user_img/FelixQuecke.png",
+    photo: "assets/user_img/FelixQuecke.webp",
     stichwoerter: ["Koordination", "Entwicklung", "Support"],
     links: []
   },
@@ -150,7 +150,7 @@ export const members = [
     name: "Stefan Limmer",
     taetigkeit: "Beratungsingenieur, Bauphysiker",
     catchphrase: "",
-    photo: "assets/user_img/StefanLimmer.png",
+    photo: "assets/user_img/StefanLimmer.webp",
     stichwoerter: ["Bauphysik", "Simulation", "Energiekonzeption", "Workflows", "Problemlösung"],
     links: []
   }
@@ -158,9 +158,9 @@ export const members = [
 
 export const events = [
   {
-    id: "evt_2026_03_15",
+    id: "evt_2026_04_07",
     title: "Nachhaltiges Bauen & Circular Economy",
-    date: "2026-03-15",
+    date: "2026-04-07",
     time: "18:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
@@ -169,9 +169,9 @@ export const events = [
     tags: ["Nachhaltigkeit", "Circular Economy", "Green Building"]
   },
   {
-    id: "evt_2026_04_20",
+    id: "evt_2026_05_05",
     title: "Digitalisierung in der Bauausführung",
-    date: "2026-04-20",
+    date: "2026-05-05",
     time: "18:00",
     durationMinutes: 90,
     location: "Digital (Teams)",

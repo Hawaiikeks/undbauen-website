@@ -14,9 +14,14 @@
   "devDependencies": {
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "sharp": "^0.34.5"
   },
-  "keywords": ["community", "platform", "aec"],
+  "keywords": [
+    "community",
+    "platform",
+    "aec"
+  ],
   "author": "",
   "license": "MIT",
   "engines": {
