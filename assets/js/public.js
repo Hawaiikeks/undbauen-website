@@ -43,7 +43,12 @@ const renderPublicEvents = () => {
   const wrap = $("#publicEvents");
   if (!wrap) return;
 
-  const evs = events.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const evs = events.slice().sort((a, b) => {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return (a.date + a.time).localeCompare(b.date + b.time);
+  });
 
   if (evs.length === 0) {
     wrap.innerHTML = '<div class="p-xl text-center text-muted">Keine Termine verfügbar.</div>';
@@ -65,7 +70,7 @@ const renderPublicEvents = () => {
           </div>
           <h3 class="event-card-title-small">${sanitizeHTML(ev.title || '')}</h3>
           <div class="event-card-meta-small">
-            ${dayName ? `<span class="event-meta-item">${getIcon('calendar', 13)} ${dayName}, ${dateShort}</span>` : ''}
+            <span class="event-meta-item">${getIcon('calendar', 13)} ${dayName ? `${dayName}, ${dateShort}` : 'Termin folgt'}</span>
             ${ev.time ? `<span class="event-meta-item">${getIcon('clock', 13)} ${sanitizeHTML(ev.time)} Uhr</span>` : ''}
           </div>
         </div>
@@ -196,7 +201,7 @@ function renderFAQ() {
   const faqs = [
     {
       question: "Wie kann ich Mitglied werden?",
-      answer: "Sie können über den Button 'Kontakt aufnehmen' eine E-Mail an <a href='mailto:kontakt@undbauen.de' class='faq-link'>kontakt@undbauen.de</a> senden, um Ihr Interesse an einer Mitgliedschaft mitzuteilen. Alternativ können Sie Ihre Anfrage auch eigenständig per E-Mail an <a href='mailto:kontakt@undbauen.de' class='faq-link'>kontakt@undbauen.de</a> senden."
+      answer: "Sie können über den Button 'Kontakt aufnehmen' eine E-Mail an <a href='mailto:lukas.gilbert@mara-bim.de' class='faq-link'>lukas.gilbert@mara-bim.de</a> senden, um Ihr Interesse an einer Mitgliedschaft mitzuteilen. Alternativ können Sie Ihre Anfrage auch eigenständig per E-Mail an <a href='mailto:lukas.gilbert@mara-bim.de' class='faq-link'>lukas.gilbert@mara-bim.de</a> senden."
     },
     {
       question: "Was kostet die Mitgliedschaft?",
@@ -373,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         msg + "\n\n" +
         "Meine E-Mail: " + email
       );
-      ctaMailto.href = `mailto:kontakt@undbauen.de?subject=Interesse%20an%20Mitgliedschaft&body=${body}`;
+      ctaMailto.href = `mailto:lukas.gilbert@mara-bim.de?subject=Interesse%20an%20Mitgliedschaft&body=${body}`;
     };
     ctaEmail.addEventListener("input", updateMailto);
     ctaTextarea.addEventListener("input", updateMailto);

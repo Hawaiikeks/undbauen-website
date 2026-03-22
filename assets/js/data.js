@@ -103,7 +103,7 @@ export const members = [
     taetigkeit: "BIM Manager",
     catchphrase: "",
     photo: "assets/user_img/AlexSchlachter.webp",
-    stichwoerter: ["Automatisierung", "BIM für die Baustelle", "Daten-Management/-Visualisierung", "Software-Entwicklung"],
+    stichwoerter: ["Automatisierung", "BIM für die Baustelle", "Datenmanagement & Visualisierung", "Software-Entwicklung"],
     links: []
   },
   {
@@ -158,48 +158,48 @@ export const members = [
 
 export const events = [
   {
+    id: "evt_2026_03_30",
+    title: "BIM in der Bauphysik – Anforderungen an das Bauphysikmodell",
+    date: "2026-03-30",
+    time: "19:00",
+    durationMinutes: 90,
+    location: "Digital (Teams)",
+    format: "Workshop",
+    descriptionPublic: "Vertiefung der Modellanforderungen und Integration in den BIM-Prozess.",
+    tags: ["BIM", "Bauphysik", "Modell"]
+  },
+  {
     id: "evt_2026_04_07",
-    title: "Nachhaltiges Bauen & Circular Economy",
+    title: "Transformation im Bauwesen – von BIM zum echten Mehrwert",
     date: "2026-04-07",
-    time: "18:00",
+    time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
     format: "Innovationsabend",
-    descriptionPublic: "Austausch zu nachhaltigen Baukonzepten und zirkulären Wirtschaftsmodellen im Bauwesen.",
-    tags: ["Nachhaltigkeit", "Circular Economy", "Green Building"]
+    descriptionPublic: "",
+    tags: ["BIM", "Transformation", "Innovation"]
   },
   {
-    id: "evt_2026_05_05",
-    title: "Digitalisierung in der Bauausführung",
-    date: "2026-05-05",
-    time: "18:00",
+    id: "test1",
+    title: "DIN 19650 – Umsetzung & Anwendung in der Praxis",
+    date: "",
+    time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
     format: "Workshop",
-    descriptionPublic: "Diskussion über digitale Tools und Prozesse auf der Baustelle.",
-    tags: ["Digitalisierung", "Bauausführung", "Construction Tech"]
+    descriptionPublic: "Gemeinsame Erarbeitung und Vertiefung der neuen Anforderungen.",
+    tags: ["DIN 19650", "BIM", "Normen"]
   },
   {
-    id: "evt_2026_05_18",
-    title: "KI-gestützte Planungsprozesse",
-    date: "2026-05-18",
-    time: "18:00",
-    durationMinutes: 90,
-    location: "Digital (Teams)",
-    format: "Innovationsabend",
-    descriptionPublic: "Erkundung von KI-Anwendungen in der Architektur- und Bauplanung.",
-    tags: ["KI", "Künstliche Intelligenz", "Planung"]
-  },
-  {
-    id: "evt_2026_06_22",
-    title: "Nachhaltigkeit & Klimaneutrales Bauen",
-    date: "2026-06-22",
-    time: "18:00",
+    id: "test2",
+    title: "DIN 19650 – Umsetzung & Anwendung in der Praxis",
+    date: "",
+    time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
     format: "Workshop",
-    descriptionPublic: "Diskussion über Strategien für klimaneutrales Bauen und nachhaltige Materialien.",
-    tags: ["Nachhaltigkeit", "Klimaneutral", "Green Building"]
+    descriptionPublic: "Gemeinsame Erarbeitung und Vertiefung der neuen Anforderungen.",
+    tags: ["DIN 19650", "BIM", "Normen"]
   }
 ];
 
