@@ -4,11 +4,11 @@ import { memberModal } from "./components/memberModal.js";
 import { heroAnimation } from "./components/heroAnimation.js";
 const $ = (s) => document.querySelector(s);
 
+const _sanitizeDiv = document.createElement('div');
 const sanitizeHTML = (str) => {
   if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  _sanitizeDiv.textContent = str;
+  return _sanitizeDiv.innerHTML;
 };
 
 const debounce = (fn, wait) => {
@@ -180,15 +180,27 @@ function updateNetworkSlider() {
     });
   }
 
-  prevBtn?.addEventListener("click", () => { index = (index - SHIFT + list.length) % list.length; render(); });
-  nextBtn?.addEventListener("click", () => { index = (index + SHIFT) % list.length; render(); });
+  if (!prevBtn._sliderBound) {
+    prevBtn.addEventListener("click", () => { index = (index - SHIFT + list.length) % list.length; render(); });
+    prevBtn._sliderBound = true;
+  }
+  if (!nextBtn._sliderBound) {
+    nextBtn.addEventListener("click", () => { index = (index + SHIFT) % list.length; render(); });
+    nextBtn._sliderBound = true;
+  }
 
-  slider.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft")  { index = (index - SHIFT + list.length) % list.length; render(); }
-    if (e.key === "ArrowRight") { index = (index + SHIFT) % list.length; render(); }
-  });
+  if (!slider._keyBound) {
+    slider.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft")  { index = (index - SHIFT + list.length) % list.length; render(); }
+      if (e.key === "ArrowRight") { index = (index + SHIFT) % list.length; render(); }
+    });
+    slider._keyBound = true;
+  }
 
-  window.addEventListener("resize", debounce(render, 250));
+  if (!window._sliderResizeBound) {
+    window.addEventListener("resize", debounce(render, 250));
+    window._sliderResizeBound = true;
+  }
   render();
 }
 

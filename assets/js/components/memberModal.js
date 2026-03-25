@@ -25,9 +25,10 @@ export const memberModal = {
 
       overlay.querySelector('#closeMemberModal').addEventListener('click', () => this.hide());
       overlay.addEventListener('click', (e) => { if (e.target === overlay) this.hide(); });
-      document.addEventListener('keydown', (e) => {
+      this._keyHandler = (e) => {
         if (e.key === 'Escape' && overlay.style.display === 'flex') this.hide();
-      });
+      };
+      document.addEventListener('keydown', this._keyHandler);
     } else {
       this.overlay = document.getElementById('memberModalOverlay');
       this.modal = this.overlay.querySelector('.member-modal');
