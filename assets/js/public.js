@@ -213,7 +213,7 @@ function renderFAQ() {
   const faqs = [
     {
       question: "Wie kann ich Mitglied werden?",
-      answer: "Sie können über den Button 'Kontakt aufnehmen' eine E-Mail an <a href='mailto:lukas.gilbert@mara-bim.de' class='faq-link'>lukas.gilbert@mara-bim.de</a> senden, um Ihr Interesse an einer Mitgliedschaft mitzuteilen. Alternativ können Sie Ihre Anfrage auch eigenständig per E-Mail an <a href='mailto:lukas.gilbert@mara-bim.de' class='faq-link'>lukas.gilbert@mara-bim.de</a> senden."
+      answer: "Sie können über den Button 'Kontakt aufnehmen' eine E-Mail an <a href='mailto:kontakt@undbauen.de' class='faq-link'>kontakt@undbauen.de</a> senden, um Ihr Interesse an einer Mitgliedschaft mitzuteilen. Alternativ können Sie Ihre Anfrage auch eigenständig per E-Mail an <a href='mailto:kontakt@undbauen.de' class='faq-link'>kontakt@undbauen.de</a> senden."
     },
     {
       question: "Was kostet die Mitgliedschaft?",
@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         msg + "\n\n" +
         "Meine E-Mail: " + email
       );
-      ctaMailto.href = `mailto:lukas.gilbert@mara-bim.de?subject=Interesse%20an%20Mitgliedschaft&body=${body}`;
+      ctaMailto.href = `mailto:kontakt@undbauen.de?subject=Interesse%20an%20Mitgliedschaft&body=${body}`;
     };
     ctaEmail.addEventListener("input", updateMailto);
     ctaTextarea.addEventListener("input", updateMailto);
