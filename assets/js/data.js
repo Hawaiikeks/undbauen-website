@@ -169,15 +169,15 @@ export const events = [
     tags: ["BIM", "Bauphysik", "Modell"]
   },
   {
-    id: "evt_2026_04_07",
-    title: "Transformation im Bauwesen – von BIM zum echten Mehrwert",
-    date: "2026-04-07",
+    id: "evt_2026_05_04",
+    title: "Innovationsabend – Expertentalk (Thema folgt)",
+    date: "2026-05-04",
     time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
     format: "Innovationsabend",
-    descriptionPublic: "",
-    tags: ["BIM", "Transformation", "Innovation"]
+    descriptionPublic: "Begrüßung & Netzwerk-Update (Status der Plattform & nächste Schritte), anschließend Expertentalk. Thema wird in Kürze bekanntgegeben – eigene Themenvorschläge willkommen.",
+    tags: ["Innovationsabend", "Netzwerk", "Expertentalk"]
   },
   {
     id: "test1",
