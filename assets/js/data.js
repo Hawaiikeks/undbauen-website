@@ -160,7 +160,7 @@ export const events = [
   {
     id: "evt_2026_05_04",
     title: "Realität im BIM-Alltag",
-    subtitle: "What the hell ?!, Diskusion & Workshops",
+    subtitle: "What the hell ?!, Diskusion & Workshop",
     date: "2026-05-04",
     time: "19:00",
     durationMinutes: 90,
