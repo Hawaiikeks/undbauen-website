@@ -56,7 +56,7 @@ const renderPublicEvents = () => {
   }
 
   wrap.innerHTML = evs.map((ev, i) => {
-    const isBlurred = i >= 2;
+    const isBlurred = i >= 3;
     const [y, m, d] = (ev.date || '').split('-');
     const dateObj   = y ? new Date(+y, +m - 1, +d) : null;
     const dayName   = dateObj ? dateObj.toLocaleDateString('de-DE', { weekday: 'short' }) : '';
@@ -68,7 +68,10 @@ const renderPublicEvents = () => {
           <div class="event-card-top">
             <span class="event-badge">${sanitizeHTML(ev.format || '')}</span>
           </div>
-          <h3 class="event-card-title-small">${sanitizeHTML(ev.title || '')}</h3>
+          <div class="event-card-heading">
+            <h3 class="event-card-title-small">${sanitizeHTML(ev.title || '')}</h3>
+            ${ev.subtitle ? `<p class="event-card-subtitle-small">${sanitizeHTML(ev.subtitle)}</p>` : ''}
+          </div>
           <div class="event-card-meta-small">
             <span class="event-meta-item">${getIcon('calendar', 13)} ${dayName ? `${dayName}, ${dateShort}` : 'Termin folgt'}</span>
             ${ev.time ? `<span class="event-meta-item">${getIcon('clock', 13)} ${sanitizeHTML(ev.time)} Uhr</span>` : ''}

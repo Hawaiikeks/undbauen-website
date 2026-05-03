@@ -4,8 +4,8 @@
   "description": "Community Platform für AEC-Profis",
   "type": "module",
   "scripts": {
-    "start": "serve . -l 8000",
-    "dev": "serve . -l 8000",
+    "start": "node ./node_modules/serve/build/main.js . -l 8000",
+    "dev": "node ./node_modules/serve/build/main.js . -l 8000",
     "lint": "eslint src/assets/js/**/*.js",
     "lint:fix": "eslint src/assets/js/**/*.js --fix",
     "format": "prettier --write \"src/**/*.{js,json,html,css}\"",

@@ -281,12 +281,26 @@
   flex: 1;
 }
 
+.event-card-heading{
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
 .event-card-title-small{
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
   line-height: 1.4;
+}
+
+.event-card-subtitle-small{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.45;
 }
 
 .event-card-meta-small{

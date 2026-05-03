@@ -158,9 +158,22 @@ export const members = [
 
 export const events = [
   {
-    id: "evt_2026_03_30",
-    title: "BIM in der Bauphysik – Anforderungen an das Bauphysikmodell",
-    date: "2026-03-30",
+    id: "evt_2026_05_04",
+    title: "Realität im BIM-Alltag",
+    subtitle: "What the hell ?!, Diskusion & Workshops",
+    date: "2026-05-04",
+    time: "19:00",
+    durationMinutes: 90,
+    location: "Digital (Teams)",
+    format: "Innovationsabend",
+    descriptionPublic: "Begrüßung & Netzwerk-Update (Status der Plattform & nächste Schritte), anschließend Expertentalk zum Thema Realität im BIM-Alltag.",
+    tags: ["Innovationsabend", "BIM", "Praxis"]
+  },
+  {
+    id: "evt_2026_05_19",
+    title: "BIM in der Bauphysik",
+    subtitle: "Anforderungen an das Bauphysikmodell",
+    date: "2026-05-19",
     time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
@@ -169,37 +182,16 @@ export const events = [
     tags: ["BIM", "Bauphysik", "Modell"]
   },
   {
-    id: "evt_2026_05_04",
-    title: "Innovationsabend – Expertentalk (Thema folgt)",
-    date: "2026-05-04",
-    time: "19:00",
-    durationMinutes: 90,
-    location: "Digital (Teams)",
-    format: "Innovationsabend",
-    descriptionPublic: "Begrüßung & Netzwerk-Update (Status der Plattform & nächste Schritte), anschließend Expertentalk. Thema wird in Kürze bekanntgegeben – eigene Themenvorschläge willkommen.",
-    tags: ["Innovationsabend", "Netzwerk", "Expertentalk"]
-  },
-  {
-    id: "test1",
-    title: "DIN 19650 – Umsetzung & Anwendung in der Praxis",
-    date: "",
+    id: "evt_2026_05_26",
+    title: "DIN 19650",
+    subtitle: "CDE Umsetzung & Anwendung in der Praxis",
+    date: "2026-05-26",
     time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
     format: "Workshop",
-    descriptionPublic: "Gemeinsame Erarbeitung und Vertiefung der neuen Anforderungen.",
-    tags: ["DIN 19650", "BIM", "Normen"]
-  },
-  {
-    id: "test2",
-    title: "DIN 19650 – Umsetzung & Anwendung in der Praxis",
-    date: "",
-    time: "19:00",
-    durationMinutes: 90,
-    location: "Digital (Teams)",
-    format: "Workshop",
-    descriptionPublic: "Gemeinsame Erarbeitung und Vertiefung der neuen Anforderungen.",
-    tags: ["DIN 19650", "BIM", "Normen"]
+    descriptionPublic: "Schwerpunkt: Was eine CDE nach DIN 19650 bedeutet und wie sie in der Projektarbeit umgesetzt wird. Gemeinsame Erarbeitung und Vertiefung der Anforderungen.",
+    tags: ["DIN 19650", "CDE", "BIM", "Normen"]
   }
 ];
 
