@@ -158,10 +158,10 @@ export const members = [
 
 export const events = [
   {
-    id: "evt_2026_05_04",
-    title: "Realität im BIM-Alltag",
-    subtitle: "What the hell ?!, Diskusion & Workshop",
-    date: "2026-05-04",
+    id: "evt_2026_07_06",
+    title: "KI im Bauwesen",
+    subtitle: "Impulse, Praxisbeispiele & Diskussion",
+    date: "2026-07-06",
     time: "19:00",
     durationMinutes: 90,
     location: "Digital (Teams)",
