@@ -38,7 +38,9 @@
     "@type": "Organization",
     "name": "…undbauen",
     "url": "https://undbauen.de",
-    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation"
+    "email": "kontakt@undbauen.de",
+    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation",
+    "sameAs": []
   }
   </script>
   <script type="application/ld+json">
@@ -47,11 +49,12 @@
     "@type": "WebSite",
     "name": "…undbauen",
     "url": "https://undbauen.de",
+    "inLanguage": "de-DE",
     "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation"
   }
   </script>
   
-  <script>(function(){document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');})();</script>
+  <script>(function(){var s;try{s=localStorage.getItem('theme');}catch(e){}var t=(s==='dark'||s==='light')?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="assets/css/fonts.css" />
   <link rel="stylesheet" href="assets/css/base.css?v=4.3.0" />
   <link rel="stylesheet" href="assets/css/public.css?v=4.3.0" />
@@ -61,19 +64,24 @@
   <header class="publicNav" role="banner">
     <div class="container publicNavInner">
       <a class="brand" href="#home" aria-label="…undbauen Startseite">…undbauen</a>
-      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navLinks">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
       <nav class="navLinks" id="navLinks" aria-label="Hauptnavigation" role="navigation" aria-hidden="true">
         <a href="#innovationsabend">Innovationsabend</a>
         <a href="#netzwerk">Netzwerk</a>
-        <a href="#themen">Themen</a>
-        <a href="#termine">Termine</a>
+        <!-- <a href="#themen">Themen</a> -->
+        <a href="#termine">Workshops</a>
         <a href="#kontakt">Kontakt</a>
-        <a href="#kontakt" class="btn primary">Registrieren</a>
+        <a href="#kontakt" class="btn primary">Kontakt</a>
       </nav>
+      <div class="nav-actions">
+        <button class="btn icon-btn" id="themeToggle" aria-label="Theme wechseln (Hell/Dunkel)" aria-pressed="false" title="Theme wechseln">
+          <svg class="icon icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+        </button>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navLinks">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -161,7 +169,10 @@
       <div class="container">
         <h2 id="innovationsabend-heading" class="section-title">Der monatliche Innovationsabend</h2>
         <p class="section-subtitle">Jeden Monat laden wir zu einem kuratierten Abend ein, der Raum für Austausch, Inspiration und echte Begegnungen schafft. Kein Marketing, keine Produktpräsentationen – nur Menschen, Ideen und Dialog.</p>
-        
+        <div class="events-grid-row" id="innovationsabendDates"></div>
+
+        <p class="section-subtitle">Der Innovationsabend ist unser Hauptformat und findet in der Regel am ersten Montag im Monat statt. Aus den Innovationsabenden entstehen vertiefende Workshops, deren Termine wir gemeinsam mit den Teilnehmer:innen abstimmen.</p>
+
         <div class="event-grid">
           <div class="event-card">
             <div class="event-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 4-3 6-3 6H9s-3-2-3-6a6 6 0 0 1 6-6z"></path><path d="M12 9v6"></path></svg></div>
@@ -204,7 +215,7 @@
       </div>
     </section>
 
-    <!-- Topics Section -->
+    <!-- Topics Section (ausgeblendet)
     <section id="themen" class="topics section section-with-divider" aria-labelledby="topics-heading" role="region">
       <div class="container">
         <div class="topics-header">
@@ -246,18 +257,19 @@
         </div>
       </div>
     </section>
+    -->
 
     <section id="termine" class="section section-with-divider" aria-labelledby="termine-heading" role="region">
       <div class="container">
-        <h2 id="termine-heading" class="section-title">Laufende Termine</h2>
+        <h2 id="termine-heading" class="section-title">Workshops</h2>
         <div class="events-header-layout">
           <div class="events-image-block">
             <img src="assets/img/event-workshop.jpg" alt="Innovationsabende und Workshops" loading="lazy" />
           </div>
           <div class="events-intro-block">
-            <p class="p"><strong>Im Rahmen von …undbauen</strong> finden regelmäßig <em>Innovationsabende, Workshops und Diskussionsformate</em> statt.</p>
-            <p class="p">Die Termine greifen aktuelle Fragestellungen aus <span class="highlight">Planung, Baupraxis, Digitalisierung und Nachhaltigkeit</span> auf.</p>
-            <p class="p">Inhalte werden von eingeladenen <strong>Expert:innen, Praktiker:innen</strong> oder im gemeinsamen Austausch erarbeitet. Der Innovationsabend ist unser Hauptformat und findet in der Regel am ersten Montag im Monat statt. Aus den Innovationsabenden entstehen vertiefende Workshops, deren Termine wir gemeinsam mit den Teilnehmer:innen abstimmen.</p>
+            <p class="p"><strong>Im Rahmen von …undbauen</strong> finden regelmäßig <em>Workshops und Diskussionsformate</em> statt.</p>
+            <p class="p">Die Termine greifen aktuelle Fragestellungen aus <span class="highlight">Planung, Baupraxis, Digitalisierung und Nachhaltigkeit</span> auf. Inhalte werden von eingeladenen <strong>Expert:innen, Praktiker:innen</strong> oder im gemeinsamen Austausch erarbeitet.</p>
+  
           </div>
         </div>
         <div class="events-grid-row" id="publicEvents"></div>
@@ -349,12 +361,6 @@
 
             <h3 class="legal-sub-title">Urheberrecht</h3>
             <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
-
-            <p class="legal-theme-toggle">
-              <button class="btn icon-btn" id="themeToggle" aria-label="Theme wechseln (Hell/Dunkel)" aria-pressed="false" title="Theme wechseln">
-                <svg class="icon icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
-              </button>
-            </p>
           </div>
 
           <!-- Datenschutz & Cookies -->
@@ -362,7 +368,7 @@
             <h2 class="legal-block-title">Datenschutz</h2>
 
             <h3 class="legal-sub-title">1. Verantwortlicher</h3>
-            <p>Verantwortlicher im Sinne der DSGVO ist Lukas Gilbert, Hausenstraße 23, 50968 Köln, kontakt@undbauen.de.</p>
+            <p>Verantwortlicher im Sinne der DSGVO ist Lukas Gilbert, Hitzelerstraße 73, 50968 Köln, kontakt@undbauen.de.</p>
 
             <h3 class="legal-sub-title">2. Hosting</h3>
             <p>Diese Website wird bei <strong>Vercel Inc.</strong> (440 N Barranca Ave #4133, Covina, CA 91723, USA) gehostet. Vercel verarbeitet beim Aufruf der Website technisch notwendige Verbindungsdaten (IP-Adresse, Zeitstempel, aufgerufene URL) in seinen Server-Logs. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Vercel ist nach dem EU-US Data Privacy Framework zertifiziert. Weitere Informationen: <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="legal-link">vercel.com/legal/privacy-policy</a>.</p>
@@ -370,6 +376,7 @@
             <h3 class="legal-sub-title">3. Cookies</h3>
             <p>Diese Website verwendet ausschließlich <strong>technisch notwendige Cookies</strong>. Tracking, Analyse oder Werbe-Cookies werden nicht eingesetzt.</p>
             <p><strong>cn_seen</strong> – speichert, dass Sie den Cookie-Hinweis zur Kenntnis genommen haben (1 Jahr). Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Vermeidung wiederholter Hinweise).</p>
+            <p>Zusätzlich speichern wir im lokalen Speicher Ihres Browsers (<em>localStorage</em>) ausschließlich Ihre gewählte Darstellung (<strong>theme</strong>: hell/dunkel). Diese Information verbleibt auf Ihrem Gerät, wird nicht an uns übertragen und dient allein der Wiederherstellung Ihrer Anzeigeeinstellung.</p>
 
             <h3 class="legal-sub-title">4. Keine externen Dienste</h3>
             <p>Alle Schriften, Bilder und Skripte werden ausschließlich von unserem eigenen Server ausgeliefert. Es werden keine Daten an Google, Meta, Adobe oder andere Drittanbieter übertragen.</p>
@@ -390,25 +397,6 @@
   </div>
 
   <script type="module" src="assets/js/public.js?v=4.3.0"></script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "…undbauen",
-    "url": "https://undbauen.de",
-    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation",
-    "sameAs": []
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "…undbauen",
-    "url": "https://undbauen.de",
-    "description": "Innovationsnetzwerk für nachhaltiges Bauen und Innovation"
-  }
-  </script>
 
   <!-- Cookie-Hinweis -->
   <div id="cookieNotice" class="cookie-notice" role="region" aria-label="Cookie-Hinweis" hidden>

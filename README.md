@@ -27,7 +27,8 @@ assets/
     fonts.css               # Schriften
   js/
     public.js               # Haupt-Logik (Events, Netzwerk-Slider, FAQ, CTA)
-    data.js                 # Statische Daten (Members, Events)
+    personen.js             # Statische Personendaten (Members)
+    termine.js              # Statische Termindaten (Themes, Events)
     components/
       heroAnimation.js      # Wort-Rotation im Hero
       hoverCard.js          # Hover-Preview auf Person-Cards
@@ -38,4 +39,4 @@ assets/
 
 ## Daten pflegen
 
-Mitglieder und Termine direkt in `assets/js/data.js` bearbeiten – kein Backend, kein API.
+Mitglieder direkt in `assets/js/personen.js`, Termine in `assets/js/termine.js` bearbeiten – kein Backend, kein API.

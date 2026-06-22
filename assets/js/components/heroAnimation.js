@@ -43,6 +43,11 @@ export const heroAnimation = {
     headlineWrapper.appendChild(wordUnd);
     headlineWrapper.appendChild(wordBauen);
     
+    // Bei reduzierter Bewegung nur das erste Wort statisch zeigen
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
     // Starte die Rotation nach 3 Sekunden
     setTimeout(() => {
       this.startRotation();

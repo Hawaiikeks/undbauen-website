@@ -1,4 +1,5 @@
-import { members, events } from "./data.js";
+import { members } from "./personen.js";
+import { events, themes } from "./termine.js";
 import { getIcon } from "./components/icons.js";
 import { memberModal } from "./components/memberModal.js";
 import { heroAnimation } from "./components/heroAnimation.js";
@@ -39,48 +40,114 @@ const fixChipWidths = (container) => {
 
 // --- Events ---
 
+// Termine eines Themas chronologisch sortieren (Termine ohne Datum ans Ende).
+const sortByDate = (a, b) => {
+  if (!a.date && !b.date) return 0;
+  if (!a.date) return 1;
+  if (!b.date) return -1;
+  return (a.date + a.time).localeCompare(b.date + b.time);
+};
+
+const MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+// Eine einzelne Termin-Kachel rendern.
+const renderTerminCard = (ev) => {
+  const [y, m, d] = (ev.date || '').split('-');
+  const dateObj   = y ? new Date(+y, +m - 1, +d) : null;
+  const dayName   = dateObj ? dateObj.toLocaleDateString('de-DE', { weekday: 'long' }) : '';
+  const dayNum    = dateObj ? String(+d) : '';
+  const monthShort = dateObj ? MONTHS_SHORT[+m - 1] : '';
+
+  const dateAnchor = dateObj
+    ? `<span class="event-termin-day">${dayNum}</span>
+       <span class="event-termin-month">${monthShort}</span>
+       <span class="event-termin-year">${y}</span>`
+    : `<span class="event-termin-day">?</span><span class="event-termin-month">tbd</span>`;
+
+  return `
+    <div class="event-termin-card">
+      <div class="event-termin-date" aria-hidden="true">${dateAnchor}</div>
+      <div class="event-termin-card-body">
+        ${ev.title ? `<h4 class="event-termin-card-title">${sanitizeHTML(ev.title)}</h4>` : ''}
+        ${ev.subtitle ? `<p class="event-termin-card-note">${sanitizeHTML(ev.subtitle)}</p>` : ''}
+        <div class="event-termin-card-meta">
+          <span class="event-meta-item">${getIcon('calendar', 13)} ${dateObj ? dayName : 'Termin folgt'}</span>
+          ${ev.time ? `<span class="event-meta-item">${getIcon('clock', 13)} ${sanitizeHTML(ev.time)} Uhr</span>` : ''}
+        </div>
+        ${ev.location ? `<span class="event-termin-chip">${getIcon('mapPin', 12)} ${sanitizeHTML(ev.location)}</span>` : ''}
+      </div>
+    </div>
+  `;
+};
+
+// Einen Themen-Abschnitt (Überschrift, optionale Medien/Credits, Termin-Kacheln) rendern.
+const renderThemeSection = (theme, items, titleOverride) => {
+  const hasCredits = Array.isArray(theme.credits) && theme.credits.length;
+  const creditsHTML = hasCredits ? `
+        <div class="event-theme-credits">
+          ${theme.credits.map(c => `<span class="event-theme-credit"><span class="event-theme-credit-role">${sanitizeHTML(c.role || '')}:</span> ${sanitizeHTML(c.name || '')}</span>`).join('')}
+        </div>` : '';
+  const hasMedia = theme.image || theme.intro;
+  return `
+      <section class="event-theme-section">
+        <div class="event-theme-header">
+          <h3 class="event-theme-title">${sanitizeHTML(titleOverride || theme.title || '')}</h3>
+        </div>
+        ${hasMedia ? `
+        <div class="event-theme-media">
+          ${theme.image ? `<img class="event-theme-image" src="${sanitizeHTML(theme.image)}" alt="${sanitizeHTML(theme.title || '')}" loading="lazy" />` : ''}
+          <div class="event-theme-text">
+            ${theme.intro ? `<p class="event-theme-intro">${sanitizeHTML(theme.intro)}</p>` : ''}
+            ${creditsHTML}
+          </div>
+        </div>` : creditsHTML}
+        <div class="event-termin-grid">
+          ${items.map(renderTerminCard).join('')}
+        </div>
+        ${items.length > 1 ? `<button class="event-termin-more" type="button" aria-expanded="false">Weitere ${items.length - 1} Termine anzeigen</button>` : ''}
+      </section>
+    `;
+};
+
+// Mobile: nur den ersten Termin zeigen, restliche per Button einblenden.
+const bindTerminToggles = (root) => {
+  if (!root) return;
+  root.querySelectorAll('.event-termin-more').forEach(btn => {
+    const grid = btn.previousElementSibling;
+    if (!grid || !grid.classList.contains('event-termin-grid')) return;
+    const count = grid.querySelectorAll('.event-termin-card').length;
+    btn.addEventListener('click', () => {
+      const expanded = grid.classList.toggle('termin-expanded');
+      btn.setAttribute('aria-expanded', String(expanded));
+      btn.textContent = expanded ? 'Weniger anzeigen' : `Weitere ${count - 1} Termine anzeigen`;
+    });
+  });
+};
+
+const itemsForTheme = (themeId) =>
+  events.filter(ev => ev.theme === themeId).sort(sortByDate);
+
 const renderPublicEvents = () => {
   const wrap = $("#publicEvents");
-  if (!wrap) return;
-
-  const evs = events.slice().sort((a, b) => {
-    if (!a.date && !b.date) return 0;
-    if (!a.date) return 1;
-    if (!b.date) return -1;
-    return (a.date + a.time).localeCompare(b.date + b.time);
-  });
-
-  if (evs.length === 0) {
-    wrap.innerHTML = '<div class="p-xl text-center text-muted">Keine Termine verfügbar.</div>';
-    return;
+  if (wrap) {
+    const groups = themes
+      .filter(theme => theme.id !== "innovationsabend")
+      .map(theme => ({ theme, items: itemsForTheme(theme.id) }))
+      .filter(g => g.items.length > 0);
+    wrap.innerHTML = groups.length
+      ? groups.map(({ theme, items }) => renderThemeSection(theme, items)).join("")
+      : '<div class="p-xl text-center text-muted">Keine Termine verfügbar.</div>';
+    bindTerminToggles(wrap);
   }
 
-  wrap.innerHTML = evs.map((ev, i) => {
-    const isBlurred = i >= 3;
-    const [y, m, d] = (ev.date || '').split('-');
-    const dateObj   = y ? new Date(+y, +m - 1, +d) : null;
-    const dayName   = dateObj ? dateObj.toLocaleDateString('de-DE', { weekday: 'short' }) : '';
-    const dateShort = dateObj ? `${d}.${m}.${y}` : '';
-    return `
-      <div class="event-card-compact-small${isBlurred ? ' event-card-blurred' : ''}">
-        <div class="event-card-accent"></div>
-        <div class="event-card-content-small">
-          <div class="event-card-top">
-            <span class="event-badge">${sanitizeHTML(ev.format || '')}</span>
-          </div>
-          <div class="event-card-heading">
-            <h3 class="event-card-title-small">${sanitizeHTML(ev.title || '')}</h3>
-            ${ev.subtitle ? `<p class="event-card-subtitle-small">${sanitizeHTML(ev.subtitle)}</p>` : ''}
-          </div>
-          <div class="event-card-meta-small">
-            <span class="event-meta-item">${getIcon('calendar', 13)} ${dayName ? `${dayName}, ${dateShort}` : 'Termin folgt'}</span>
-            ${ev.time ? `<span class="event-meta-item">${getIcon('clock', 13)} ${sanitizeHTML(ev.time)} Uhr</span>` : ''}
-          </div>
-        </div>
-        ${isBlurred ? '<div class="event-card-blur-overlay"><span>Nur für Mitglieder sichtbar</span></div>' : ''}
-      </div>
-    `;
-  }).join("");
+  // Innovationsabend-Termine direkt im Abschnitt "Der monatliche Innovationsabend".
+  const iaWrap = $("#innovationsabendDates");
+  if (iaWrap) {
+    const ia = themes.find(theme => theme.id === "innovationsabend");
+    const items = itemsForTheme("innovationsabend");
+    iaWrap.innerHTML = ia && items.length ? renderThemeSection(ia, items, "Nächste Termine") : '';
+    bindTerminToggles(iaWrap);
+  }
 };
 
 // --- Social Proof ---
@@ -89,7 +156,7 @@ const renderSocialProof = () => {
   const wrap = $("#socialProofStats");
   if (!wrap) return;
 
-  const total = 35;
+  const total = members.length;
 
   wrap.innerHTML = `
     <div class="stat-card">
@@ -279,8 +346,16 @@ function renderFAQ() {
 
 // --- Theme ---
 
+const getStoredTheme = () => {
+  try {
+    const t = localStorage.getItem('theme');
+    return t === 'dark' || t === 'light' ? t : null;
+  } catch (e) { return null; }
+};
+
 const initTheme = () => {
-  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  const theme = getStoredTheme()
+    ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', theme);
   updateThemeIcon(theme);
 };
@@ -309,6 +384,7 @@ const updateThemeIcon = (theme) => {
 const toggleTheme = () => {
   const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('theme', next); } catch (e) {}
   updateThemeIcon(next);
 };
 

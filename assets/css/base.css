@@ -66,6 +66,18 @@ a:hover{
   color: var(--primary); 
 }
 
+@media (prefers-reduced-motion: reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html{ scroll-behavior: auto; }
+}
+
 .container{ max-width:var(--max-width); margin:0 auto; padding:0 24px; }
 
 .section{ 
@@ -571,6 +583,22 @@ a.chip-link:hover {
 
 .hero-cta .btn{
   min-width: 160px;
+}
+
+/* Sekundärer Hero-Button dezent halten, damit die primäre Aktion dominiert */
+[data-theme="light"] .hero-cta .btn:not(.primary),
+[data-theme="dark"] .hero-cta .btn:not(.primary){
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+[data-theme="light"] .hero-cta .btn:not(.primary):hover,
+[data-theme="dark"] .hero-cta .btn:not(.primary):hover{
+  background: transparent;
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 @media (max-width: 768px){
